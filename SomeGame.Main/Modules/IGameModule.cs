@@ -65,7 +65,7 @@ namespace SomeGame.Main.Modules
 
         protected abstract Palette CreatePalette(Palette basePalette, PaletteIndex index);
 
-        protected abstract IndexedImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system);
+        protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system);
 
         public void Update(GameTime gameTime)
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 
 namespace SomeGame.Main.Models
@@ -7,7 +8,7 @@ namespace SomeGame.Main.Models
     {
         private readonly int _tileSize;
 
-        public TileMap TileMap { get; }        
+        public TileMap TileMap { get; } 
         public PaletteIndex Palette { get; set; }
         public RotatingInt ScrollX { get; set; }
         public RotatingInt ScrollY { get; set; }
@@ -15,7 +16,6 @@ namespace SomeGame.Main.Models
         public Layer(TileMap tileMap, PaletteIndex palette, RotatingInt scrollX, RotatingInt scrollY, int tileSize)
         {
             _tileSize = tileSize;
-
             TileMap = tileMap;
             Palette = palette;
             ScrollX = scrollX;

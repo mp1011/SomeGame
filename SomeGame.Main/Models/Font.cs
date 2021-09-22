@@ -4,12 +4,12 @@ namespace SomeGame.Main.Models
 {
     class Font
     {
-        private readonly TileSet _tileSet;
         private readonly string _charset;
+        private readonly int _tileOffset = 0;
 
-        public Font(TileSet tileSet, string charset)
+        public Font(int tileOffset, string charset)
         {
-            _tileSet = tileSet;
+            _tileOffset = tileOffset;
             _charset = charset;
         }
 
@@ -25,7 +25,7 @@ namespace SomeGame.Main.Models
             if (index < 0)
                 return new Tile(-1, TileFlags.None);
             else
-                return new Tile(index, TileFlags.None);
+                return new Tile(_tileOffset + index, TileFlags.None);
         }
     }
 }

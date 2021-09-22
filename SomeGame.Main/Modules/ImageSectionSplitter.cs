@@ -50,13 +50,13 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override IndexedImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
         {
             _image = resourceLoader.LoadTexture(_imageKey)
                 .ToIndexedImage();
 
-            return new IndexedImage[] { resourceLoader.LoadTexture(_tileSetKey)
-                .ToIndexedImage() };
+            return new IndexedTilesetImage[] { resourceLoader.LoadTexture(_tileSetKey)
+                                                             .ToIndexedTilesetImage() };
         }
 
         private Point? _dragStart;

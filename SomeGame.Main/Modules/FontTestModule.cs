@@ -19,17 +19,17 @@ namespace SomeGame.Main.Modules
         {
             if(index == LayerIndex.FG)
             {
-                var font = new Font(system.GetTileSet(PaletteIndex.P1), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
+                var font = new Font(system.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
                 var tiles = font.FromString("HALLO WORLD");
 
                 layer.TileMap.SetEach(0, tiles.Length, 0, 1, (x, y) => tiles[x]);
             }
         }
 
-        protected override IndexedImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
         {
             using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
-            return new IndexedImage[] { font.ToIndexedImage() };
+            return new IndexedTilesetImage[] { font.ToIndexedTilesetImage() };
         }
     }
 }

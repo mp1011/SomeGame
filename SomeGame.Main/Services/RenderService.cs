@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 
 namespace SomeGame.Main.Services
@@ -18,8 +19,8 @@ namespace SomeGame.Main.Services
             DrawWrappingTileMap(spriteBatch, 
                 layer.TileMap, 
                 _gameSystem.GetTileSet(layer.Palette),
-                layer.ScrollX, 
-                layer.ScrollY);
+                x: layer.ScrollX, 
+                y: layer.ScrollY);
         }
 
         private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y)
@@ -40,8 +41,6 @@ namespace SomeGame.Main.Services
 
                 DrawTile(
                     spriteBatch: spriteBatch,
-                    tileX: tileX,
-                    tileY: tileY,
                     screenX: screenX,
                     screenY: screenY,
                     tile: tile,
@@ -50,14 +49,17 @@ namespace SomeGame.Main.Services
         }
    
 
-        private void DrawTile(SpriteBatch spriteBatch, int tileX, int tileY, int screenX, int screenY, 
-                             Tile tile, TileSet tileSet)
+        private void DrawTile(SpriteBatch spriteBatch, 
+                              int screenX, 
+                              int screenY, 
+                              Tile tile, 
+                              TileSet tileSet)
         {
             if (tile.Index < 0)
                 return;
 
             var srcRec = tileSet.GetSrcRec(tile);
-            var destRec = new Rectangle(x: screenX, 
+            var destRec = new Rectangle(x: screenX,
                                         y: screenY,
                                         width: _gameSystem.TileSize,
                                         height: _gameSystem.TileSize);
@@ -72,13 +74,13 @@ namespace SomeGame.Main.Services
             if ((tile.Flags & TileFlags.FlipV) > 0)
                 effects |= SpriteEffects.FlipVertically;
 
-            spriteBatch.Draw(tileSet.Texture, 
+            spriteBatch.Draw(tileSet.Texture,
                                 destinationRectangle: destRec,
-                                sourceRectangle: srcRec, 
-                                Color.White, 
-                                rotation: 0, 
-                                origin: Vector2.Zero, 
-                                effects: effects, 
+                                sourceRectangle: srcRec,
+                                Color.White,
+                                rotation: 0,
+                                origin: Vector2.Zero,
+                                effects: effects,
                                 layerDepth: 0);
         }
     }

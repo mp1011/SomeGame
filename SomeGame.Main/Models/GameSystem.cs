@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Input;
 using SomeGame.Main.Services;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +12,7 @@ namespace SomeGame.Main.Models
 {
     class GameSystem
     {
-        private Grid<byte> _tileSetData;
+        private VramData _tileSetData;
         private Palette[] _palettes;
         private Layer[] _layers;
         private TileSet[] _tileSets;
@@ -45,6 +47,11 @@ namespace SomeGame.Main.Models
 
         public Palette GetPalette(PaletteIndex paletteIndex) => _palettes[(int)paletteIndex];
 
+        public int GetTileOffset(TilesetContentKey tilesetContentKey)
+        {
+            return _tileSetData.Offsets[tilesetContentKey];
+        }
+
         public void SetPalettes(Palette palette1, Palette palette2, Palette palette3, Palette palette4)
         {
             _palettes = new Palette[] {
@@ -55,17 +62,17 @@ namespace SomeGame.Main.Models
             };
         }
 
-        public void SetVram(GraphicsDevice graphicsDevice, IndexedImage[] data)
+        public void SetVram(GraphicsDevice graphicsDevice, IndexedTilesetImage[] data)
         {
             _tileSetData = CreateVramImage(data);
            
             _tileSets = _palettes
                 .Select(pal =>
                 {
-                    var texture = new IndexedImage(_tileSetData, pal)
+                    var texture = new IndexedImage(_tileSetData.ImageData, pal)
                                            .ToTexture2D(graphicsDevice);
 
-                    return new TileSet(texture, TileSize);
+                    return new TileSet(texture, _tileSetData.Offsets, TileSize);
                 }).ToArray();
 
             SaveVramSnapshot(PaletteIndex.P1);
@@ -86,22 +93,32 @@ namespace SomeGame.Main.Models
             texture.SaveAsPng(fs, texture.Width, texture.Height);
         }
 
-        private Grid<byte> CreateVramImage(IndexedImage[] data)
+        private VramData CreateVramImage(IndexedTilesetImage[] data)
         {
-            if (data.Length == 1)
-                return data[0].Image;
-
             var splitImages = data
-                .Select(d => d.Image.Split(TileSize))
+                .Select(d => new { Key = d.Key, Data = d.Image.Split(TileSize) })
                 .ToArray();
 
-            var tiles = splitImages
-                .SelectMany(s => s.ToArray())
-                .Where(p => !p.All((x, y, t) => t == 0))
-                .ToArray();
+            var tileGroups = splitImages.Select(p => new
+            {
+                Key = p.Key,
+                Data = p.Data.Where(p => !p.All((x, y, t) => t == 0))
+                             .ToArray()
+            }).ToArray();
 
-            var combined = tiles.Combine(32);
-            return combined;
+            var offsets = new Dictionary<TilesetContentKey, int>();
+            int currentOffset = 0;
+            foreach(var tileGroup in tileGroups)
+            {
+                offsets[tileGroup.Key] = currentOffset;
+                currentOffset += tileGroup.Data.Length;
+            }
+
+            var combined = tileGroups
+                            .SelectMany(p=>p.Data)
+                            .Combine(32);
+
+            return new VramData(ImageData: combined, Offsets: offsets);
         }
     }
 }

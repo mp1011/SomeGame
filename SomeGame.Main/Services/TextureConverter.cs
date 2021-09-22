@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
+using System.Linq;
 
 namespace SomeGame.Main.Services
 {
@@ -25,6 +26,20 @@ namespace SomeGame.Main.Services
             var pixels = ToColorData(texture);
             var palette = new Palette(pixels);
             return ToIndexedImage(pixels.ToGrid(texture.Width,texture.Height), palette);
+        }
+
+        public static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture)
+        {
+            var pixels = ToColorData(texture);
+            var palette = new Palette(pixels);
+            var key = texture.Name.Split('\\')
+                                  .Last()
+                                  .ParseEnum<TilesetContentKey>();
+
+            var grid = pixels.ToGrid(texture.Width, texture.Height)
+                             .Map(palette.GetIndex);
+
+            return new IndexedTilesetImage(key, grid, palette);
         }
 
         public static IndexedImage ToIndexedImage(this Texture2D texture, Palette palette)

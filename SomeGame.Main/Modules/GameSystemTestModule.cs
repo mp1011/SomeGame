@@ -34,7 +34,15 @@ namespace SomeGame.Main.Modules
 
         protected override void InitializeLayer(GameSystem system, LayerIndex index, Layer layer)
         {
-            if(index == LayerIndex.FG)
+            if (index == LayerIndex.BG)
+            {
+                var font = new Font(system.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
+                var tiles = font.FromString("HELLO WORLD");
+
+                layer.TileMap.SetEach(0, tiles.Length, 3, 4, (x, y) => tiles[x]);
+            }
+
+            if (index == LayerIndex.FG)
             {
                 layer.TileMap.SetTile(0, 0, new Tile(16, TileFlags.None));
 
@@ -75,12 +83,12 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override IndexedImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
         {
             using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
             using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
 
-            return new IndexedImage[] { image.ToIndexedImage(), font.ToIndexedImage() };
+            return new IndexedTilesetImage[] { image.ToIndexedTilesetImage(), font.ToIndexedTilesetImage() };
         }
     }
 }

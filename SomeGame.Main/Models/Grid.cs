@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace SomeGame.Main.Models
@@ -96,6 +97,16 @@ namespace SomeGame.Main.Models
             int i = 0;
             ForEach((x, y, v) => array[i++] = v);
             return array;
+        }
+
+        public IEnumerable<T> Where(Func<T,bool> predicate)
+        {
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                {
+                    if (predicate(_grid[x, y]))
+                        yield return _grid[x, y];
+                }
         }
 
         public Grid<Grid<T>> Split(int segmentSize)
