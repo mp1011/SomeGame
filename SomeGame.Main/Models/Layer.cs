@@ -24,11 +24,11 @@ namespace SomeGame.Main.Models
 
         public Point TilePointFromPixelPoint(int x, int y)
         {
-            if (ScrollX != 0 || ScrollY != 0)
-                throw new System.NotImplementedException();
+            var sx = x - ScrollX;
+            var sy = y - ScrollY;
 
-            var tileX = (x / _tileSize).Clamp(0, TileMap.TilesX - 1);
-            var tileY = (y / _tileSize).Clamp(0, TileMap.TilesY - 1);
+            var tileX = (sx / _tileSize).Clamp(0, TileMap.TilesX - 1);
+            var tileY = (sy / _tileSize).Clamp(0, TileMap.TilesY - 1);
             return new Point(tileX, tileY);
         }
     }

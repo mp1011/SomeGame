@@ -12,4 +12,10 @@
         Tiles,
         Font
     }
+
+    public enum LevelContentKey
+    {
+        None,
+        TestLevel
+    }
 }

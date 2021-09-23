@@ -30,9 +30,19 @@
             return new RotatingInt(rb.Value + delta, rb.Max);
         }
 
+        public static RotatingInt operator +(int number, RotatingInt rb)
+        {
+            return new RotatingInt(number + rb.Value, rb.Max);
+        }
+
         public static RotatingInt operator -(RotatingInt rb, int delta)
         {
             return new RotatingInt(rb.Value - delta, rb.Max);
+        }
+
+        public static RotatingInt operator -(int number, RotatingInt rb)
+        {
+            return new RotatingInt(number - rb.Value, rb.Max);
         }
 
         public static implicit operator int(RotatingInt b) => b.Value;
