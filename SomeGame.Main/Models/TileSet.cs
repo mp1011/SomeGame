@@ -26,9 +26,9 @@ namespace SomeGame.Main.Models
             return _cells[_offsets[key] + tile.Index];
         }
 
-        public Rectangle GetSrcRec(Tile tile)
+        public Rectangle GetSrcRec(int index)
         {
-            return _cells[tile.Index];
+            return _cells[index];
         }
     }
 }

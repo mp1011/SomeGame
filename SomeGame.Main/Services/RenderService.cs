@@ -20,10 +20,17 @@ namespace SomeGame.Main.Services
                 layer.TileMap, 
                 _gameSystem.GetTileSet(layer.Palette),
                 x: layer.ScrollX, 
-                y: layer.ScrollY);
+                y: layer.ScrollY,
+                tileOffset: 0);
         }
 
-        private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y)
+        public void DrawSprite(SpriteBatch spriteBatch, Sprite sprite)
+        {
+            var tileSet = _gameSystem.GetTileSet(sprite.Palette);
+            DrawWrappingTileMap(spriteBatch, sprite.TileMap, tileSet, sprite.ScrollX, sprite.ScrollY, sprite.TileOffset);
+        }
+
+        private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y, int tileOffset)
         {
             tileMap.ForEach((tileX, tileY, tile) =>
             {
@@ -44,7 +51,8 @@ namespace SomeGame.Main.Services
                     screenX: screenX,
                     screenY: screenY,
                     tile: tile,
-                    tileSet: tileSet);
+                    tileSet: tileSet,
+                    tileOffset: tileOffset);
             });
         }
    
@@ -53,12 +61,13 @@ namespace SomeGame.Main.Services
                               int screenX, 
                               int screenY, 
                               Tile tile, 
-                              TileSet tileSet)
+                              TileSet tileSet,
+                              int tileOffset)
         {
             if (tile.Index < 0)
                 return;
 
-            var srcRec = tileSet.GetSrcRec(tile);
+            var srcRec = tileSet.GetSrcRec(tileOffset + tile.Index);
             var destRec = new Rectangle(x: screenX,
                                         y: screenY,
                                         width: _gameSystem.TileSize,

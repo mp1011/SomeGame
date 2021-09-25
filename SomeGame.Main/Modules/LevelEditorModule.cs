@@ -17,9 +17,9 @@ namespace SomeGame.Main.Modules
             _dataSerializer = new DataSerializer();
         }
 
-        protected override Palette CreatePalette(Palette basePalette, PaletteIndex index)
+        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
         {
-            return basePalette;
+            return tilesetImages[0].Palette;
         }
 
         protected override void Update(GameTime gameTime, GameSystem gameSystem)

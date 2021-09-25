@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Models;
+using SomeGame.Main.Models.AnimationModels;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Modules
@@ -16,8 +17,11 @@ namespace SomeGame.Main.Modules
 
     abstract class GameModuleBase : IGameModule
     {
+        private ulong _frameNumber;
         private readonly GameSystem _system;
         private readonly RenderService _renderService;
+        private SpriteAnimator _spriteAnimator;
+
         private double _mouseScale = 1.0;
         protected InputModel Input { get; private set; }
 
@@ -31,19 +35,26 @@ namespace SomeGame.Main.Modules
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            foreach (var sprite in _system.GetBackSprites())
+                _renderService.DrawSprite(spriteBatch, sprite);
+
             _renderService.DrawLayer(spriteBatch, _system.GetLayer(LayerIndex.BG));
             _renderService.DrawLayer(spriteBatch, _system.GetLayer(LayerIndex.FG));
             _renderService.DrawLayer(spriteBatch, _system.GetLayer(LayerIndex.Interface));
+
+
+            foreach (var sprite in _system.GetFrontSprites())
+                _renderService.DrawSprite(spriteBatch, sprite);
         }
 
         public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
             var vramImages = LoadVramImages(resourceLoader, _system);
 
-            _system.SetPalettes(CreatePalette(vramImages[0].Palette, PaletteIndex.P1),
-                                CreatePalette(vramImages[0].Palette, PaletteIndex.P2),
-                                CreatePalette(vramImages[0].Palette, PaletteIndex.P3),
-                                CreatePalette(vramImages[0].Palette, PaletteIndex.P4));
+            _system.SetPalettes(CreatePalette(vramImages, PaletteIndex.P1),
+                                CreatePalette(vramImages, PaletteIndex.P2),
+                                CreatePalette(vramImages, PaletteIndex.P3),
+                                CreatePalette(vramImages, PaletteIndex.P4));
 
             _system.SetVram(graphicsDevice, vramImages);
 
@@ -53,6 +64,9 @@ namespace SomeGame.Main.Modules
 
             _system.Input.Initialize(_system.Screen);
 
+            _spriteAnimator = InitializeAnimations();
+            InitializeSprites(_system, _spriteAnimator);
+
             AfterInitialize(resourceLoader, graphicsDevice);
         }
 
@@ -61,15 +75,23 @@ namespace SomeGame.Main.Modules
 
         }
 
+        protected virtual SpriteAnimator InitializeAnimations()
+        {
+            return new SpriteAnimator(new SpriteFrame[] { }, new AnimationFrame[] { }, new Animation[] { });
+        }
+
+        protected virtual void InitializeSprites(GameSystem system, SpriteAnimator spriteAnimator) { }
+
         protected abstract void InitializeLayer(GameSystem system, LayerIndex index, Layer layer);
 
-        protected abstract Palette CreatePalette(Palette basePalette, PaletteIndex index);
+        protected abstract Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index);
 
         protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system);
 
         public void Update(GameTime gameTime)
         {
             Input = _system.Input.ReadInput(_mouseScale);
+            _spriteAnimator.Update(_system);
             Update(gameTime, _system);
         }
 

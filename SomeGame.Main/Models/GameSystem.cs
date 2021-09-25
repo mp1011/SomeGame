@@ -4,6 +4,7 @@ using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Input;
 using SomeGame.Main.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace SomeGame.Main.Models
         private Palette[] _palettes;
         private Layer[] _layers;
         private TileSet[] _tileSets;
+        private Sprite[] _sprites;
 
         public readonly Rectangle Screen = new Rectangle(0, 0, 320, 240);
         public int TileSize = 8;
@@ -39,11 +41,21 @@ namespace SomeGame.Main.Models
             };
 
             Input = new MouseAndKeyboardInputSource();
+            _sprites = new Sprite[Enum.GetValues<SpriteIndex>().Length];
+
+            for (int i = 0; i < _sprites.Length; i++)
+                _sprites[i] = new Sprite(LayerPixelWidth, LayerPixelHeight, TileSize);
         }
 
         public TileSet GetTileSet(PaletteIndex paletteIndex) => _tileSets[(int)paletteIndex];
 
         public Layer GetLayer(LayerIndex layerIndex) =>_layers[(int)layerIndex];
+
+        public Sprite GetSprite(SpriteIndex spriteIndex) => _sprites[(int)spriteIndex];
+
+        public IEnumerable<Sprite> GetBackSprites() => _sprites.Where(p => p.Enabled && p.Priority == SpritePriority.Back);
+        public IEnumerable<Sprite> GetFrontSprites() => _sprites.Where(p => p.Enabled && p.Priority == SpritePriority.Front);
+
 
         public Palette GetPalette(PaletteIndex paletteIndex) => _palettes[(int)paletteIndex];
 
@@ -79,7 +91,6 @@ namespace SomeGame.Main.Models
             SaveVramSnapshot(PaletteIndex.P2);
             SaveVramSnapshot(PaletteIndex.P3);
             SaveVramSnapshot(PaletteIndex.P4);
-
         }
 
         private void SaveVramSnapshot(PaletteIndex p)

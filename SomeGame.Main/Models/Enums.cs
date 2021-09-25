@@ -63,4 +63,22 @@
         FG,
         Interface
     }
+
+    public enum SpriteIndex
+    {
+        Sprite1,
+        Sprite2,
+        Sprite3,
+        Sprite4,
+        Sprite5,
+        Sprite6,
+        Sprite7,
+        Sprite8
+    }
+
+    public enum SpritePriority
+    {
+        Back,
+        Front
+    }
 }

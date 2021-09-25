@@ -1,35 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using SomeGame.Main.Content;
-using SomeGame.Main.Extensions;
-
-namespace SomeGame.Main.Models
+﻿namespace SomeGame.Main.Models
 {
-    class Layer
+    class Layer : TiledObject
     {
-        private readonly int _tileSize;
-
-        public TileMap TileMap { get; } 
-        public PaletteIndex Palette { get; set; }
-        public RotatingInt ScrollX { get; set; }
-        public RotatingInt ScrollY { get; set; }
-
-        public Layer(TileMap tileMap, PaletteIndex palette, RotatingInt scrollX, RotatingInt scrollY, int tileSize)
+        public Layer(TileMap tileMap, PaletteIndex palette, RotatingInt scrollX, RotatingInt scrollY, int tileSize) : base(tileMap, palette, scrollX, scrollY, tileSize)
         {
-            _tileSize = tileSize;
-            TileMap = tileMap;
-            Palette = palette;
-            ScrollX = scrollX;
-            ScrollY = scrollY;
-        }
-
-        public Point TilePointFromPixelPoint(int x, int y)
-        {
-            var sx = x - ScrollX;
-            var sy = y - ScrollY;
-
-            var tileX = (sx / _tileSize).Clamp(0, TileMap.TilesX - 1);
-            var tileY = (sy / _tileSize).Clamp(0, TileMap.TilesY - 1);
-            return new Point(tileX, tileY);
         }
     }
 }

@@ -3,14 +3,17 @@
     public enum ImageContentKey
     {
         None,
-        Sheet
+        Sheet,
+        Characters_7,
+        Hero
     }
 
     public enum TilesetContentKey
     {
         None,
         Tiles,
-        Font
+        Font,
+        Hero
     }
 
     public enum LevelContentKey

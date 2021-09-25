@@ -9,10 +9,10 @@ namespace SomeGame.Main.Modules
 {
     class GameSystemTestModule : GameModuleBase
     {
-        protected override Palette CreatePalette(Palette basePalette, PaletteIndex index)
+        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
         {
             if (index == PaletteIndex.P1)
-                return basePalette;
+                return tilesetImages[0].Palette;
 
             return new Palette(Enumerable.Range(0, 32)
                                          .Select(i => new Color(i * 4, i, i * 3)));

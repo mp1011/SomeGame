@@ -29,12 +29,12 @@ namespace SomeGame.Main.Modules
         {
             _graphicsDevice = graphicsDevice;
         }
-        protected override Palette CreatePalette(Palette basePalette, PaletteIndex index)
+        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
         {
             if (index == PaletteIndex.P1)
-                return basePalette;
+                return tilesetImages[0].Palette;
             else 
-                return basePalette.CreateTransformed(c => new Color(c.R, 0, 0));
+                return tilesetImages[0].Palette.CreateTransformed(c => new Color(c.R, 0, 0));
         }
 
         protected override void InitializeLayer(GameSystem system, LayerIndex index, Layer layer)

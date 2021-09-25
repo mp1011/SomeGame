@@ -10,7 +10,7 @@ namespace SomeGame.Main.Models
     {
         private readonly Color[] _colors;
 
-        public Color this[byte b] => _colors[(int)b];
+        public Color this[byte b] => _colors[new RotatingInt((int)b, _colors.Length)];
 
         public Palette(IEnumerable<Color> colors)
         {
