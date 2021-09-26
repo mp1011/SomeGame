@@ -8,8 +8,8 @@ namespace SomeGame.Main.Models
 {
     class GameRectangle
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public virtual int X { get; set; }
+        public virtual int Y { get; set; }
         public int Width { get; }
         public int Height { get;}
 
@@ -19,6 +19,21 @@ namespace SomeGame.Main.Models
             Y = y;
             Width = width;
             Height = height;
+        }
+    }
+
+    class BoundedGameRectangle : GameRectangle
+    {
+        private BoundedInt _boundedX, _boundedY;
+
+        public override int X { get => _boundedX.Value; set => _boundedX = _boundedX.Set(value); }
+        public override int Y { get => _boundedY.Value; set => _boundedY = _boundedY.Set(value); }
+
+        public BoundedGameRectangle(int x, int y, int width, int height, int maxX, int maxY) 
+            : base(x, y, width, height)
+        {
+            _boundedX = new BoundedInt(x, maxX);
+            _boundedY = new BoundedInt(y, maxY);
         }
     }
 }

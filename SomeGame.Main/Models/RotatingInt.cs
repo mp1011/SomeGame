@@ -1,23 +1,23 @@
 ﻿namespace SomeGame.Main.Models
 {
-    struct RotatingInt
+    struct BoundedInt
     {
         public int Value { get; }
         public int Max { get; }
-        public RotatingInt(int value, int max)
+        public BoundedInt(int value, int max)
         {
             Value = value;
             Max = max;
 
-            while (Value < 0)
-                Value += Max;
-            while (Value >= Max)
-                Value -= Max;
+            if (Value < 0)
+                Value = 0;
+            if (Value > max)
+                Value = max;
         }
 
-        public RotatingInt Set(int value)
+        public BoundedInt Set(int value)
         {
-            return new RotatingInt(value, Max);
+            return new BoundedInt(value, Max);
         }
 
         public override string ToString()
@@ -25,26 +25,26 @@
             return Value.ToString();
         }
 
-        public static RotatingInt operator +(RotatingInt rb, int delta)
+        public static BoundedInt operator +(BoundedInt rb, int delta)
         {
-            return new RotatingInt(rb.Value + delta, rb.Max);
+            return new BoundedInt(rb.Value + delta, rb.Max);
         }
 
-        public static RotatingInt operator +(int number, RotatingInt rb)
+        public static BoundedInt operator +(int number, BoundedInt rb)
         {
-            return new RotatingInt(number + rb.Value, rb.Max);
+            return new BoundedInt(number + rb.Value, rb.Max);
         }
 
-        public static RotatingInt operator -(RotatingInt rb, int delta)
+        public static BoundedInt operator -(BoundedInt rb, int delta)
         {
-            return new RotatingInt(rb.Value - delta, rb.Max);
+            return new BoundedInt(rb.Value - delta, rb.Max);
         }
 
-        public static RotatingInt operator -(int number, RotatingInt rb)
+        public static BoundedInt operator -(int number, BoundedInt rb)
         {
-            return new RotatingInt(number - rb.Value, rb.Max);
+            return new BoundedInt(number - rb.Value, rb.Max);
         }
 
-        public static implicit operator int(RotatingInt b) => b.Value;
+        public static implicit operator int(BoundedInt b) => b.Value;
     }
 }

@@ -6,12 +6,16 @@ namespace SomeGame.Main.Services
 {
     class ActorManager
     {
+        private readonly GameSystem _gameSystem;
+        private readonly SceneManager _sceneManager;
         private readonly SpriteAnimator _spriteAnimator;
         private Actor[] _actors = new Actor[Enum.GetValues<SpriteIndex>().Length];
 
-        public ActorManager(SpriteAnimator spriteAnimator)
+        public ActorManager(GameSystem gameSystem, SpriteAnimator spriteAnimator, SceneManager sceneManager)
         {
             _spriteAnimator = spriteAnimator;
+            _gameSystem = gameSystem;
+            _sceneManager = sceneManager;
         }
 
         public bool TryAddActor(GameSystem system, Actor actor)
@@ -33,7 +37,7 @@ namespace SomeGame.Main.Services
             return true;
         }
 
-        public void Update(GameSystem gameSystem, Scene currentScene)
+        public void Update()
         {
             foreach (SpriteIndex spriteIndex in Enum.GetValues<SpriteIndex>())
             {
@@ -41,18 +45,24 @@ namespace SomeGame.Main.Services
                 if (actor == null)
                     continue;
 
-                UpdateActor(actor, spriteIndex, currentScene, gameSystem);
+                UpdateActor(actor, spriteIndex);
             }
         }
 
-        private void UpdateActor(Actor actor, SpriteIndex spriteIndex, Scene currentScene, GameSystem gameSystem)
+        private void UpdateActor(Actor actor, SpriteIndex spriteIndex)
         {
-            var sprite = gameSystem.GetSprite(spriteIndex);
+            var sprite = _gameSystem.GetSprite(spriteIndex);
 
-            sprite.ScrollX = sprite.ScrollX.Set(actor.WorldPosition.X - currentScene.Camera.X);
-            sprite.ScrollY = sprite.ScrollX.Set(actor.WorldPosition.Y - currentScene.Camera.Y);
+            actor.WorldPosition.X += actor.MotionVector.X;
+            actor.WorldPosition.Y += actor.MotionVector.Y;
+
+            var scene = _sceneManager.CurrentScene;
+            sprite.ScrollX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
+            sprite.ScrollY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
 
             _spriteAnimator.SetSpriteAnimation(spriteIndex, actor.CurrentAnimationIndex);
+
+            actor.Behavior.Update(actor);
         }
     }
 }

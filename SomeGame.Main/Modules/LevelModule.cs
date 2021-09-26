@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Behaviors;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
@@ -23,7 +24,7 @@ namespace SomeGame.Main.Modules
             }            
         }
 
-        protected override void InitializeLayer(GameSystem system, LayerIndex index, Layer layer)
+        protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
             if(index == LayerIndex.FG)
             {
@@ -32,7 +33,7 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
             return new IndexedTilesetImage[]
             {
@@ -41,21 +42,27 @@ namespace SomeGame.Main.Modules
             };
         }
 
-        protected override void InitializeActors(GameSystem system, SpriteAnimator spriteAnimator, ActorManager actorManager)
+        protected override void InitializeActors()
         {          
             var animationSet = new Dictionary<AnimationKey, byte>();
             animationSet[AnimationKey.Idle] = 0;
 
-            var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, animationSet);
+            var playerBehavior = new PlayerBehavior(
+                new EightDirPlayerMotionBehavior(InputManager),
+                new CameraBehavior(SceneManager, GameSystem));
+
+            var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, animationSet);
             player.WorldPosition.X = 100;
             player.WorldPosition.Y = 100;
+            player.MotionVector = new Point(1, 1);
 
-            actorManager.TryAddActor(system, player);                
+            ActorManager.TryAddActor(GameSystem, player);                
         }
 
         protected override SpriteAnimator InitializeAnimations()
         {
             return new SpriteAnimator(
+                GameSystem,
                 new SpriteFrame[]
                 {
                     new SpriteFrame(TopLeft: new Tile(0, TileFlags.Solid),
@@ -83,26 +90,13 @@ namespace SomeGame.Main.Modules
                 });
         }
 
-        protected override Scene InitializeScene(GameSystem gameSystem)
+        protected override Scene InitializeScene()
         {
-            return new Scene(new Rectangle(0, 0, 1000, gameSystem.LayerPixelHeight), gameSystem);
+            return new Scene(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
         }
 
-        bool dummyValue;
-        protected override void Update(GameSystem gameSystem, Scene currentScene)
+        protected override void Update()
         {
-            if (dummyValue)
-            {
-                currentScene.Camera.X -= 1;
-                if (currentScene.Camera.X <= 0)
-                    dummyValue = false;
-            }
-            else
-            {
-                currentScene.Camera.X += 1;
-                if (currentScene.Camera.X >= 200)
-                    dummyValue = true;
-            }
         }
     }
 }

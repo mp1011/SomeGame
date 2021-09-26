@@ -22,10 +22,10 @@ namespace SomeGame.Main.Modules
             return tilesetImages[0].Palette;
         }
 
-        protected override void Update(GameSystem gameSystem, Scene currentScene)
+        protected override void Update()
         {
-            var foreground = gameSystem.GetLayer(LayerIndex.FG);
-            var background = gameSystem.GetLayer(LayerIndex.BG);
+            var foreground = GameSystem.GetLayer(LayerIndex.FG);
+            var background = GameSystem.GetLayer(LayerIndex.BG);
 
             var mouseTile = foreground.TilePointFromPixelPoint(Input.MouseX, Input.MouseY);
 
@@ -71,7 +71,7 @@ namespace SomeGame.Main.Modules
             _dataSerializer.Save(t);
         }
 
-        protected override void InitializeLayer(GameSystem system, LayerIndex index, Layer layer)
+        protected override void InitializeLayer(LayerIndex index, Layer layer)
         {      
             if(index == LayerIndex.BG)
             {
@@ -80,7 +80,7 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
             using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
             return new IndexedTilesetImage[] { image.ToIndexedTilesetImage()};

@@ -4,19 +4,24 @@ namespace SomeGame.Main.Models
 {
     class Scene
     {
+        private readonly GameSystem _gameSystem;
+
         public Rectangle Bounds { get; }
         public GameRectangle Camera { get; }
 
         public Scene(Rectangle bounds, GameSystem gameSystem)
         {
+            _gameSystem = gameSystem;
             Bounds = bounds;
-            Camera = new GameRectangle(0, 0, gameSystem.Screen.Width, gameSystem.Screen.Height);
+            Camera = new BoundedGameRectangle(0, 0, gameSystem.Screen.Width, gameSystem.Screen.Height, 
+                maxX: bounds.Width - gameSystem.Screen.Width,
+                maxY: bounds.Height - gameSystem.Screen.Height);
         }
 
-        public void Update(GameSystem gameSystem)
+        public void Update()
         {
-            var bg = gameSystem.GetLayer(LayerIndex.BG);
-            var fg = gameSystem.GetLayer(LayerIndex.FG);
+            var bg = _gameSystem.GetLayer(LayerIndex.BG);
+            var fg = _gameSystem.GetLayer(LayerIndex.FG);
 
             bg.ScrollX = bg.ScrollX.Set(-Camera.X);
             bg.ScrollY = bg.ScrollY.Set(-Camera.Y);

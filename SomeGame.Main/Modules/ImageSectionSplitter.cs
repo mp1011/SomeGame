@@ -37,11 +37,11 @@ namespace SomeGame.Main.Modules
                 return tilesetImages[0].Palette.CreateTransformed(c => new Color(c.R, 0, 0));
         }
 
-        protected override void InitializeLayer(GameSystem system, LayerIndex index, Layer layer)
+        protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
             if(index == LayerIndex.BG)
             {
-                var grid = _tileSetService.CreateTileMapFromImageAndTileset(_image, system.GetTileSet(PaletteIndex.P1));
+                var grid = _tileSetService.CreateTileMapFromImageAndTileset(_image, GameSystem.GetTileSet(PaletteIndex.P1));
                 layer.TileMap.SetEach(0,grid.Width,0, grid.Height, (x, y) => grid[x, y]);
             }
             else if(index == LayerIndex.FG)
@@ -50,7 +50,7 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
             _image = resourceLoader.LoadTexture(_imageKey)
                 .ToIndexedImage();
@@ -63,10 +63,10 @@ namespace SomeGame.Main.Modules
         private Point _mouseTile;
         private Point _lastMouseTile;
 
-        protected override void Update(GameSystem gameSystem, Scene currentScene)
+        protected override void Update()
         {
-            var background = gameSystem.GetLayer(LayerIndex.BG);
-            var foreground = gameSystem.GetLayer(LayerIndex.FG);
+            var background = GameSystem.GetLayer(LayerIndex.BG);
+            var foreground = GameSystem.GetLayer(LayerIndex.FG);
 
             _mouseTile = background.TilePointFromPixelPoint(Input.MouseX, Input.MouseY);
             
@@ -86,7 +86,7 @@ namespace SomeGame.Main.Modules
                     return new Tile(0, TileFlags.None);
                 });
 
-                ExportDragArea(_dragStart.Value, _mouseTile, gameSystem.GetPalette(PaletteIndex.P1), gameSystem.TileSize);
+                ExportDragArea(_dragStart.Value, _mouseTile, GameSystem.GetPalette(PaletteIndex.P1), GameSystem.TileSize);
                 _dragStart = null;
             }
 

@@ -16,100 +16,99 @@ namespace SomeGame.Main.Modules
 
     abstract class GameModuleBase : IGameModule
     {
-        private readonly GameSystem _system;
-        private readonly RenderService _renderService;
-        private SpriteAnimator _spriteAnimator;
-        private ActorManager _actorManager;
-        private Scene _currentScene;
+        protected GameSystem GameSystem { get; }
+        protected RenderService RenderService { get; }
+        protected SpriteAnimator SpriteAnimator { get; private set; }
+        protected ActorManager ActorManager { get; private set; }
+        protected SceneManager SceneManager { get; }
+        protected InputManager InputManager { get; } 
+        protected InputModel Input => InputManager.Input;
 
-        private double _mouseScale = 1.0;
-        protected InputModel Input { get; private set; }
-
-        public Rectangle Screen => _system.Screen;
+        public Rectangle Screen => GameSystem.Screen;
 
         public GameModuleBase()
         {
-            _system = new GameSystem();
-            _renderService = new RenderService(_system);
+            GameSystem = new GameSystem();
+            RenderService= new RenderService(GameSystem);
+            SceneManager = new SceneManager();
+            InputManager = new InputManager(GameSystem);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var sprite in _system.GetBackSprites())
-                _renderService.DrawSprite(spriteBatch, sprite);
+            foreach (var sprite in GameSystem.GetBackSprites())
+                RenderService.DrawSprite(spriteBatch, sprite);
 
-            _renderService.DrawLayer(spriteBatch, _system.GetLayer(LayerIndex.BG));
-            _renderService.DrawLayer(spriteBatch, _system.GetLayer(LayerIndex.FG));
-            _renderService.DrawLayer(spriteBatch, _system.GetLayer(LayerIndex.Interface));
+            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.BG));
+            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.FG));
+            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.Interface));
 
-
-            foreach (var sprite in _system.GetFrontSprites())
-                _renderService.DrawSprite(spriteBatch, sprite);
+            foreach (var sprite in GameSystem.GetFrontSprites())
+                RenderService.DrawSprite(spriteBatch, sprite);
         }
 
         public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
-            var vramImages = LoadVramImages(resourceLoader, _system);
+            var vramImages = LoadVramImages(resourceLoader);
 
-            _system.SetPalettes(CreatePalette(vramImages, PaletteIndex.P1),
+            GameSystem.SetPalettes(CreatePalette(vramImages, PaletteIndex.P1),
                                 CreatePalette(vramImages, PaletteIndex.P2),
                                 CreatePalette(vramImages, PaletteIndex.P3),
                                 CreatePalette(vramImages, PaletteIndex.P4));
 
-            _system.SetVram(graphicsDevice, vramImages);
+            GameSystem.SetVram(graphicsDevice, vramImages);
 
-            InitializeLayer(_system, LayerIndex.BG, _system.GetLayer(LayerIndex.BG));
-            InitializeLayer(_system, LayerIndex.FG, _system.GetLayer(LayerIndex.FG));
-            InitializeLayer(_system, LayerIndex.Interface, _system.GetLayer(LayerIndex.Interface));
+            InitializeLayer(LayerIndex.BG, GameSystem.GetLayer(LayerIndex.BG));
+            InitializeLayer(LayerIndex.FG, GameSystem.GetLayer(LayerIndex.FG));
+            InitializeLayer(LayerIndex.Interface, GameSystem.GetLayer(LayerIndex.Interface));
 
-            _system.Input.Initialize(_system.Screen);
+            GameSystem.Input.Initialize(GameSystem.Screen);
 
-            _spriteAnimator = InitializeAnimations();
-            _actorManager = new ActorManager(_spriteAnimator);
-            InitializeActors(_system, _spriteAnimator, _actorManager);
+            SpriteAnimator = InitializeAnimations();
+            ActorManager = new ActorManager(GameSystem, SpriteAnimator, SceneManager);
+            InitializeActors();
 
-            _currentScene = InitializeScene(_system);
+            SceneManager.SetScene(InitializeScene());
 
             AfterInitialize(resourceLoader, graphicsDevice);
         }
 
-        protected virtual Scene InitializeScene(GameSystem gameSystem)
+        protected virtual Scene InitializeScene()
         {
-            return new Scene(new Rectangle(0,0,_system.LayerPixelWidth, _system.LayerPixelHeight), _system);
+            return new Scene(new Rectangle(0,0,GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
         }
 
         protected virtual void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
-
         }
 
         protected virtual SpriteAnimator InitializeAnimations()
         {
-            return new SpriteAnimator(new SpriteFrame[] { }, new AnimationFrame[] { }, new Animation[] { });
+            return new SpriteAnimator(GameSystem, new SpriteFrame[] { }, new AnimationFrame[] { }, new Animation[] { });
         }
 
-        protected virtual void InitializeActors(GameSystem system, SpriteAnimator spriteAnimator, ActorManager actorManager) { }
+        protected virtual void InitializeActors() { }
 
-        protected abstract void InitializeLayer(GameSystem system, LayerIndex index, Layer layer);
+        protected abstract void InitializeLayer(LayerIndex index, Layer layer);
 
         protected abstract Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index);
 
-        protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system);
+        protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader);
 
         public void Update(GameTime gameTime)
         {
-            Input = _system.Input.ReadInput(_mouseScale);
-            _spriteAnimator.Update(_system);
-            _currentScene.Update(_system);
-            _actorManager.Update(_system, _currentScene);
-            Update(_system, _currentScene);
+            InputManager.Update();
+            SpriteAnimator.Update();
+            SceneManager.Update();
+            ActorManager.Update();
+            Update();
         }
 
-        protected abstract void Update(GameSystem gameSystem, Scene currentScene);
+        protected abstract void Update();
 
         public void OnWindowSizeChanged(Viewport viewport)
         {
-            _mouseScale = _system.Screen.Width / (double)viewport.Width;
+            InputManager.AdjustMouseScale(GameSystem, viewport);
         }
     }
 }

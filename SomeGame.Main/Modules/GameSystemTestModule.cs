@@ -18,9 +18,9 @@ namespace SomeGame.Main.Modules
                                          .Select(i => new Color(i * 4, i, i * 3)));
         }
 
-        protected override void Update(GameSystem gameSystem, Scene currentScene)
+        protected override void Update()
         {
-            var layer = gameSystem.GetLayer(LayerIndex.FG);
+            var layer = GameSystem.GetLayer(LayerIndex.FG);
 
             if (Input.Left.IsDown())
                 layer.ScrollX -= 2;
@@ -32,11 +32,11 @@ namespace SomeGame.Main.Modules
                 layer.ScrollY += 2;
         }
 
-        protected override void InitializeLayer(GameSystem system, LayerIndex index, Layer layer)
+        protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
             if (index == LayerIndex.BG)
             {
-                var font = new Font(system.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
+                var font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
                 var tiles = font.FromString("HELLO WORLD");
 
                 layer.TileMap.SetEach(0, tiles.Length, 3, 4, (x, y) => tiles[x]);
@@ -83,7 +83,7 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader, GameSystem system)
+        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
             using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
             using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
