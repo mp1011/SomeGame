@@ -81,4 +81,9 @@
         Back,
         Front
     }
+
+    public enum AnimationKey
+    {
+        Idle
+    }
 }

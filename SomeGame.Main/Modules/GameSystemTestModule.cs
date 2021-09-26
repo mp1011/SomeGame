@@ -18,7 +18,7 @@ namespace SomeGame.Main.Modules
                                          .Select(i => new Color(i * 4, i, i * 3)));
         }
 
-        protected override void Update(GameTime gameTime, GameSystem gameSystem)
+        protected override void Update(GameSystem gameSystem, Scene currentScene)
         {
             var layer = gameSystem.GetLayer(LayerIndex.FG);
 

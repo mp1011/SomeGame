@@ -22,7 +22,7 @@ namespace SomeGame.Main.Modules
             return tilesetImages[0].Palette;
         }
 
-        protected override void Update(GameTime gameTime, GameSystem gameSystem)
+        protected override void Update(GameSystem gameSystem, Scene currentScene)
         {
             var foreground = gameSystem.GetLayer(LayerIndex.FG);
             var background = gameSystem.GetLayer(LayerIndex.BG);

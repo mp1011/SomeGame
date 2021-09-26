@@ -1,4 +1,4 @@
-﻿namespace SomeGame.Main.Models.AnimationModels
+﻿namespace SomeGame.Main.Models
 {
     class SpriteAnimation
     {

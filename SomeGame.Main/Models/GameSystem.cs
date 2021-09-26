@@ -53,6 +53,15 @@ namespace SomeGame.Main.Models
 
         public Sprite GetSprite(SpriteIndex spriteIndex) => _sprites[(int)spriteIndex];
 
+        public SpriteIndex? GetFreeSpriteIndex()
+        {
+            var index = Array.FindIndex(_sprites, p => !p.Enabled);
+            if (index < 0)
+                return null;
+            else
+                return (SpriteIndex)index;
+        }
+
         public IEnumerable<Sprite> GetBackSprites() => _sprites.Where(p => p.Enabled && p.Priority == SpritePriority.Back);
         public IEnumerable<Sprite> GetFrontSprites() => _sprites.Where(p => p.Enabled && p.Priority == SpritePriority.Front);
 

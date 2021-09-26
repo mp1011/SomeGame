@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Models;
-using SomeGame.Main.Models.AnimationModels;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Modules
@@ -17,10 +16,11 @@ namespace SomeGame.Main.Modules
 
     abstract class GameModuleBase : IGameModule
     {
-        private ulong _frameNumber;
         private readonly GameSystem _system;
         private readonly RenderService _renderService;
         private SpriteAnimator _spriteAnimator;
+        private ActorManager _actorManager;
+        private Scene _currentScene;
 
         private double _mouseScale = 1.0;
         protected InputModel Input { get; private set; }
@@ -65,9 +65,17 @@ namespace SomeGame.Main.Modules
             _system.Input.Initialize(_system.Screen);
 
             _spriteAnimator = InitializeAnimations();
-            InitializeSprites(_system, _spriteAnimator);
+            _actorManager = new ActorManager(_spriteAnimator);
+            InitializeActors(_system, _spriteAnimator, _actorManager);
+
+            _currentScene = InitializeScene(_system);
 
             AfterInitialize(resourceLoader, graphicsDevice);
+        }
+
+        protected virtual Scene InitializeScene(GameSystem gameSystem)
+        {
+            return new Scene(new Rectangle(0,0,_system.LayerPixelWidth, _system.LayerPixelHeight), _system);
         }
 
         protected virtual void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
@@ -80,7 +88,7 @@ namespace SomeGame.Main.Modules
             return new SpriteAnimator(new SpriteFrame[] { }, new AnimationFrame[] { }, new Animation[] { });
         }
 
-        protected virtual void InitializeSprites(GameSystem system, SpriteAnimator spriteAnimator) { }
+        protected virtual void InitializeActors(GameSystem system, SpriteAnimator spriteAnimator, ActorManager actorManager) { }
 
         protected abstract void InitializeLayer(GameSystem system, LayerIndex index, Layer layer);
 
@@ -92,10 +100,12 @@ namespace SomeGame.Main.Modules
         {
             Input = _system.Input.ReadInput(_mouseScale);
             _spriteAnimator.Update(_system);
-            Update(gameTime, _system);
+            _currentScene.Update(_system);
+            _actorManager.Update(_system, _currentScene);
+            Update(_system, _currentScene);
         }
 
-        protected abstract void Update(GameTime gameTime, GameSystem gameSystem);
+        protected abstract void Update(GameSystem gameSystem, Scene currentScene);
 
         public void OnWindowSizeChanged(Viewport viewport)
         {

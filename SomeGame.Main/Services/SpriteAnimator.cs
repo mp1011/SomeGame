@@ -1,5 +1,4 @@
 ﻿using SomeGame.Main.Models;
-using SomeGame.Main.Models.AnimationModels;
 using System;
 
 namespace SomeGame.Main.Services
@@ -23,7 +22,9 @@ namespace SomeGame.Main.Services
 
         public void SetSpriteAnimation(SpriteIndex spriteIndex, byte animationIndex)
         {
-            _spriteAnimations[(int)spriteIndex] = new SpriteAnimation(animationIndex);
+            var current = _spriteAnimations[(int)spriteIndex];
+            if (current == null || current.AnimationIndex != animationIndex)
+                _spriteAnimations[(int)spriteIndex] = new SpriteAnimation(animationIndex);
         }
 
         public void Update(GameSystem gameSystem)

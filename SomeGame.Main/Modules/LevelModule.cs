@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
-using SomeGame.Main.Models.AnimationModels;
 using SomeGame.Main.Services;
+using System.Collections.Generic;
 
 namespace SomeGame.Main.Modules
 {
@@ -41,17 +41,16 @@ namespace SomeGame.Main.Modules
             };
         }
 
-        protected override void InitializeSprites(GameSystem system, SpriteAnimator spriteAnimator)
-        {
-            var sprite = system.GetSprite(SpriteIndex.Sprite1);
-            sprite.TileOffset = system.GetTileOffset(TilesetContentKey.Hero);
-            sprite.Priority = SpritePriority.Front;
-            sprite.Palette = PaletteIndex.P2;
-            sprite.Enabled = true;
-            sprite.ScrollX = sprite.ScrollX.Set(100);
-            sprite.ScrollY = sprite.ScrollY.Set(100);
+        protected override void InitializeActors(GameSystem system, SpriteAnimator spriteAnimator, ActorManager actorManager)
+        {          
+            var animationSet = new Dictionary<AnimationKey, byte>();
+            animationSet[AnimationKey.Idle] = 0;
 
-            spriteAnimator.SetSpriteAnimation(SpriteIndex.Sprite1, 0);
+            var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, animationSet);
+            player.WorldPosition.X = 100;
+            player.WorldPosition.Y = 100;
+
+            actorManager.TryAddActor(system, player);                
         }
 
         protected override SpriteAnimator InitializeAnimations()
@@ -84,9 +83,26 @@ namespace SomeGame.Main.Modules
                 });
         }
 
-        protected override void Update(GameTime gameTime, GameSystem gameSystem)
+        protected override Scene InitializeScene(GameSystem gameSystem)
         {
-            
+            return new Scene(new Rectangle(0, 0, 1000, gameSystem.LayerPixelHeight), gameSystem);
+        }
+
+        bool dummyValue;
+        protected override void Update(GameSystem gameSystem, Scene currentScene)
+        {
+            if (dummyValue)
+            {
+                currentScene.Camera.X -= 1;
+                if (currentScene.Camera.X <= 0)
+                    dummyValue = false;
+            }
+            else
+            {
+                currentScene.Camera.X += 1;
+                if (currentScene.Camera.X >= 200)
+                    dummyValue = true;
+            }
         }
     }
 }

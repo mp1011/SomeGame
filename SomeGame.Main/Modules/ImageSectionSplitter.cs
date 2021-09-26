@@ -63,7 +63,7 @@ namespace SomeGame.Main.Modules
         private Point _mouseTile;
         private Point _lastMouseTile;
 
-        protected override void Update(GameTime gameTime, GameSystem gameSystem)
+        protected override void Update(GameSystem gameSystem, Scene currentScene)
         {
             var background = gameSystem.GetLayer(LayerIndex.BG);
             var foreground = gameSystem.GetLayer(LayerIndex.FG);

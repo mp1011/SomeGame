@@ -11,7 +11,7 @@ namespace SomeGame.Main.Modules
     {
         protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index) => tilesetImages[0].Palette;
 
-        protected override void Update(GameTime gameTime, GameSystem gameSystem)
+        protected override void Update(GameSystem gameSystem, Scene currentScene)
         {
         }
 
