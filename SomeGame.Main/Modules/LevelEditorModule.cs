@@ -27,7 +27,7 @@ namespace SomeGame.Main.Modules
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
             var background = GameSystem.GetLayer(LayerIndex.BG);
 
-            var mouseTile = foreground.TilePointFromPixelPoint(Input.MouseX, Input.MouseY);
+            var mouseTile = foreground.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
 
             foreground.TileMap.SetEach((x, y) => {
                 if (x == mouseTile.X && y == mouseTile.Y)

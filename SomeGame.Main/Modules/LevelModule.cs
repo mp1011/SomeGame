@@ -46,10 +46,12 @@ namespace SomeGame.Main.Modules
         {          
             var animationSet = new Dictionary<AnimationKey, byte>();
             animationSet[AnimationKey.Idle] = 0;
+            animationSet[AnimationKey.Moving] = 1;
 
             var playerBehavior = new PlayerBehavior(
                 new EightDirPlayerMotionBehavior(InputManager),
-                new CameraBehavior(SceneManager, GameSystem));
+                new CameraBehavior(SceneManager, GameSystem), 
+                new BgCollisionBehavior(GameSystem));
 
             var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, animationSet);
             player.WorldPosition.X = 100;
@@ -65,6 +67,7 @@ namespace SomeGame.Main.Modules
                 GameSystem,
                 new SpriteFrame[]
                 {
+                    //idle
                     new SpriteFrame(TopLeft: new Tile(0, TileFlags.Solid),
                                     TopRight: new Tile(1, TileFlags.Solid),
                                     BottomLeft: new Tile(9, TileFlags.Solid),
@@ -77,16 +80,37 @@ namespace SomeGame.Main.Modules
                                     TopRight: new Tile(5, TileFlags.Solid),
                                     BottomLeft: new Tile(9, TileFlags.Solid),
                                     BottomRight: new Tile(10, TileFlags.Solid)),
+                    //walk 
+                    new SpriteFrame(TopLeft: new Tile(18, TileFlags.Solid),
+                                    TopRight: new Tile(19, TileFlags.Solid),
+                                    BottomLeft: new Tile(24, TileFlags.Solid),
+                                    BottomRight: new Tile(25, TileFlags.Solid)),
+                    new SpriteFrame(TopLeft: new Tile(20, TileFlags.Solid),
+                                    TopRight: new Tile(21, TileFlags.Solid),
+                                    BottomLeft: new Tile(26, TileFlags.Solid),
+                                    BottomRight: new Tile(27, TileFlags.Solid)),
+                    new SpriteFrame(TopLeft: new Tile(22, TileFlags.Solid),
+                                    TopRight: new Tile(23, TileFlags.Solid),
+                                    BottomLeft: new Tile(28, TileFlags.Solid),
+                                    BottomRight: new Tile(29, TileFlags.Solid)),
                 },
                 new AnimationFrame[]
                 {
+                    //idle
                     new AnimationFrame(SpriteFrameIndex:0,Duration:50),
                     new AnimationFrame(SpriteFrameIndex:1,Duration:50),
                     new AnimationFrame(SpriteFrameIndex:2,Duration:50),
+
+                    //walk
+                    new AnimationFrame(SpriteFrameIndex:3,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:4,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:5,Duration:10),
+
                 },
                 new Animation[]
                 {
-                    new Animation(0,1,2,1)
+                    new Animation(0,1,2,1),
+                    new Animation(3,4,5)
                 });
         }
 

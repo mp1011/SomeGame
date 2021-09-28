@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Models;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Models;
 using System;
 using System.Linq;
 
@@ -52,17 +53,18 @@ namespace SomeGame.Main.Services
         private void UpdateActor(Actor actor, SpriteIndex spriteIndex)
         {
             var sprite = _gameSystem.GetSprite(spriteIndex);
+            var frameStartPosition = (Rectangle)actor.WorldPosition;    
 
             actor.WorldPosition.X += actor.MotionVector.X;
             actor.WorldPosition.Y += actor.MotionVector.Y;
+         
+            _spriteAnimator.SetSpriteAnimation(spriteIndex, actor.CurrentAnimationIndex);
+
+            actor.Behavior.Update(actor, frameStartPosition);
 
             var scene = _sceneManager.CurrentScene;
             sprite.ScrollX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
             sprite.ScrollY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
-
-            _spriteAnimator.SetSpriteAnimation(spriteIndex, actor.CurrentAnimationIndex);
-
-            actor.Behavior.Update(actor);
         }
     }
 }

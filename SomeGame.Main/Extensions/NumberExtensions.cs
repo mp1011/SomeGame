@@ -2,6 +2,8 @@
 {
     public static class NumberExtensions
     {
+        public static int Clamp(this int value, int max) => value.Clamp(0, max);
+
         public static int Clamp(this int value, int min, int max)
         {
             if (value < min)

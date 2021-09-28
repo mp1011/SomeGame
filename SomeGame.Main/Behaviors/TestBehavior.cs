@@ -7,7 +7,7 @@ namespace SomeGame.Main.Behaviors
     {
         private int _counter = 0;
 
-        public override void Update(Actor actor)
+        public override void Update(Actor actor, Rectangle frameStartPosition)
         {
             if(_counter==0)
                 actor.MotionVector = new Point(2, 1);

@@ -68,7 +68,7 @@ namespace SomeGame.Main.Modules
             var background = GameSystem.GetLayer(LayerIndex.BG);
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
 
-            _mouseTile = background.TilePointFromPixelPoint(Input.MouseX, Input.MouseY);
+            _mouseTile = background.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
             
             foreground.TileMap.SetTile(_mouseTile.X, _mouseTile.Y, background.TileMap.GetTile(_mouseTile));
 

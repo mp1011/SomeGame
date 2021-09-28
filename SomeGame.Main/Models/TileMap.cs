@@ -37,6 +37,12 @@ namespace SomeGame.Main.Models
         }
 
         public void ForEach(Action<int, int, Tile> action) => _tiles.ForEach(action);
+
+        public void ForEach(Point upperLeftTile, Point bottomRightTile, Action<int, int, Tile> action)
+        {
+            _tiles.ForEach(upperLeftTile.X, bottomRightTile.X, upperLeftTile.Y, bottomRightTile.Y, action);
+        }
+
         public void SetEach(Func<int, int, Tile> createTile) => _tiles.SetEach(createTile);
         public void SetEach(int xStart, int xEnd, int yStart, int yEnd, Func<int, int, Tile> createTile) => _tiles.SetEach(xStart, xEnd, yStart, yEnd, createTile);
     }

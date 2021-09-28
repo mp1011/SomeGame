@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,8 @@ namespace SomeGame.Main.Models
 
         public Grid(T[,] grid)
         {
+            if (grid == null)
+                throw new NullReferenceException();
             _grid = grid;
         }
 
@@ -63,6 +66,11 @@ namespace SomeGame.Main.Models
 
         public void ForEach(int xStart, int xEnd, int yStart, int yEnd, Action<int,int,T> action)
         {
+            xStart = xStart.Clamp(Width - 1);
+            yStart = yStart.Clamp(Height - 1);
+            xEnd = xEnd.Clamp(Width);
+            yEnd = yEnd.Clamp(Height);
+
             for (int y = yStart; y < yEnd; y++)
                 for (int x = xStart; x < xEnd; x++)                
                     action(x, y, _grid[x, y]);

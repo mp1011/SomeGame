@@ -14,9 +14,14 @@ namespace SomeGame.Main.Behaviors
             _inputManger = inputManger;
         }
 
-        public override void Update(Actor actor)
+        public override void Update(Actor actor, Rectangle frameStartPosition)
         {
             actor.MotionVector = GetVectorFromInput(_inputManger.Input);
+
+            if (actor.MotionVector.X == 0 && actor.MotionVector.Y == 0)
+                actor.CurrentAnimation = AnimationKey.Idle;
+            else
+                actor.CurrentAnimation = AnimationKey.Moving;
         }
 
         private Point GetVectorFromInput(InputModel input)

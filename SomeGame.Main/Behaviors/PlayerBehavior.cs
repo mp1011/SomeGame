@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Models;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Models;
 using System;
 
 namespace SomeGame.Main.Behaviors
@@ -7,17 +8,20 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly EightDirPlayerMotionBehavior _motionBehavior;
         private readonly CameraBehavior _cameraBehavior;
+        private readonly BgCollisionBehavior _bgCollisionBehavior;
 
-        public PlayerBehavior(EightDirPlayerMotionBehavior motionBehavior, CameraBehavior cameraBehavior)
+        public PlayerBehavior(EightDirPlayerMotionBehavior motionBehavior, CameraBehavior cameraBehavior, BgCollisionBehavior bgCollisionBehavior)
         {
             _motionBehavior = motionBehavior;
             _cameraBehavior = cameraBehavior;
+            _bgCollisionBehavior = bgCollisionBehavior;
         }
 
-        public override void Update(Actor actor)
+        public override void Update(Actor actor, Rectangle frameStartPosition)
         {
-            _motionBehavior.Update(actor);
-            _cameraBehavior.Update(actor);
+            _bgCollisionBehavior.Update(actor,frameStartPosition);
+            _motionBehavior.Update(actor, frameStartPosition);            
+            _cameraBehavior.Update(actor, frameStartPosition);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Models;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 using System;
 
@@ -15,7 +16,7 @@ namespace SomeGame.Main.Behaviors
             _gameSystem = gameSystem;
         }
 
-        public override void Update(Actor actor)
+        public override void Update(Actor actor, Rectangle frameStartPosition)
         {
             var scene = _sceneManager.CurrentScene;
             scene.Camera.X = actor.WorldPosition.X - _gameSystem.Screen.Width / 2;

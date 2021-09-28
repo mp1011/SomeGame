@@ -84,6 +84,7 @@
 
     public enum AnimationKey
     {
-        Idle
+        Idle,
+        Moving
     }
 }
