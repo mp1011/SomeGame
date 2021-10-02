@@ -49,14 +49,14 @@ namespace SomeGame.Main.Modules
             animationSet[AnimationKey.Moving] = 1;
 
             var playerBehavior = new PlayerBehavior(
-                new EightDirPlayerMotionBehavior(InputManager),
+                new PlatformerPlayerMotionBehavior(InputManager),
                 new CameraBehavior(SceneManager, GameSystem), 
-                new BgCollisionBehavior(GameSystem));
+                new BgCollisionBehavior(GameSystem),
+                new Gravity());
 
             var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, animationSet);
             player.WorldPosition.X = 100;
             player.WorldPosition.Y = 100;
-            player.MotionVector = new Point(1, 1);
 
             ActorManager.TryAddActor(GameSystem, player);                
         }

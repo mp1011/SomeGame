@@ -27,13 +27,16 @@ namespace SomeGame.Main.Services
         public void DrawSprite(SpriteBatch spriteBatch, Sprite sprite)
         {
             var tileSet = _gameSystem.GetTileSet(sprite.Palette);
-            DrawWrappingTileMap(spriteBatch, sprite.TileMap, tileSet, sprite.ScrollX, sprite.ScrollY, sprite.TileOffset);
+            DrawWrappingTileMap(spriteBatch, sprite.TileMap, tileSet, sprite.ScrollX, sprite.ScrollY, sprite.TileOffset, sprite.Flip);
         }
 
-        private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y, int tileOffset)
+        private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y, int tileOffset, Flip flip= Flip.None)
         {
             tileMap.ForEach((tileX, tileY, tile) =>
             {
+                if ((flip & Flip.H) > 0)
+                    tileX = tileMap.TilesX - tileX-1;
+
                 var screenX = (int)(x + (tileX * _gameSystem.TileSize));
                 var screenY = (int)(y + (tileY * _gameSystem.TileSize));
 
@@ -52,7 +55,8 @@ namespace SomeGame.Main.Services
                     screenY: screenY,
                     tile: tile,
                     tileSet: tileSet,
-                    tileOffset: tileOffset);
+                    tileOffset: tileOffset,
+                    flip: flip);
             });
         }
    
@@ -62,7 +66,8 @@ namespace SomeGame.Main.Services
                               int screenY, 
                               Tile tile, 
                               TileSet tileSet,
-                              int tileOffset)
+                              int tileOffset,
+                              Flip flip)
         {
             if (tile.Index < 0)
                 return;
@@ -76,11 +81,11 @@ namespace SomeGame.Main.Services
                 return;
 
             var effects = SpriteEffects.None;
-
-            if ((tile.Flags & TileFlags.FlipH) > 0)
+    
+            if(((flip & Flip.H) > 0) ^ ((tile.Flags & TileFlags.FlipH) > 0))       
                 effects |= SpriteEffects.FlipHorizontally;
 
-            if ((tile.Flags & TileFlags.FlipV) > 0)
+            if (((flip & Flip.V) > 0) ^ ((tile.Flags & TileFlags.FlipV) > 0))
                 effects |= SpriteEffects.FlipVertically;
 
             spriteBatch.Draw(tileSet.Texture,

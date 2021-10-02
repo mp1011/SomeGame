@@ -29,6 +29,31 @@ namespace SomeGame.Main.Models
         public static implicit operator Rectangle(GameRectangle r) => new Rectangle(r.X,r.Y,r.Width,r.Height);
     }
 
+    class GameRectangleWithSubpixels : GameRectangle
+    {
+        public GameRectangleWithSubpixels(int x, int y, int width, int height) : base(x, y, width, height)
+        {
+        }
+
+        public PixelValue XPixel { get; set; } = new PixelValue(0, 0);
+        public PixelValue YPixel { get; set; } = new PixelValue(0, 0);
+
+
+        public override int X
+        {
+            get => XPixel;
+            set => XPixel = value;
+        }
+
+        public override int Y
+        {
+            get => YPixel;
+            set => YPixel = value;
+        }
+
+
+    }
+
     class BoundedGameRectangle : GameRectangle
     {
         private BoundedInt _boundedX, _boundedY;

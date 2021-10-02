@@ -8,10 +8,12 @@ namespace SomeGame.Main.Models
     class Actor
     {
         public Behavior Behavior { get; }
-        public GameRectangle WorldPosition { get; set; }
-        public Point MotionVector { get; set; }
+        public GameRectangleWithSubpixels WorldPosition { get; set; }
+        public PixelPoint MotionVector { get; set; } = new PixelPoint(0, 0);
         public TilesetContentKey Tileset { get; }
         public PaletteIndex Palette { get; }
+
+        public Flip Flip { get; set; } 
 
         public AnimationKey CurrentAnimation { get; set; }
 
@@ -23,7 +25,7 @@ namespace SomeGame.Main.Models
                      Behavior behavior,
                      Dictionary<AnimationKey, byte> animationSet)
         {
-            WorldPosition = new GameRectangle(0, 0, 16, 16);
+            WorldPosition = new GameRectangleWithSubpixels(0, 0, 16, 16);
             Behavior = behavior;
             Palette = palette;
             Tileset = tilesetKey;

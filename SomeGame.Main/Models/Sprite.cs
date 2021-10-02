@@ -17,7 +17,7 @@
 
         private static TileMap CreateBlankTilemap()
         {
-            return new TileMap(4, 4);
+            return new TileMap(2, 2);
         }
 
         public void SetTiles(Tile topLeft, Tile topRight, Tile bottomLeft, Tile bottomRight)

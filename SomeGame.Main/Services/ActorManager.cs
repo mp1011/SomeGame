@@ -47,6 +47,9 @@ namespace SomeGame.Main.Services
                     continue;
 
                 UpdateActor(actor, spriteIndex);
+
+                var sprite = _gameSystem.GetSprite(spriteIndex);
+                sprite.Flip = actor.Flip;
             }
         }
 
@@ -55,8 +58,8 @@ namespace SomeGame.Main.Services
             var sprite = _gameSystem.GetSprite(spriteIndex);
             var frameStartPosition = (Rectangle)actor.WorldPosition;    
 
-            actor.WorldPosition.X += actor.MotionVector.X;
-            actor.WorldPosition.Y += actor.MotionVector.Y;
+            actor.WorldPosition.XPixel += actor.MotionVector.X;
+            actor.WorldPosition.YPixel += actor.MotionVector.Y;
          
             _spriteAnimator.SetSpriteAnimation(spriteIndex, actor.CurrentAnimationIndex);
 

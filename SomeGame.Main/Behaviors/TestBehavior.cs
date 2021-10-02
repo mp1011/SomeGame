@@ -10,9 +10,9 @@ namespace SomeGame.Main.Behaviors
         public override void Update(Actor actor, Rectangle frameStartPosition)
         {
             if(_counter==0)
-                actor.MotionVector = new Point(2, 1);
+                actor.MotionVector = new PixelPoint(2, 1);
             if (_counter == 50)
-                actor.MotionVector = new Point(-2, -1);
+                actor.MotionVector = new PixelPoint(-2, -1);
           
             _counter++;
             if (_counter == 100)

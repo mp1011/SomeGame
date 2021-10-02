@@ -87,4 +87,10 @@
         Idle,
         Moving
     }
+
+    public enum Orientation
+    {
+        Vertical,
+        Horizontal
+    }
 }

@@ -24,7 +24,7 @@ namespace SomeGame.Main.Behaviors
                 actor.CurrentAnimation = AnimationKey.Moving;
         }
 
-        private Point GetVectorFromInput(InputModel input)
+        private PixelPoint GetVectorFromInput(InputModel input)
         {
             int x = 0, y = 0;
             if (input.Right.IsDown())
@@ -36,7 +36,7 @@ namespace SomeGame.Main.Behaviors
             else if (input.Up.IsDown())
                 y = -1;
 
-            return new Point(x, y);
+            return new PixelPoint(x, y);
         }
     }
 }

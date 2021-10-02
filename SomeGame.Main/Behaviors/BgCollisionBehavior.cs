@@ -62,6 +62,9 @@ namespace SomeGame.Main.Behaviors
 
             while (collidingTile.Intersects(actor.WorldPosition))            
                 actor.WorldPosition.Y += correctY;
+
+            if (correctY < 0)
+                actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
         }
 
         private void HandleHorizontalCollision(Actor actor, Rectangle collidingTile, Rectangle frameStartPosition)
