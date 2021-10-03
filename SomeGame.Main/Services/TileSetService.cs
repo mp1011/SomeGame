@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Extensions;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace SomeGame.Main.Services
 
             return imageTiles.Map((x, y, imageTile) =>
             {
-                for(int i = 0; i < tileSetIndexedImage.Size; i++)
+                for (int i = 0; i < tileSetIndexedImage.Size; i++)
                 {
                     var tilesetTile = tileSetIndexedImage[i];
                     if (tilesetTile.Equals(imageTile))
@@ -48,6 +49,80 @@ namespace SomeGame.Main.Services
                 }
 
                 throw new Exception("Unable to match image tile with a tileSet tile");
+            });
+        }
+
+        public EditorTileSet BuildEditorTileset(EditorBlock[] blocks)
+        {
+            var tileset = new EditorTileSet();
+
+            foreach (var block in blocks)
+                FillEditorTiles(tileset, block.Grid, block.Theme);
+
+            return tileset;
+        }
+
+        public EditorTile[] GetMatchingTiles(EditorTileSet editorTileSet, string theme, TileMap tileMap, 
+                                             Point tileLocation, TileChoiceMode tileChoiceMode)
+        {
+            return editorTileSet.Tiles
+                .Where(p => p.ContainsTheme(theme)
+                            && CanTileBePlacedAtLocation(p, editorTileSet, tileMap, tileLocation, tileChoiceMode))
+                .ToArray();
+        }
+
+        public void AddTileRelationsFromTileMap(EditorTileSet editorTileSet, TileMap tileMap)
+        {
+            FillEditorTiles(editorTileSet, tileMap.GetGrid(), null);
+        }
+
+        private bool CanTileBePlacedAtLocation(EditorTile proposedTile, EditorTileSet editorTileSet, TileMap tileMap, Point tileLocation, TileChoiceMode tileChoiceMode)
+        {
+            if (tileChoiceMode == TileChoiceMode.Free)
+                return true;
+
+            foreach (Direction direction in Enum.GetValues<Direction>())
+            {
+                if (direction == Direction.None)
+                    continue;
+
+                var neighbor = tileMap.GetGrid().GetNeighborOrDefault(tileLocation.X, tileLocation.Y, direction);
+                if (neighbor == null)
+                    continue;
+
+                var neighborEditorTile = editorTileSet.GetOrAddTile(neighbor);
+                if (neighborEditorTile.Tile.Index < 0 && tileChoiceMode == TileChoiceMode.SemiStrict)
+                    continue;
+
+                if (!neighborEditorTile.Matches[direction.Opposite()].Contains(proposedTile))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void FillEditorTiles(EditorTileSet tileSet, Grid<Tile> grid, string theme)
+        {
+            grid.ForEach((x, y, t) =>
+            {
+                if (t.Index < 0)
+                    return;
+
+                var editorTile = tileSet.GetOrAddTile(t);
+                if(theme != null)
+                    editorTile.AddTheme(theme);
+
+                foreach (Direction direction in Enum.GetValues<Direction>())
+                {
+                    if (direction == Direction.None)
+                        continue;
+
+                    var neighbor = grid.GetNeighborOrDefault(x, y, direction);
+                    if (neighbor == null || neighbor.Index < 0)
+                        continue;
+
+                    editorTile.AddMatch(direction, tileSet.GetOrAddTile(neighbor));
+                }
             });
         }
     }

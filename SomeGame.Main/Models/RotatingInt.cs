@@ -9,10 +9,15 @@
             Value = value;
             Max = max;
 
-            while (Value < 0)
-                Value += Max;
-            while (Value >= Max)
-                Value -= Max;
+            if (Max <= 0)
+                Value = 0;
+            else
+            {
+                while (Value < 0)
+                    Value += Max;
+                while (Value >= Max)
+                    Value -= Max;
+            }
         }
 
         public RotatingInt Set(int value)
@@ -23,6 +28,16 @@
         public override string ToString()
         {
             return Value.ToString();
+        }
+
+        public static RotatingInt operator ++(RotatingInt rb)
+        {
+            return new RotatingInt(rb.Value + 1, rb.Max);
+        }
+
+        public static RotatingInt operator --(RotatingInt rb)
+        {
+            return new RotatingInt(rb.Value - 1, rb.Max);
         }
 
         public static RotatingInt operator +(RotatingInt rb, int delta)

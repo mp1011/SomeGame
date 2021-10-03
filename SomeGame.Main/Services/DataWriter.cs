@@ -45,6 +45,36 @@ namespace SomeGame.Main.Services
             _writer.Write((byte)tile.Flags);
         }
 
+        public void Write(EditorTileSet tileSet)
+        {
+            WriteEnumerable(tileSet.Tiles);
+        }
+
+        public void WriteEnumerable<T>(IEnumerable<T> list)
+        {
+            _writer.Write(list.Count());
+            foreach (var item in list)
+                Write(item);
+        }
+
+        public void Write(EditorTile editorTile)
+        {
+            WriteEnumerable(editorTile.Themes);
+            Write(editorTile.Tile);
+
+            foreach (Direction direction in Enum.GetValues<Direction>())
+            {
+                if (direction == Direction.None)
+                    continue;
+
+                var matches = editorTile.Matches[direction]
+                                        .Select(p => p.Tile)
+                                        .ToArray();
+
+                WriteEnumerable(matches);
+            }
+        }
+
         private void Write(object o)
         {
             var customMethod = _customWriteMethods.GetValueOrDefault(o.GetType());

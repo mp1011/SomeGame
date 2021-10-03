@@ -1,45 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using SomeGame.Main.Content;
+﻿using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
-using System.IO;
 
 namespace SomeGame.Main.Modules
 {
 
-    class LevelEditorModule : GameModuleBase
+    class LevelEditorModule : TileEditorBaseModule
     {
-        private readonly DataSerializer _dataSerializer;
-
-        public LevelEditorModule()
-        {
-            _dataSerializer = new DataSerializer();
-        }
-
-        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
-        {
-            return tilesetImages[0].Palette;
-        }
-
         protected override void Update()
         {
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
             var background = GameSystem.GetLayer(LayerIndex.BG);
-
-            var mouseTile = foreground.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
-
-            foreground.TileMap.SetEach((x, y) => {
-                if (x == mouseTile.X && y == mouseTile.Y)
-                    return new Tile(16, TileFlags.Solid);
-                else
-                    return new Tile(-1, TileFlags.None);
-                });
-
-            if (Input.A.IsDown())
-                background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(16, TileFlags.Solid));
-            if (Input.B.IsDown())
-                background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(-1, TileFlags.None));
 
             if (Input.Right.IsDown())
             {

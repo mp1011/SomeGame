@@ -93,4 +93,18 @@
         Vertical,
         Horizontal
     }
+
+    public enum TileChoiceMode
+    {
+        Free,
+        SemiStrict,
+        Strict
+    }
+
+    public enum UIButtonState
+    {
+        None,
+        MouseOver,
+        Pressed
+    }
 }

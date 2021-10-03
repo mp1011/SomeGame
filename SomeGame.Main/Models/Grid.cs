@@ -161,6 +161,21 @@ namespace SomeGame.Main.Models
                             (x, y) => thisGrid[x + upperLeft.X, y + upperLeft.Y]);                            
         }
 
+
+        public T GetNeighborOrDefault(int x, int y, Direction direction)
+        {
+            var neighbor = new Point(x, y).Offset(direction.ToPoint());
+            return GetElementOrDefault(neighbor);
+        }
+
+        public T GetElementOrDefault(Point p)
+        {
+            if (p.X < 0 || p.Y < 0 || p.X >= Width || p.Y >= Height)
+                return default(T);
+            else
+                return this[p.X, p.Y];
+        }
+
         public override int GetHashCode()
         {
             int hash = 0;
