@@ -7,7 +7,7 @@ namespace SomeGame.Main.Modules
     abstract class TileEditorBaseModule : GameModuleBase
     {
         protected readonly DataSerializer _dataSerializer;
-        protected Point _lastMouseTile;
+        private Point _lastMouseTile;
 
         public TileEditorBaseModule()
         {
@@ -21,11 +21,20 @@ namespace SomeGame.Main.Modules
             return tilesetImages[0].Palette;
         }
 
+        protected Point GetCurrentMouseTile()
+        {
+            var foreground = GameSystem.GetLayer(LayerIndex.FG);
+            return foreground.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
+        }
+
         protected void HandleStandardInput()
         {
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
             var background = GameSystem.GetLayer(LayerIndex.BG);
-            var mouseTile = foreground.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
+            var mouseTile = GetCurrentMouseTile();
+
+            if (mouseTile.Y < 2)
+                return;
 
             foreground.TileMap.SetEach((x, y) => {
                 if (x == mouseTile.X && y == mouseTile.Y)

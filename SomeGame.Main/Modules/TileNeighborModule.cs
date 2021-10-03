@@ -49,7 +49,7 @@ namespace SomeGame.Main.Modules
                 var layer = GameSystem.GetLayer(LayerIndex.Interface);
                 layer.TileMap.SetEach(0, fontTiles.Length, 0, 1, (x, y) => fontTiles[x]);
 
-                UpdateTileChoices(_lastMouseTile);
+                UpdateTileChoices(GetCurrentMouseTile());
             }
         }
 

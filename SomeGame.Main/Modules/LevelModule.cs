@@ -29,6 +29,14 @@ namespace SomeGame.Main.Modules
             if(index == LayerIndex.FG)
             {
                 var loaded = _dataSerializer.Load(LevelContentKey.TestLevel);
+
+                //temporary
+                loaded.ForEach((x, y, t) =>
+                {
+                    if (t.Index >= 0)
+                        loaded.SetTile(x, y, new Tile(t.Index, TileFlags.Solid));
+                });
+
                 layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
             }
         }
@@ -55,7 +63,7 @@ namespace SomeGame.Main.Modules
                 new Gravity());
 
             var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, animationSet);
-            player.WorldPosition.X = 100;
+            player.WorldPosition.X = 50;
             player.WorldPosition.Y = 100;
 
             ActorManager.TryAddActor(GameSystem, player);                

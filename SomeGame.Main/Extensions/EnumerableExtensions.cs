@@ -43,5 +43,18 @@ namespace SomeGame.Main.Extensions
 
             return new Grid<T>(grid);
         }
+
+        internal static RotatingInt GetRotatingIndex<T>(this IEnumerable<T> list, T findItem)
+        {
+            int index = 0;
+            foreach(var item in list)
+            {
+                if (item.Equals(findItem))
+                    return new RotatingInt(index, list.Count());
+                index++;
+            }
+
+            return new RotatingInt(0, list.Count());
+        }
     }
 }

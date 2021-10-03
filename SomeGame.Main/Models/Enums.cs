@@ -107,4 +107,12 @@
         MouseOver,
         Pressed
     }
+
+    public enum LevelEditorMode
+    {
+        Free,
+        Auto,
+        Copy,
+        Move
+    }
 }
