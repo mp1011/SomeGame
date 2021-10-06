@@ -34,9 +34,19 @@ namespace SomeGame.Main.Services
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.bin";
         }
 
+        private string GetSpriteFramePath(TilesetContentKey tilesetContentKey)
+        {
+            return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}_SpriteFrames.bin";
+        }
+
         public void Save(TileMap tileMap)
         {
             Save(tileMap.GetGrid(), GetPath(LevelContentKey.TestLevel));
+        }
+
+        public void Save(TilesetContentKey tilesetContentKey, SpriteFrame[] spriteFrames)
+        {
+            Save(spriteFrames, GetSpriteFramePath(tilesetContentKey));
         }
 
         public void Save(EditorTileSet editorTileSet)
@@ -52,6 +62,13 @@ namespace SomeGame.Main.Services
             using var fileStream = File.OpenWrite(path);
             using var writer = new DataWriter(fileStream);
             writer.Write(editorTileSet);
+        }
+
+        private void Save(SpriteFrame[] spriteFrames, string path)
+        {
+            using var fileStream = File.OpenWrite(path);
+            using var writer = new DataWriter(fileStream);
+            writer.WriteEnumerable(spriteFrames);
         }
 
         private void Save<T>(Grid<T> grid, string path)
@@ -80,6 +97,14 @@ namespace SomeGame.Main.Services
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);
             return reader.ReadEditorTileset();
+        }
+
+        public SpriteFrame[] LoadSpriteFrames(TilesetContentKey tilesetContentKey)
+        {
+            var path = GetSpriteFramePath(tilesetContentKey);
+            using var fileStream = File.OpenRead(path);
+            using var reader = new DataReader(fileStream);
+            return reader.ReadEnumerable<SpriteFrame>();
         }
 
     }

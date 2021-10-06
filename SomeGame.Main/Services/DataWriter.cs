@@ -75,6 +75,14 @@ namespace SomeGame.Main.Services
             }
         }
 
+        public void Write(SpriteFrame spriteFrame)
+        {
+            Write(spriteFrame.TopLeft);
+            Write(spriteFrame.TopRight);
+            Write(spriteFrame.BottomLeft);
+            Write(spriteFrame.BottomRight);
+        }
+
         private void Write(object o)
         {
             var customMethod = _customWriteMethods.GetValueOrDefault(o.GetType());

@@ -85,7 +85,9 @@
     public enum AnimationKey
     {
         Idle,
-        Moving
+        Moving,
+        Jumping,
+        Attacking
     }
 
     public enum Orientation

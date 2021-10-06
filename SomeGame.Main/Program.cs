@@ -16,10 +16,11 @@ namespace SomeGame.Main
             //var module = new ImageSectionSplitter(ImageContentKey.Sheet, TilesetContentKey.Tiles);
             // var module = new GameSystemTestModule();
             //var module = new FontTestModule();
-          //  var module = new LevelEditorModule();
+            //  var module = new LevelEditorModule();
             //var module = new TextureCreatorModule();
-             var module = new LevelModule();
-          //  var module = new TileNeighborModule(new TileSetService());
+            var module = new LevelModule();
+            //  var module = new TileNeighborModule(new TileSetService());
+            //var module = new SpriteEditorModule();
 
             using (var game = new GameEngine(module))
                 game.Run();

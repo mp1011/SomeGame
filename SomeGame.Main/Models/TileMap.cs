@@ -19,6 +19,8 @@ namespace SomeGame.Main.Models
             _tiles = tiles;
         }
 
+        public Tile this[int x, int y] => _tiles[x,y];
+
         public int TilesX => _tiles.Width;
         public int TilesY => _tiles.Height;
         public Grid<Tile> GetGrid() => _tiles;

@@ -102,6 +102,11 @@ namespace SomeGame.Main.Services
             return editorTile;
         }
 
+        public SpriteFrame ReadSpriteFrame()
+        {
+            return new SpriteFrame(ReadTile(), ReadTile(), ReadTile(), ReadTile());
+        }
+
         public T[] ReadEnumerable<T>()
         {
             var count = _reader.ReadInt32();

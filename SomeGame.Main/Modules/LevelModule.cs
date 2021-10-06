@@ -54,7 +54,9 @@ namespace SomeGame.Main.Modules
         {          
             var animationSet = new Dictionary<AnimationKey, byte>();
             animationSet[AnimationKey.Idle] = 0;
-            animationSet[AnimationKey.Moving] = 1;
+            animationSet[AnimationKey.Jumping] = 1;
+            animationSet[AnimationKey.Moving] = 2;            
+            animationSet[AnimationKey.Attacking] = 3;
 
             var playerBehavior = new PlayerBehavior(
                 new PlatformerPlayerMotionBehavior(InputManager),
@@ -71,37 +73,11 @@ namespace SomeGame.Main.Modules
 
         protected override SpriteAnimator InitializeAnimations()
         {
+            var spriteFrames = _dataSerializer.LoadSpriteFrames(TilesetContentKey.Hero);
+
             return new SpriteAnimator(
                 GameSystem,
-                new SpriteFrame[]
-                {
-                    //idle
-                    new SpriteFrame(TopLeft: new Tile(0, TileFlags.Solid),
-                                    TopRight: new Tile(1, TileFlags.Solid),
-                                    BottomLeft: new Tile(9, TileFlags.Solid),
-                                    BottomRight: new Tile(10, TileFlags.Solid)),
-                    new SpriteFrame(TopLeft: new Tile(2, TileFlags.Solid),
-                                    TopRight: new Tile(3, TileFlags.Solid),
-                                    BottomLeft: new Tile(11, TileFlags.Solid),
-                                    BottomRight: new Tile(12, TileFlags.Solid)),
-                    new SpriteFrame(TopLeft: new Tile(4, TileFlags.Solid),
-                                    TopRight: new Tile(5, TileFlags.Solid),
-                                    BottomLeft: new Tile(9, TileFlags.Solid),
-                                    BottomRight: new Tile(10, TileFlags.Solid)),
-                    //walk 
-                    new SpriteFrame(TopLeft: new Tile(18, TileFlags.Solid),
-                                    TopRight: new Tile(19, TileFlags.Solid),
-                                    BottomLeft: new Tile(24, TileFlags.Solid),
-                                    BottomRight: new Tile(25, TileFlags.Solid)),
-                    new SpriteFrame(TopLeft: new Tile(20, TileFlags.Solid),
-                                    TopRight: new Tile(21, TileFlags.Solid),
-                                    BottomLeft: new Tile(26, TileFlags.Solid),
-                                    BottomRight: new Tile(27, TileFlags.Solid)),
-                    new SpriteFrame(TopLeft: new Tile(22, TileFlags.Solid),
-                                    TopRight: new Tile(23, TileFlags.Solid),
-                                    BottomLeft: new Tile(28, TileFlags.Solid),
-                                    BottomRight: new Tile(29, TileFlags.Solid)),
-                },
+                spriteFrames,
                 new AnimationFrame[]
                 {
                     //idle
@@ -109,16 +85,27 @@ namespace SomeGame.Main.Modules
                     new AnimationFrame(SpriteFrameIndex:1,Duration:50),
                     new AnimationFrame(SpriteFrameIndex:2,Duration:50),
 
+                    //jump 
+                    new AnimationFrame(SpriteFrameIndex:4,Duration:50),
+                    new AnimationFrame(SpriteFrameIndex:3,Duration:50),
+
                     //walk
-                    new AnimationFrame(SpriteFrameIndex:3,Duration:10),
-                    new AnimationFrame(SpriteFrameIndex:4,Duration:10),
                     new AnimationFrame(SpriteFrameIndex:5,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:6,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:7,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:8,Duration:10),
+
+                    //attack
+                    new AnimationFrame(SpriteFrameIndex:9,Duration:50),
+                    new AnimationFrame(SpriteFrameIndex:10,Duration:50),
 
                 },
                 new Animation[]
                 {
-                    new Animation(0,1,2,1),
-                    new Animation(3,4,5)
+                    new Animation(0,1,2,1), //idle
+                    new Animation(3,4), //jump
+                    new Animation(5,6,7,8), //walk 
+                    new Animation(9,10) // attack
                 });
         }
 
