@@ -9,14 +9,8 @@ namespace SomeGame.Main.Modules
 {
     class SpriteEditorModule : TileEditorBaseModule
     {
-        private readonly DataSerializer _dataSerializer;
         private Font _font;
         private UIButton _save;
-
-        public SpriteEditorModule()
-        {
-            _dataSerializer = new DataSerializer();
-        }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {

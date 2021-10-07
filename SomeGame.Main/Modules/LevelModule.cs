@@ -61,10 +61,9 @@ namespace SomeGame.Main.Modules
             var playerBehavior = new PlayerBehavior(
                 new PlatformerPlayerMotionBehavior(InputManager),
                 new CameraBehavior(SceneManager, GameSystem), 
-                new BgCollisionBehavior(GameSystem),
                 new Gravity());
 
-            var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, animationSet);
+            var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, new BgCollisionDetector(GameSystem), animationSet);
             player.WorldPosition.X = 50;
             player.WorldPosition.Y = 100;
 

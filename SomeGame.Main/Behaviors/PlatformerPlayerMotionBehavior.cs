@@ -15,28 +15,41 @@ namespace SomeGame.Main.Behaviors
             _inputManger = inputManger;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition)
+        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo backgroundCollisionInfo)
         {
-            if (_inputManger.Input.A.IsPressed())
+            if (_inputManger.Input.A.IsPressed() && backgroundCollisionInfo.IsOnGround)
                 actor.MotionVector = new PixelPoint(actor.MotionVector.X, -2);
+
+            bool isMoving = false;
 
             if (_inputManger.Input.Left.IsDown())
             {
                 actor.MotionVector = new PixelPoint(-1, actor.MotionVector.Y);
                 actor.Flip = Flip.H;
-                actor.CurrentAnimation = AnimationKey.Moving;
+                isMoving = true;
             }
             else if (_inputManger.Input.Right.IsDown())
             {
                 actor.MotionVector = new PixelPoint(1, actor.MotionVector.Y);
                 actor.Flip = Flip.None;
-                actor.CurrentAnimation = AnimationKey.Moving;
+                isMoving = true;
             }
             else
             {
                 actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
-                actor.CurrentAnimation = AnimationKey.Idle;
             }
+
+            actor.CurrentAnimation = GetAnimation(isMoving, backgroundCollisionInfo.IsOnGround);
+        }
+
+        private AnimationKey GetAnimation(bool isMoving, bool isOnGround)
+        {
+            if (!isOnGround)
+                return AnimationKey.Jumping;
+            else if (isMoving)
+                return AnimationKey.Moving;
+            else
+                return AnimationKey.Idle;
         }
     }
 }

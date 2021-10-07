@@ -5,6 +5,6 @@ namespace SomeGame.Main.Behaviors
 {
     abstract class Behavior
     {
-        public abstract void Update(Actor actor, Rectangle frameStartPosition);
+        public abstract void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo);
     }
 }

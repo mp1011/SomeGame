@@ -63,7 +63,8 @@ namespace SomeGame.Main.Services
          
             _spriteAnimator.SetSpriteAnimation(spriteIndex, actor.CurrentAnimationIndex);
 
-            actor.Behavior.Update(actor, frameStartPosition);
+            var collisionInfo = actor.CollisionDetector.DetectCollisions(actor, frameStartPosition);
+            actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
 
             var scene = _sceneManager.CurrentScene;
             sprite.ScrollX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);

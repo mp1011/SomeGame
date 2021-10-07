@@ -16,7 +16,7 @@ namespace SomeGame.Main.Behaviors
             Orientation = orientation;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition)
+        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
             actor.MotionVector = actor.MotionVector.Offset(Orientation, CoarseAcceleration, SubPixelAcceleration);
         }

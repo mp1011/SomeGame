@@ -8,6 +8,7 @@ namespace SomeGame.Main.Models
     class Actor
     {
         public Behavior Behavior { get; }
+        public ICollisionDetector CollisionDetector { get; }
         public GameRectangleWithSubpixels WorldPosition { get; set; }
         public PixelPoint MotionVector { get; set; } = new PixelPoint(0, 0);
         public TilesetContentKey Tileset { get; }
@@ -23,10 +24,12 @@ namespace SomeGame.Main.Models
         public Actor(TilesetContentKey tilesetKey, 
                      PaletteIndex palette,
                      Behavior behavior,
+                     ICollisionDetector collisionDetector,
                      Dictionary<AnimationKey, byte> animationSet)
         {
             WorldPosition = new GameRectangleWithSubpixels(0, 0, 16, 16);
             Behavior = behavior;
+            CollisionDetector = collisionDetector;
             Palette = palette;
             Tileset = tilesetKey;
             _animationSet = animationSet;
