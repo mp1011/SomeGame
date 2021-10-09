@@ -16,6 +16,8 @@ namespace SomeGame.Main.Models
 
         public Flip Flip { get; set; } 
 
+        public bool Enabled { get; set; }
+
         public AnimationKey CurrentAnimation { get; set; }
 
         private Dictionary<AnimationKey, byte> _animationSet = new Dictionary<AnimationKey, byte>();

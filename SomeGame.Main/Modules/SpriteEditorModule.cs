@@ -9,8 +9,15 @@ namespace SomeGame.Main.Modules
 {
     class SpriteEditorModule : TileEditorBaseModule
     {
+        private readonly TilesetContentKey _spriteKey;
         private Font _font;
-        private UIButton _save;
+        private UIButton _save;        
+        private Point _previewSpriteTile = new Point(0, 4);
+
+        public SpriteEditorModule(TilesetContentKey spriteKey)
+        {
+            _spriteKey = spriteKey;
+        }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
@@ -38,7 +45,7 @@ namespace SomeGame.Main.Modules
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
             _save = new UIButton("SAVE", new Point(30, 0), GameSystem.GetLayer(LayerIndex.Interface), _font);
 
-            var spriteFrames = _dataSerializer.LoadSpriteFrames(TilesetContentKey.Hero);
+            var spriteFrames = _dataSerializer.LoadSpriteFrames(_spriteKey);
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             Point p = new Point(0, 4);
             foreach(var frame in spriteFrames)
@@ -52,11 +59,13 @@ namespace SomeGame.Main.Modules
                 if(p.X >= 30)
                     p = new Point(0, p.Y + 2);
             }
+
+            PreviewSprite();
         }
 
         protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
-            using var image = resourceLoader.LoadTexture(TilesetContentKey.Hero);
+            using var image = resourceLoader.LoadTexture(_spriteKey);
             var tileset = image.ToIndexedTilesetImage();
 
             using var fontImage = resourceLoader.LoadTexture(TilesetContentKey.Font);
@@ -70,10 +79,42 @@ namespace SomeGame.Main.Modules
                 Save();
             else
             {
+                HandleFlip();
                 HandleStandardInput();
                 HandleSelectTile();
+                HandleMovePreview();
+
+                PreviewSprite();
             }
-             
+        }
+
+        private void HandleFlip()
+        {
+            if (!Input.A.IsPressed())
+                return;
+
+            var background = GameSystem.GetLayer(LayerIndex.BG);
+            var mouseTile = GetCurrentMouseTile();
+            var currentTile = background.TileMap.GetTile(mouseTile);
+
+            if(currentTile == SelectedTile)
+            {
+                switch(SelectedTile.Flags)
+                {
+                    case TileFlags.None:
+                        SelectedTile = new Tile(SelectedTile.Index, TileFlags.FlipH);
+                        break;
+                    case TileFlags.FlipH:
+                        SelectedTile = new Tile(SelectedTile.Index, TileFlags.FlipV);
+                        break;
+                    case TileFlags.FlipV:
+                        SelectedTile = new Tile(SelectedTile.Index, TileFlags.FlipHV);
+                        break;
+                    case TileFlags.FlipHV:
+                        SelectedTile = new Tile(SelectedTile.Index, TileFlags.None);
+                        break;
+                }
+            }
         }
 
         private void HandleSelectTile()
@@ -87,6 +128,19 @@ namespace SomeGame.Main.Modules
 
             var interfaceLayer = GameSystem.GetLayer(LayerIndex.Interface);
             SelectedTile = interfaceLayer.TileMap.GetTile(mouseTile);
+        }
+
+        private void HandleMovePreview()
+        {
+            var offset = Input.PressedDirectionVector.Scale(2);
+            if (offset.X == 0 && offset.Y == 0)
+                return;
+
+            _previewSpriteTile = _previewSpriteTile.Offset(offset);
+            if (_previewSpriteTile.X < 0)
+                _previewSpriteTile = new Point(0, _previewSpriteTile.Y);
+            if (_previewSpriteTile.Y < 4)
+                _previewSpriteTile = new Point(_previewSpriteTile.X, 4);
         }
 
         private SpriteFrame[] CreateSpriteFrames()
@@ -113,7 +167,21 @@ namespace SomeGame.Main.Modules
         private void Save()
         {
             var frames = CreateSpriteFrames();
-            _dataSerializer.Save(TilesetContentKey.Hero, frames);
+            _dataSerializer.Save(_spriteKey, frames);
+        }
+
+
+        private void PreviewSprite()
+        {
+            var bg = GameSystem.GetLayer(LayerIndex.BG);
+            var fg = GameSystem.GetLayer(LayerIndex.FG);
+
+            bg.TileMap.ForEach(_previewSpriteTile, _previewSpriteTile.Offset(2, 2), (x, y, t) =>
+             {
+                 fg.TileMap.SetTile(20 + (x - _previewSpriteTile.X),
+                                    20 + (y - _previewSpriteTile.Y),
+                                    t);
+             });
         }
     }
 }

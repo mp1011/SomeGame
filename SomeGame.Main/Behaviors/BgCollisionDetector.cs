@@ -13,18 +13,18 @@ namespace SomeGame.Main.Behaviors
             _gameSystem = gameSystem;
         }
 
-        public CollisionInfo DetectCollisions(Actor actor, Rectangle frameStartPosition)
+        public CollisionInfo DetectCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition)
         {
             var fg = _gameSystem.GetLayer(LayerIndex.FG);
 
-            var posX = actor.WorldPosition.X;
-            var posY = actor.WorldPosition.Y;
+            var posX = actor.WorldPosition.XPixel;
+            var posY = actor.WorldPosition.YPixel;
 
             var topLeftTile = fg.TilePointFromWorldPixelPoint(actor.WorldPosition.TopLeft).Offset(-2, -2);
             var bottomRightTile = fg.TilePointFromWorldPixelPoint(actor.WorldPosition.BottomRight).Offset(2, 2);
 
             var collisionInfo = new CollisionInfo();
-            actor.WorldPosition.X = frameStartPosition.X;
+            actor.WorldPosition.XPixel = frameStartPosition.XPixel;
             fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x,y,t) =>
             {
                 if(t.IsSolid)
@@ -35,7 +35,7 @@ namespace SomeGame.Main.Behaviors
                 }
             });
 
-            actor.WorldPosition.X = posX;
+            actor.WorldPosition.XPixel = posX;
             fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
                 if (t.IsSolid)

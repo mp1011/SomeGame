@@ -25,7 +25,7 @@
         }
     }
 
-    record PixelValue(int Pixel, byte SubPixel)
+    record PixelValue(int Pixel, int SubPixel)
     {
         public static PixelValue operator +(PixelValue pv, int i)
         {
@@ -43,17 +43,23 @@
                 newPixel++;
             }
 
-            while (newSubPixel < 0)
+            while (newSubPixel < -255)
             {
                 newSubPixel += 255;
                 newPixel--;
             }
 
-            return new PixelValue(newPixel, (byte)newSubPixel);
+            return new PixelValue(newPixel, newSubPixel);
+        }
+
+        public static PixelValue operator *(PixelValue p, int multiple)
+        {
+            return new PixelValue(p.Pixel * multiple, p.SubPixel * multiple);
         }
 
         public static implicit operator int(PixelValue pv) => pv.Pixel;
         public static implicit operator PixelValue(int v) => new PixelValue(v,0);
+
 
     }
 

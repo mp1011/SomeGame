@@ -1,5 +1,7 @@
 ﻿using SomeGame.Main.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SomeGame.Main.Services
 {
@@ -13,12 +15,12 @@ namespace SomeGame.Main.Services
         private SpriteAnimation[] _spriteAnimations = new SpriteAnimation[Enum.GetValues<SpriteIndex>().Length];
 
         public SpriteAnimator(GameSystem gameSystem,
-                              SpriteFrame[] spriteFrames, 
+                              IEnumerable<SpriteFrame> spriteFrames, 
                               AnimationFrame[] animationFrames,
                               Animation[] animations)
         {
             _gameSystem = gameSystem;
-            _spriteFrames = spriteFrames;
+            _spriteFrames = spriteFrames.ToArray();
             _animationFrames = animationFrames;
             _animations = animations;
         }

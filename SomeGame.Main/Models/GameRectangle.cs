@@ -36,6 +36,12 @@ namespace SomeGame.Main.Models
         {
         }
 
+        public GameRectangleWithSubpixels Copy() => new GameRectangleWithSubpixels(0, 0, Width, Height)
+        {
+            XPixel = XPixel,
+            YPixel = YPixel
+        };
+
         public PixelValue XPixel { get; set; } = new PixelValue(0, 0);
         public PixelValue YPixel { get; set; } = new PixelValue(0, 0);
 

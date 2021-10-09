@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Content;
+﻿using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using System.IO;
 using System.Linq;
@@ -34,9 +35,24 @@ namespace SomeGame.Main.Services
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.bin";
         }
 
+        private string GetImagePath(TilesetContentKey tilesetContentKey)
+        {
+            return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.png";
+        }
+
         private string GetSpriteFramePath(TilesetContentKey tilesetContentKey)
         {
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}_SpriteFrames.bin";
+        }
+
+        public void SaveTilesetImage(TilesetContentKey tilesetContentKey, Texture2D image)
+        {
+            var path = GetImagePath(tilesetContentKey);
+            if (File.Exists(path))
+                File.Delete(path);
+
+            using var stream = File.OpenWrite(path);
+            image.SaveAsPng(stream, image.Width, image.Height);
         }
 
         public void Save(TileMap tileMap)
@@ -102,6 +118,8 @@ namespace SomeGame.Main.Services
         public SpriteFrame[] LoadSpriteFrames(TilesetContentKey tilesetContentKey)
         {
             var path = GetSpriteFramePath(tilesetContentKey);
+            if (!File.Exists(path))
+                return new SpriteFrame[] { };
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);
             return reader.ReadEnumerable<SpriteFrame>();

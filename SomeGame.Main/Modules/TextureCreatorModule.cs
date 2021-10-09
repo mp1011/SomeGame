@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Services;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,16 @@ namespace SomeGame.Main.Modules
 {
     class TextureCreatorModule : IGameModule
     {
+        private readonly ImageContentKey _src;
+        private readonly TilesetContentKey _dest;
         private readonly TileSetService _tileSetService = new TileSetService();
+        private readonly DataSerializer _dataSerializer = new DataSerializer();
+
+        public TextureCreatorModule(ImageContentKey src, TilesetContentKey dest)
+        {
+            _src = src;
+            _dest = dest;
+        }
 
         public Rectangle Screen => new Rectangle(0, 0, 100, 100);
 
@@ -22,14 +32,13 @@ namespace SomeGame.Main.Modules
 
         public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
-            var img = resourceLoader.LoadTexture(Content.ImageContentKey.Hero)
+            var img = resourceLoader.LoadTexture(_src)
                                     .ToIndexedImage();
 
             var tileset = _tileSetService.CreateTilesetFromImage(img)
                                          .ToTexture2D(graphicsDevice);
 
-            using var stream = File.OpenWrite("characters.png");
-            tileset.SaveAsPng(stream, tileset.Width,tileset.Height);
+            _dataSerializer.SaveTilesetImage(_dest, tileset);
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

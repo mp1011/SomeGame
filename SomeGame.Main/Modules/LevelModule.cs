@@ -20,6 +20,8 @@ namespace SomeGame.Main.Modules
             switch(index)
             {
                 case PaletteIndex.P1: return tilesetImages[0].Palette;
+                case PaletteIndex.P2: return tilesetImages[1].Palette;
+                case PaletteIndex.P3: return tilesetImages[2].Palette;
                 default: return tilesetImages[1].Palette;
             }            
         }
@@ -46,65 +48,120 @@ namespace SomeGame.Main.Modules
             return new IndexedTilesetImage[]
             {
                 resourceLoader.LoadTexture(TilesetContentKey.Tiles).ToIndexedTilesetImage(),
-                resourceLoader.LoadTexture(TilesetContentKey.Hero).ToIndexedTilesetImage()
+                resourceLoader.LoadTexture(TilesetContentKey.Hero).ToIndexedTilesetImage(),
+                resourceLoader.LoadTexture(TilesetContentKey.Skeleton).ToIndexedTilesetImage(),
             };
         }
 
         protected override void InitializeActors()
-        {          
-            var animationSet = new Dictionary<AnimationKey, byte>();
-            animationSet[AnimationKey.Idle] = 0;
-            animationSet[AnimationKey.Jumping] = 1;
-            animationSet[AnimationKey.Moving] = 2;            
-            animationSet[AnimationKey.Attacking] = 3;
+        {
+            var actorFactory = new ActorFactory(ActorManager, GameSystem);
 
-            var playerBehavior = new PlayerBehavior(
-                new PlatformerPlayerMotionBehavior(InputManager),
-                new CameraBehavior(SceneManager, GameSystem), 
-                new Gravity());
+            actorFactory.CreateActor(
+                tileset: TilesetContentKey.Hero,
+                paletteIndex: PaletteIndex.P2,
+                animations: new Dictionary<AnimationKey, byte> 
+                {
+                   [AnimationKey.Idle] = 0,
+                   [AnimationKey.Jumping] = 1,
+                   [AnimationKey.Moving] = 2,            
+                   [AnimationKey.Attacking] = 3
+                },
+                behavior: new PlayerBehavior(
+                                new PlatformerPlayerMotionBehavior(InputManager),
+                                new CameraBehavior(SceneManager, GameSystem),
+                                new Gravity()),
+                collisionDetector: new BgCollisionDetector(GameSystem),
+                initialPosition: new Point(50, 100));
 
-            var player = new Actor(TilesetContentKey.Hero, PaletteIndex.P2, playerBehavior, new BgCollisionDetector(GameSystem), animationSet);
-            player.WorldPosition.X = 50;
-            player.WorldPosition.Y = 100;
+           var projectile = actorFactory.CreateActor(
+                tileset: TilesetContentKey.Skeleton,
+                paletteIndex: PaletteIndex.P3,
+                animations: new Dictionary<AnimationKey, byte>
+                {
+                    [AnimationKey.Moving] = 7,
+                },
+                behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1,0)),
+                collisionDetector: new EmptyCollisionDetector(),
+                initialPosition: new Point(0, 0));
 
-            ActorManager.TryAddActor(GameSystem, player);                
+            projectile.CurrentAnimation = AnimationKey.Moving;
+
+
+            actorFactory.CreateActor(
+                tileset: TilesetContentKey.Skeleton,
+                paletteIndex: PaletteIndex.P3,
+                animations: new Dictionary<AnimationKey, byte>
+                {
+                    [AnimationKey.Idle] = 4,
+                    [AnimationKey.Moving] = 5,
+                    [AnimationKey.Attacking] = 6
+                },
+                behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), projectile),
+                collisionDetector: new BgCollisionDetector(GameSystem),
+                initialPosition: new Point(150, 50));
+
+
+
         }
 
         protected override SpriteAnimator InitializeAnimations()
         {
-            var spriteFrames = _dataSerializer.LoadSpriteFrames(TilesetContentKey.Hero);
+            List<SpriteFrame> spriteFrames = new List<SpriteFrame>();
+            spriteFrames.AddRange(_dataSerializer.LoadSpriteFrames(TilesetContentKey.Hero));
+            spriteFrames.AddRange(_dataSerializer.LoadSpriteFrames(TilesetContentKey.Skeleton));
 
             return new SpriteAnimator(
                 GameSystem,
                 spriteFrames,
                 new AnimationFrame[]
                 {
-                    //idle
+                    //player idle
                     new AnimationFrame(SpriteFrameIndex:0,Duration:50),
                     new AnimationFrame(SpriteFrameIndex:1,Duration:50),
                     new AnimationFrame(SpriteFrameIndex:2,Duration:50),
 
-                    //jump 
+                    //player jump 
                     new AnimationFrame(SpriteFrameIndex:4,Duration:50),
                     new AnimationFrame(SpriteFrameIndex:3,Duration:50),
 
-                    //walk
-                    new AnimationFrame(SpriteFrameIndex:5,Duration:10),
-                    new AnimationFrame(SpriteFrameIndex:6,Duration:10),
+                    //player attack
+                    new AnimationFrame(SpriteFrameIndex:5,Duration:50),
+                    new AnimationFrame(SpriteFrameIndex:6,Duration:50),
+
+                    //player walk
                     new AnimationFrame(SpriteFrameIndex:7,Duration:10),
                     new AnimationFrame(SpriteFrameIndex:8,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:9,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:10,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:11,Duration:10),
 
-                    //attack
-                    new AnimationFrame(SpriteFrameIndex:9,Duration:50),
-                    new AnimationFrame(SpriteFrameIndex:10,Duration:50),
+                    //skeleton idle
+                    new AnimationFrame(SpriteFrameIndex:12, Duration:10),
 
+                    //skeleton walk
+                    new AnimationFrame(SpriteFrameIndex:13, Duration:20),
+                    new AnimationFrame(SpriteFrameIndex:14, Duration:20),
+
+                    //skeleton attack
+                    new AnimationFrame(SpriteFrameIndex:15, Duration:50),
+
+                    //skeleton bone
+                    new AnimationFrame(SpriteFrameIndex:16, Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:17, Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:18, Duration:18),
+                    new AnimationFrame(SpriteFrameIndex:19, Duration:19),
                 },
                 new Animation[]
                 {
                     new Animation(0,1,2,1), //idle
                     new Animation(3,4), //jump
-                    new Animation(5,6,7,8), //walk 
-                    new Animation(9,10) // attack
+                    new Animation(7,8,9,10,11), //walk 
+                    new Animation(5,6), // attack
+                    new Animation(12), // skeleton idle
+                    new Animation(13,14), // skeleton walk
+                    new Animation(15), // skeleton attack
+                    new Animation(16,17,18,19), //skeleton bone
                 });
         }
 

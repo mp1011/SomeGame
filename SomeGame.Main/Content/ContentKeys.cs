@@ -5,7 +5,8 @@
         None,
         Sheet,
         Characters_7,
-        Hero
+        Hero,
+        Skeleton
     }
 
     public enum TilesetContentKey
@@ -13,7 +14,8 @@
         None,
         Tiles,
         Font,
-        Hero
+        Hero,
+        Skeleton
     }
 
     public enum LevelContentKey

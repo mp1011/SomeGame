@@ -30,11 +30,10 @@ namespace SomeGame.Main.Services
             sprite.Priority = SpritePriority.Front;
             sprite.Palette = actor.Palette;
             sprite.Enabled = true;
-
+            actor.Enabled = true;
 
             _actors[(int)spriteIndex] = actor;
 
-            
             return true;
         }
 
@@ -46,17 +45,21 @@ namespace SomeGame.Main.Services
                 if (actor == null)
                     continue;
 
-                UpdateActor(actor, spriteIndex);
-
                 var sprite = _gameSystem.GetSprite(spriteIndex);
-                sprite.Flip = actor.Flip;
+                sprite.Enabled = actor.Enabled;
+
+                if (actor.Enabled)
+                {
+                    UpdateActor(actor, spriteIndex);
+                    sprite.Flip = actor.Flip;
+                }
             }
         }
 
         private void UpdateActor(Actor actor, SpriteIndex spriteIndex)
         {
             var sprite = _gameSystem.GetSprite(spriteIndex);
-            var frameStartPosition = (Rectangle)actor.WorldPosition;    
+            var frameStartPosition = actor.WorldPosition.Copy();   
 
             actor.WorldPosition.XPixel += actor.MotionVector.X;
             actor.WorldPosition.YPixel += actor.MotionVector.Y;

@@ -46,6 +46,7 @@
         None=0,
         FlipH=1,
         FlipV=2,
+        FlipHV=3,
         Solid=4
     }
 
@@ -116,5 +117,12 @@
         Auto,
         Copy,
         Move
+    }
+
+    public enum StandardEnemyState
+    {
+        Idle,
+        Moving,
+        Attacking
     }
 }
