@@ -11,7 +11,11 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
+            if (collisionInfo.XCorrection != 0)
+                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
 
+            if (collisionInfo.YCorrection != 0)
+                actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
         }
 
         public void SetIdle(Actor actor)

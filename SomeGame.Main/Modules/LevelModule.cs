@@ -88,7 +88,7 @@ namespace SomeGame.Main.Modules
             projectile.CurrentAnimation = AnimationKey.Moving;
 
 
-            actorFactory.CreateActor(
+           actorFactory.CreateActor(
                 tileset: TilesetContentKey.Skeleton,
                 paletteIndex: PaletteIndex.P3,
                 animations: new Dictionary<AnimationKey, byte>
@@ -99,10 +99,9 @@ namespace SomeGame.Main.Modules
                 },
                 behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), projectile),
                 collisionDetector: new BgCollisionDetector(GameSystem),
-                position: new GameRectangleWithSubpixels(150, 50,8,12));
+                position: new GameRectangleWithSubpixels(150, 40,8,15));
 
-
-
+            projectile.Enabled = false;
         }
 
         protected override SpriteAnimator InitializeAnimations()

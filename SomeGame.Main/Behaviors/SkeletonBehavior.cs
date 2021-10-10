@@ -21,6 +21,7 @@ namespace SomeGame.Main.Behaviors
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
             _gravity.Update(actor, frameStartPosition, collisionInfo);
+            _enemyMotionBehavior.Update(actor, frameStartPosition, collisionInfo);
 
             if (_counter == 0)
                 _enemyMotionBehavior.SetIdle(actor);

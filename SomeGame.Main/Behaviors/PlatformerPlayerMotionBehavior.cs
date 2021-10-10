@@ -2,7 +2,6 @@
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
-using System;
 
 namespace SomeGame.Main.Behaviors
 {
@@ -17,6 +16,12 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo backgroundCollisionInfo)
         {
+            if (backgroundCollisionInfo.XCorrection != 0)
+                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+
+            if (backgroundCollisionInfo.YCorrection != 0)
+                actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
+
             if (_inputManger.Input.A.IsPressed() && backgroundCollisionInfo.IsOnGround)
                 actor.MotionVector = new PixelPoint(actor.MotionVector.X, -2);
 

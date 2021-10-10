@@ -18,6 +18,11 @@ namespace SomeGame.Main.Models
         public Point BottomRight => new Point(X+Width-1, Y+Height-1);
 
         public int Bottom => Y + Height;
+        public int Right => X + Width;
+
+        public int Top => Y;
+
+        public int Left => X;
 
         public GameRectangle(int x, int y, int width, int height)
         {

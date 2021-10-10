@@ -73,8 +73,8 @@ namespace SomeGame.Main.Services
             var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
             var actorScreenY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
 
-            sprite.ScrollX = actorScreenX - (_gameSystem.TileSize * 2 - actor.WorldPosition.Width );
-            sprite.ScrollY = actorScreenY - (_gameSystem.TileSize * 2 - actor.WorldPosition.Height);
+            sprite.ScrollX = actorScreenX - (_gameSystem.TileSize * 2 - actor.WorldPosition.Width)/2;
+            sprite.ScrollY = actorScreenY - (_gameSystem.TileSize * 2 - actor.WorldPosition.Height)/2;
         }
     }
 }

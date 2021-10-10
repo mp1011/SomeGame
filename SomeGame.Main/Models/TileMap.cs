@@ -25,7 +25,7 @@ namespace SomeGame.Main.Models
         public int TilesY => _tiles.Height;
         public Grid<Tile> GetGrid() => _tiles;
 
-        public Tile GetTile(int x, int y) => _tiles[x, y];
+        public Tile GetTile(int x, int y) => _tiles[new RotatingInt(x,TilesX) , new RotatingInt(y,TilesY)];
         public Tile GetTile(Point p) => _tiles[p.X, p.Y];
 
         public void SetTile(int x, int y, Tile tile)

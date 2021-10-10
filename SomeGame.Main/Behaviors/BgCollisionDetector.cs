@@ -15,79 +15,96 @@ namespace SomeGame.Main.Behaviors
 
         public CollisionInfo DetectCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition)
         {
+            var collisionInfo = new CollisionInfo();
             var fg = _gameSystem.GetLayer(LayerIndex.FG);
-
-            var posX = actor.WorldPosition.XPixel;
-            var posY = actor.WorldPosition.YPixel;
-
             var topLeftTile = fg.TilePointFromWorldPixelPoint(actor.WorldPosition.TopLeft).Offset(-2, -2);
             var bottomRightTile = fg.TilePointFromWorldPixelPoint(actor.WorldPosition.BottomRight).Offset(2, 2);
 
-            var collisionInfo = new CollisionInfo();
-            actor.WorldPosition.XPixel = frameStartPosition.XPixel;
             fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x,y,t) =>
             {
                 if(t.IsSolid)
                 {
-                    var tileBounds = fg.GetTileWorldPosition(x, y);
-                    if (tileBounds.IntersectsOrTouches(actor.WorldPosition))
-                        collisionInfo += HandleVerticalCollision(actor, tileBounds, frameStartPosition);
-                }
-            });
+                    var tileAbove = fg.TileMap.GetTile(x, y - 1);
+                    var tileBelow = fg.TileMap.GetTile(x, y + 1);
+                    var tileLeft = fg.TileMap.GetTile(x - 1, y);
+                    var tileRight = fg.TileMap.GetTile(x + 1, y);
 
-            actor.WorldPosition.XPixel = posX;
-            fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
-            {
-                if (t.IsSolid)
-                {
                     var tileBounds = fg.GetTileWorldPosition(x, y);
-                    if (tileBounds.Intersects(actor.WorldPosition))
-                        collisionInfo += HandleHorizontalCollision(actor, tileBounds, frameStartPosition);
+                    if (tileBounds.Intersects(actor.WorldPosition))                    
+                        collisionInfo += HandleCollision(actor, tileBounds, frameStartPosition, tileAbove, tileBelow, tileLeft, tileRight);
+
+                    if(!tileAbove.IsSolid)
+                        collisionInfo += CheckTouchingGround(actor, tileBounds);
                 }
             });
 
             return collisionInfo;
         }
 
-        private CollisionInfo HandleVerticalCollision(Actor actor, Rectangle collidingTile, Rectangle frameStartPosition)
+        private CollisionInfo HandleCollision(Actor actor, Rectangle collidingTile, Rectangle frameStartPosition,
+            Tile tileAbove, Tile tileBelow, Tile tileLeft, Tile tileRight)
         {
-            int correctY = 0;
+
             var displacement = actor.WorldPosition.TopLeft - frameStartPosition.TopLeft();
+            var xCorrection = new PixelValue(0, -displacement.X);
+            var yCorrection = new PixelValue(0, -displacement.Y);
 
-            if (displacement.Y > 0)
-                correctY = -1;
-            else if (displacement.Y < 0)
-                correctY = 1;
+            if (tileAbove.IsSolid && yCorrection.SubPixel < 0)
+                yCorrection = new PixelValue(0, 0);
+            if (tileBelow.IsSolid && yCorrection.SubPixel > 0)
+                yCorrection = new PixelValue(0, 0);
+            if (tileLeft.IsSolid && xCorrection.SubPixel < 0)
+                xCorrection = new PixelValue(0, 0);
+            if (tileRight.IsSolid && xCorrection.SubPixel > 0)
+                xCorrection = new PixelValue(0, 0);
 
-            if (correctY == 0)
-                return new CollisionInfo(IsOnGround: actor.WorldPosition.Bottom >= collidingTile.Top);
+            var xAdjustedPosition = actor.WorldPosition.Copy();
+            var yAdjustedPosition = actor.WorldPosition.Copy();
+            var xyAdjustedPosition = actor.WorldPosition.Copy();
 
-            while (collidingTile.Intersects(actor.WorldPosition))            
-                actor.WorldPosition.Y += correctY;
+            if (xCorrection.SubPixel != 0 || yCorrection.SubPixel != 0)
+            {
+                while(true)
+                {
+                    if(!collidingTile.Intersects(xAdjustedPosition))
+                    {
+                        actor.WorldPosition = xAdjustedPosition;
+                        yCorrection = new PixelValue(0, 0);
+                        break;
+                    }
+                    else if (!collidingTile.Intersects(yAdjustedPosition))
+                    {
+                        actor.WorldPosition = yAdjustedPosition;
+                        xCorrection = new PixelValue(0, 0);
+                        break;
+                    }
+                    else if (!collidingTile.Intersects(xyAdjustedPosition))
+                    {
+                        actor.WorldPosition = xyAdjustedPosition;
+                        break;
+                    }
 
-            if (correctY < 0)
-                actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
+                    xyAdjustedPosition.XPixel += xCorrection;
+                    xyAdjustedPosition.YPixel += yCorrection;
+                    xAdjustedPosition.XPixel += xCorrection;
+                    yAdjustedPosition.YPixel += yCorrection;
+                }
+            }
 
-            return new CollisionInfo(IsOnGround: actor.WorldPosition.Bottom >= collidingTile.Top);
+            return new CollisionInfo(XCorrection: xCorrection, YCorrection: yCorrection);
         }
 
-        private CollisionInfo HandleHorizontalCollision(Actor actor, Rectangle collidingTile, Rectangle frameStartPosition)
+        private CollisionInfo CheckTouchingGround(Actor actor, Rectangle collidingTile)
         {
-            int correctX = 0;
-            var displacement = actor.WorldPosition.TopLeft - frameStartPosition.TopLeft();
-
-            if (displacement.X > 0)
-                correctX = -1;
-            else if (displacement.X < 0)
-                correctX = 1;
-
-            if (correctX == 0)
+            if (actor.MotionVector.Y >= 0 
+                && actor.WorldPosition.Bottom == collidingTile.Top
+                && actor.WorldPosition.Right >= collidingTile.Left
+                && actor.WorldPosition.Left <= collidingTile.Right)
+            {
+                return new CollisionInfo(IsOnGround: true);
+            }
+            else
                 return new CollisionInfo();
-
-            while (collidingTile.Intersects(actor.WorldPosition))
-                actor.WorldPosition.X += correctX;
-
-            return new CollisionInfo();
         }
     }
 }
