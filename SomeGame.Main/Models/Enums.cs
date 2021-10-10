@@ -125,4 +125,19 @@
         Moving,
         Attacking
     }
+
+    public enum ActorType
+    {
+        Player=1,
+        Enemy=2,
+        Character=4,
+        Bullet=8
+    }
+
+    public enum AnimationState
+    {
+        None,
+        Playing,
+        Finished
+    }
 }

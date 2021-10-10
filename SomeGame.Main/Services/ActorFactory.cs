@@ -18,15 +18,17 @@ namespace SomeGame.Main.Services
         }
 
         public Actor CreateActor(
+            ActorType actorType,
             TilesetContentKey tileset,
             PaletteIndex paletteIndex,
             Dictionary<AnimationKey, byte> animations,
             Behavior behavior,
             ICollisionDetector collisionDetector,
-            GameRectangleWithSubpixels position)
+            PixelPoint position,
+            Rectangle hitBox)
         {
-            var actor = new Actor(tileset, paletteIndex, behavior, collisionDetector, animations);
-            actor.WorldPosition = position;
+            var actor = new Actor(actorType, tileset, paletteIndex, behavior, collisionDetector, hitBox, animations);
+            actor.WorldPosition = new GameRectangleWithSubpixels(position.X,position.Y, hitBox.Width,hitBox.Height);
 
             _actorManager.TryAddActor(_gameSystem, actor);
 

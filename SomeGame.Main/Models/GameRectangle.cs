@@ -32,6 +32,11 @@ namespace SomeGame.Main.Models
             Height = height;
         }
 
+        public bool IntersectsWith(Rectangle other)
+        {
+            return ((Rectangle)this).Intersects(other);
+        }
+
         public static implicit operator Rectangle(GameRectangle r) => new Rectangle(r.X,r.Y,r.Width,r.Height);
     }
 
@@ -40,6 +45,13 @@ namespace SomeGame.Main.Models
         public GameRectangleWithSubpixels(int x, int y, int width, int height) : base(x, y, width, height)
         {
         }
+
+        public GameRectangleWithSubpixels(PixelValue x, PixelValue y, int width, int height) : base(0, 0, width, height)
+        {
+            XPixel = x;
+            YPixel = y;
+        }
+
 
         public GameRectangleWithSubpixels Copy() => new GameRectangleWithSubpixels(0, 0, Width, Height)
         {

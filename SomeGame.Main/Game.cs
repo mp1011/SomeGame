@@ -62,7 +62,7 @@ namespace SomeGame.Main
             _spriteBatch.Begin();
             _currentModule.Draw(_spriteBatch);
 
-            DebugService.DrawHitboxes(_spriteBatch, _debugTexture);
+           // DebugService.DrawHitboxes(_spriteBatch, _debugTexture);
 
             _spriteBatch.End();
 

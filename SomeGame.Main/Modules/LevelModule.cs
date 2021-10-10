@@ -50,6 +50,7 @@ namespace SomeGame.Main.Modules
                 resourceLoader.LoadTexture(TilesetContentKey.Tiles).ToIndexedTilesetImage(),
                 resourceLoader.LoadTexture(TilesetContentKey.Hero).ToIndexedTilesetImage(),
                 resourceLoader.LoadTexture(TilesetContentKey.Skeleton).ToIndexedTilesetImage(),
+                resourceLoader.LoadTexture(TilesetContentKey.Bullet).ToIndexedTilesetImage(),
             };
         }
 
@@ -57,7 +58,24 @@ namespace SomeGame.Main.Modules
         {
             var actorFactory = new ActorFactory(ActorManager, GameSystem);
 
+            var playerProjectile = actorFactory.CreateActor(
+                 actorType: ActorType.Player | ActorType.Bullet,
+                 tileset: TilesetContentKey.Bullet,
+                 paletteIndex: PaletteIndex.P4,
+                 animations: new Dictionary<AnimationKey, byte>
+                 {
+                     [AnimationKey.Moving] = 8,
+                 },
+                 behavior: new ProjectileBehavior(Direction.Right, new PixelValue(1, 0)),
+                 collisionDetector: new BulletCollisionDetector(ActorManager, ActorType.Enemy | ActorType.Character),
+                 hitBox: new Rectangle(0,0,8,8),
+                 position: new PixelPoint(0,0)
+            );;
+
+            playerProjectile.CurrentAnimation = AnimationKey.Moving;
+          
             actorFactory.CreateActor(
+                actorType: ActorType.Player | ActorType.Character,
                 tileset: TilesetContentKey.Hero,
                 paletteIndex: PaletteIndex.P2,
                 animations: new Dictionary<AnimationKey, byte> 
@@ -70,11 +88,15 @@ namespace SomeGame.Main.Modules
                 behavior: new PlayerBehavior(
                                 new PlatformerPlayerMotionBehavior(InputManager),
                                 new CameraBehavior(SceneManager, GameSystem),
-                                new Gravity()),
+                                new Gravity(),
+                                InputManager, 
+                                playerProjectile),
                 collisionDetector: new BgCollisionDetector(GameSystem),
-                position: new GameRectangleWithSubpixels(50,100,8,14));
+                hitBox: new Rectangle(4,0,8,14),
+                position: new PixelPoint(50,100));
 
-           var projectile = actorFactory.CreateActor(
+            var enemyProjectile = actorFactory.CreateActor(
+                actorType: ActorType.Enemy | ActorType.Bullet,
                 tileset: TilesetContentKey.Skeleton,
                 paletteIndex: PaletteIndex.P3,
                 animations: new Dictionary<AnimationKey, byte>
@@ -83,12 +105,14 @@ namespace SomeGame.Main.Modules
                 },
                 behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1,0)),
                 collisionDetector: new EmptyCollisionDetector(),
-                position: new GameRectangleWithSubpixels(0,0,8,8));
+                hitBox: new Rectangle(0,0,8,8),
+                position: new PixelPoint(0,0));
 
-            projectile.CurrentAnimation = AnimationKey.Moving;
+            enemyProjectile.CurrentAnimation = AnimationKey.Moving;
 
 
            actorFactory.CreateActor(
+                actorType: ActorType.Enemy | ActorType.Character,
                 tileset: TilesetContentKey.Skeleton,
                 paletteIndex: PaletteIndex.P3,
                 animations: new Dictionary<AnimationKey, byte>
@@ -97,11 +121,14 @@ namespace SomeGame.Main.Modules
                     [AnimationKey.Moving] = 5,
                     [AnimationKey.Attacking] = 6
                 },
-                behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), projectile),
+                behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), enemyProjectile),
                 collisionDetector: new BgCollisionDetector(GameSystem),
-                position: new GameRectangleWithSubpixels(150, 40,8,15));
+                hitBox: new Rectangle(4,0,8,15),
+                position: new PixelPoint(150, 40));
 
-            projectile.Enabled = false;
+            enemyProjectile.Enabled = false;
+            playerProjectile.Enabled = false;
+
         }
 
         protected override SpriteAnimator InitializeAnimations()
@@ -109,6 +136,7 @@ namespace SomeGame.Main.Modules
             List<SpriteFrame> spriteFrames = new List<SpriteFrame>();
             spriteFrames.AddRange(_dataSerializer.LoadSpriteFrames(TilesetContentKey.Hero));
             spriteFrames.AddRange(_dataSerializer.LoadSpriteFrames(TilesetContentKey.Skeleton));
+            spriteFrames.AddRange(_dataSerializer.LoadSpriteFrames(TilesetContentKey.Bullet));
 
             return new SpriteAnimator(
                 GameSystem,
@@ -125,8 +153,8 @@ namespace SomeGame.Main.Modules
                     new AnimationFrame(SpriteFrameIndex:3,Duration:50),
 
                     //player attack
-                    new AnimationFrame(SpriteFrameIndex:5,Duration:50),
-                    new AnimationFrame(SpriteFrameIndex:6,Duration:50),
+                    new AnimationFrame(SpriteFrameIndex:5,Duration:10),
+                    new AnimationFrame(SpriteFrameIndex:6,Duration:10),
 
                     //player walk
                     new AnimationFrame(SpriteFrameIndex:7,Duration:10),
@@ -150,6 +178,11 @@ namespace SomeGame.Main.Modules
                     new AnimationFrame(SpriteFrameIndex:17, Duration:10),
                     new AnimationFrame(SpriteFrameIndex:18, Duration:18),
                     new AnimationFrame(SpriteFrameIndex:19, Duration:19),
+
+                    //player bullet 
+                    new AnimationFrame(SpriteFrameIndex:22, Duration:5),
+                    new AnimationFrame(SpriteFrameIndex:23, Duration:5),
+                    new AnimationFrame(SpriteFrameIndex:24, Duration:5),
                 },
                 new Animation[]
                 {
@@ -161,6 +194,7 @@ namespace SomeGame.Main.Modules
                     new Animation(13,14), // skeleton walk
                     new Animation(15), // skeleton attack
                     new Animation(16,17,18,19), //skeleton bone
+                    new Animation(20,21,22,21), //player bullet
                 });
         }
 

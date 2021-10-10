@@ -98,7 +98,6 @@ namespace SomeGame.Main.Modules
         public void Update(GameTime gameTime)
         {
             InputManager.Update();
-            SpriteAnimator.Update();
             SceneManager.Update();
             ActorManager.Update();
             Update();

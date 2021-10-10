@@ -25,29 +25,28 @@ namespace SomeGame.Main.Services
             _animations = animations;
         }
 
-        public void SetSpriteAnimation(SpriteIndex spriteIndex, byte animationIndex)
+        private void SetSpriteAnimation(SpriteIndex spriteIndex, byte animationIndex)
         {
             var current = _spriteAnimations[(int)spriteIndex];
             if (current == null || current.AnimationIndex != animationIndex)
                 _spriteAnimations[(int)spriteIndex] = new SpriteAnimation(animationIndex);
         }
 
-        public void Update()
+        public AnimationState Update(SpriteIndex spriteIndex, byte animationIndex)
         {
-            foreach(SpriteIndex spriteIndex in Enum.GetValues<SpriteIndex>())
-            {
-                var spriteAnimation = _spriteAnimations[(int)spriteIndex];
-                if (spriteAnimation == null)
-                    continue;
+            SetSpriteAnimation(spriteIndex, animationIndex);
+            var spriteAnimation = _spriteAnimations[(int)spriteIndex];
+            if (spriteAnimation == null)
+                return AnimationState.None;
 
-                UpdateAnimation(spriteAnimation, spriteIndex);
-            }
+            return UpdateAnimation(spriteAnimation, spriteIndex);
         }
 
-        private void UpdateAnimation(SpriteAnimation spriteAnimation, SpriteIndex spriteIndex)
+        private AnimationState UpdateAnimation(SpriteAnimation spriteAnimation, SpriteIndex spriteIndex)
         {
             var animation = _animations[spriteAnimation.AnimationIndex];
             bool newFrame = false;
+            bool finished = false;
 
             if (spriteAnimation.FramesRemaining == 0)
             {
@@ -57,8 +56,9 @@ namespace SomeGame.Main.Services
 
             if (spriteAnimation.CurrentIndex >= animation.FrameIndices.Length)
             {
+                finished = spriteAnimation.CurrentIndex == animation.FrameIndices.Length;
                 spriteAnimation.CurrentIndex = 0;
-                newFrame = true;
+                newFrame = true;                
             }
            
             if (newFrame)
@@ -76,6 +76,11 @@ namespace SomeGame.Main.Services
             }
             else
                 spriteAnimation.FramesRemaining--;
+
+            if (finished)
+                return AnimationState.Finished;
+            else
+                return AnimationState.Playing;
         }
 
 

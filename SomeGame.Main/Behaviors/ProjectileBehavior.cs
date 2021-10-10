@@ -17,7 +17,11 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
-            actor.MotionVector = _motionVector;
+            if (actor.Flip == Flip.H)
+                actor.MotionVector = new PixelPoint(_motionVector.X * -1, _motionVector.Y);
+            else
+                actor.MotionVector = _motionVector;
+
             actor.CurrentAnimation = AnimationKey.Moving;
 
             _destroyTimer++;
@@ -26,6 +30,9 @@ namespace SomeGame.Main.Behaviors
                 _destroyTimer = 0;
                 actor.Enabled = false;
             }
+
+            if (collisionInfo.Actor != null)
+                collisionInfo.Actor.Enabled = false;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using SomeGame.Main.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SomeGame.Main.Services
 {
@@ -15,6 +17,11 @@ namespace SomeGame.Main.Services
             _spriteAnimator = spriteAnimator;
             _gameSystem = gameSystem;
             _sceneManager = sceneManager;
+        }
+
+        public IEnumerable<Actor> GetActors(ActorType actorType)
+        {
+            return _actors.Where(a => a != null && a.Enabled && a.ActorType == actorType);
         }
 
         public bool TryAddActor(GameSystem system, Actor actor)
@@ -63,8 +70,9 @@ namespace SomeGame.Main.Services
 
             actor.WorldPosition.XPixel += actor.MotionVector.X;
             actor.WorldPosition.YPixel += actor.MotionVector.Y;
-         
-            _spriteAnimator.SetSpriteAnimation(spriteIndex, actor.CurrentAnimationIndex);
+
+            var animationState = _spriteAnimator.Update(spriteIndex, actor.CurrentAnimationIndex);
+            actor.IsAnimationFinished = animationState == AnimationState.Finished;
 
             var collisionInfo = actor.CollisionDetector.DetectCollisions(actor, frameStartPosition);
             actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
@@ -73,8 +81,10 @@ namespace SomeGame.Main.Services
             var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
             var actorScreenY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
 
-            sprite.ScrollX = actorScreenX - (_gameSystem.TileSize * 2 - actor.WorldPosition.Width)/2;
-            sprite.ScrollY = actorScreenY - (_gameSystem.TileSize * 2 - actor.WorldPosition.Height)/2;
+            sprite.ScrollX = actorScreenX - actor.LocalHitbox.X;
+            sprite.ScrollY = actorScreenY - actor.LocalHitbox.Y;
+
+
         }
     }
 }
