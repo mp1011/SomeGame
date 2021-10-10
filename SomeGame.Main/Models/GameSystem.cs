@@ -30,6 +30,8 @@ namespace SomeGame.Main.Models
 
         public GameSystem()
         {
+            DebugService.GameSystem = this;
+
             _layers = new Layer[]
             {
                 new Layer(new TileMap(LayerTileWidth,LayerTileHeight), PaletteIndex.P1, 

@@ -72,7 +72,7 @@ namespace SomeGame.Main.Modules
                                 new CameraBehavior(SceneManager, GameSystem),
                                 new Gravity()),
                 collisionDetector: new BgCollisionDetector(GameSystem),
-                initialPosition: new Point(50, 100));
+                position: new GameRectangleWithSubpixels(50,100,8,14));
 
            var projectile = actorFactory.CreateActor(
                 tileset: TilesetContentKey.Skeleton,
@@ -83,7 +83,7 @@ namespace SomeGame.Main.Modules
                 },
                 behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1,0)),
                 collisionDetector: new EmptyCollisionDetector(),
-                initialPosition: new Point(0, 0));
+                position: new GameRectangleWithSubpixels(0,0,8,8));
 
             projectile.CurrentAnimation = AnimationKey.Moving;
 
@@ -99,7 +99,7 @@ namespace SomeGame.Main.Modules
                 },
                 behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), projectile),
                 collisionDetector: new BgCollisionDetector(GameSystem),
-                initialPosition: new Point(150, 50));
+                position: new GameRectangleWithSubpixels(150, 50,8,12));
 
 
 

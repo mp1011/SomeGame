@@ -1,7 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using SomeGame.Main.Models;
+﻿using SomeGame.Main.Models;
 using System;
-using System.Linq;
 
 namespace SomeGame.Main.Services
 {
@@ -33,6 +31,8 @@ namespace SomeGame.Main.Services
             actor.Enabled = true;
 
             _actors[(int)spriteIndex] = actor;
+
+            DebugService.Actors.Add(actor);
 
             return true;
         }
@@ -70,8 +70,11 @@ namespace SomeGame.Main.Services
             actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
 
             var scene = _sceneManager.CurrentScene;
-            sprite.ScrollX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
-            sprite.ScrollY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
+            var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
+            var actorScreenY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
+
+            sprite.ScrollX = actorScreenX - (_gameSystem.TileSize * 2 - actor.WorldPosition.Width );
+            sprite.ScrollY = actorScreenY - (_gameSystem.TileSize * 2 - actor.WorldPosition.Height);
         }
     }
 }

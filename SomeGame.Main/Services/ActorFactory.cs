@@ -23,11 +23,10 @@ namespace SomeGame.Main.Services
             Dictionary<AnimationKey, byte> animations,
             Behavior behavior,
             ICollisionDetector collisionDetector,
-            Point initialPosition)
+            GameRectangleWithSubpixels position)
         {
             var actor = new Actor(tileset, paletteIndex, behavior, collisionDetector, animations);
-            actor.WorldPosition.X = initialPosition.X;
-            actor.WorldPosition.Y = initialPosition.Y;
+            actor.WorldPosition = position;
 
             _actorManager.TryAddActor(_gameSystem, actor);
 

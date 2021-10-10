@@ -8,6 +8,7 @@ namespace SomeGame.Main
     class GameEngine : Game
     {
         private GraphicsDeviceManager _graphics;
+        private Texture2D _debugTexture;
         private SpriteBatch _spriteBatch;
         private ResourceLoader _resourceLoader;
         private RenderTarget2D _renderTarget;
@@ -42,6 +43,9 @@ namespace SomeGame.Main
             _currentModule.Initialize(_resourceLoader, GraphicsDevice);
             _currentModule.OnWindowSizeChanged(GraphicsDevice.Viewport);
             _renderTarget = new RenderTarget2D(GraphicsDevice, _currentModule.Screen.Width, _currentModule.Screen.Height);
+
+            _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _debugTexture.SetData(new Color[] { new Color(255,255,255,100) });
         }
 
         protected override void Update(GameTime gameTime)
@@ -57,6 +61,9 @@ namespace SomeGame.Main
 
             _spriteBatch.Begin();
             _currentModule.Draw(_spriteBatch);
+
+            DebugService.DrawHitboxes(_spriteBatch, _debugTexture);
+
             _spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);
