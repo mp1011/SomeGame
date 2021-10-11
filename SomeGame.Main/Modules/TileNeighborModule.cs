@@ -21,9 +21,7 @@ namespace SomeGame.Main.Modules
             {
                 _tileChoiceMode = value;
                 var layer = GameSystem.GetLayer(LayerIndex.Interface);
-
-                var fontTiles = _font.FromString(value.ToString().ToUpper().PadRight(20));
-                layer.TileMap.SetEach(0, fontTiles.Length, 1, 2, (x, y) => fontTiles[x]);
+                _font.WriteToLayer(value.ToString().ToUpper().PadRight(20), layer, new Point(1, 2));
             }
         }
 
@@ -44,10 +42,8 @@ namespace SomeGame.Main.Modules
             set
             {
                 _selectedThemeIndex = value;
-                var fontTiles = _font.FromString(SelectedTheme.ToUpper().PadRight(15));
-
                 var layer = GameSystem.GetLayer(LayerIndex.Interface);
-                layer.TileMap.SetEach(0, fontTiles.Length, 0, 1, (x, y) => fontTiles[x]);
+                _font.WriteToLayer(SelectedTheme.ToUpper().PadRight(15), layer, new Point(0, 1));
 
                 UpdateTileChoices(GetCurrentMouseTile());
             }

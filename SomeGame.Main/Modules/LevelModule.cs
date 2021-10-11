@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Behaviors;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
@@ -10,9 +11,20 @@ namespace SomeGame.Main.Modules
     class LevelModule : GameModuleBase
     {
         private readonly DataSerializer _dataSerializer;
+        private HUDManager _hudManager;
+        private PlayerState _playerState;
+
         public LevelModule()
         {
             _dataSerializer = new DataSerializer();
+        }
+
+        protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+        {
+            _hudManager = new HUDManager(GameSystem);
+            _hudManager.DrawTiles();
+
+            _playerState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
         }
 
         protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
@@ -51,6 +63,8 @@ namespace SomeGame.Main.Modules
                 resourceLoader.LoadTexture(TilesetContentKey.Hero).ToIndexedTilesetImage(),
                 resourceLoader.LoadTexture(TilesetContentKey.Skeleton).ToIndexedTilesetImage(),
                 resourceLoader.LoadTexture(TilesetContentKey.Bullet).ToIndexedTilesetImage(),
+                resourceLoader.LoadTexture(TilesetContentKey.Hud).ToIndexedTilesetImage(),
+                resourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage(),
             };
         }
 
@@ -203,8 +217,17 @@ namespace SomeGame.Main.Modules
             return new Scene(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
         }
 
+        int dummy = 0;
+
         protected override void Update()
         {
+            dummy++;
+            if (dummy == 100)
+            {
+                dummy = 0;
+                _playerState.Health -= 1;
+            }
+            _hudManager.UpdateHUD(_playerState);
         }
     }
 }

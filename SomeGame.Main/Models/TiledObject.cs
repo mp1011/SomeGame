@@ -6,6 +6,7 @@ namespace SomeGame.Main.Models
     abstract class TiledObject
     {
         private readonly int _tileSize;
+        public int TileOffset { get; set; }
 
         public TileMap TileMap { get; }
         public PaletteIndex Palette { get; set; }

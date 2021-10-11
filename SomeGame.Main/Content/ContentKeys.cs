@@ -7,7 +7,8 @@
         Characters_7,
         Hero,
         Skeleton,
-        Bullet
+        Bullet,
+        Hud
     }
 
     public enum TilesetContentKey
@@ -17,7 +18,8 @@
         Font,
         Hero,
         Skeleton,
-        Bullet
+        Bullet,
+        Hud
     }
 
     public enum LevelContentKey

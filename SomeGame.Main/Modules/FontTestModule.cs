@@ -20,9 +20,7 @@ namespace SomeGame.Main.Modules
             if(index == LayerIndex.FG)
             {
                 var font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
-                var tiles = font.FromString("HALLO WORLD");
-
-                layer.TileMap.SetEach(0, tiles.Length, 0, 1, (x, y) => tiles[x]);
+                font.WriteToLayer("HALLO WORLD", layer, new Point(0, 0));
             }
         }
 

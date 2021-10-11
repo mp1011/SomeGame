@@ -41,10 +41,12 @@ namespace SomeGame.Main.Modules
 
             RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.BG));
             RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.FG));
-            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.Interface));
 
             foreach (var sprite in GameSystem.GetFrontSprites())
                 RenderService.DrawSprite(spriteBatch, sprite);
+
+            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.Interface));
+
         }
 
         public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)

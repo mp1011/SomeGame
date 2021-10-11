@@ -37,9 +37,7 @@ namespace SomeGame.Main.Modules
             if (index == LayerIndex.BG)
             {
                 var font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
-                var tiles = font.FromString("HELLO WORLD");
-
-                layer.TileMap.SetEach(0, tiles.Length, 3, 4, (x, y) => tiles[x]);
+                font.WriteToLayer("HELLO WORLD", layer, new Point(3, 4));
             }
 
             if (index == LayerIndex.FG)

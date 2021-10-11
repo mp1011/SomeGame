@@ -15,8 +15,8 @@ namespace SomeGame.Main
             // var module = new GameSystemTestModule();
             //var module = new FontTestModule();
             //  var module = new LevelEditorModule();
-          // var module = new TextureCreatorModule(ImageContentKey.Bullet, TilesetContentKey.Bullet);
-           var module = new LevelModule();
+          //var module = new TextureCreatorModule(ImageContentKey.Hud, TilesetContentKey.Hud);
+            var module = new LevelModule();
             //  var module = new TileNeighborModule(new TileSetService());
            // var module = new SpriteEditorModule(TilesetContentKey.Bullet);
 

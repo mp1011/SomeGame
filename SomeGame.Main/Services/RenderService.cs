@@ -21,7 +21,7 @@ namespace SomeGame.Main.Services
                 _gameSystem.GetTileSet(layer.Palette),
                 x: layer.ScrollX, 
                 y: layer.ScrollY,
-                tileOffset: 0);
+                tileOffset: layer.TileOffset);
         }
 
         public void DrawSprite(SpriteBatch spriteBatch, Sprite sprite)

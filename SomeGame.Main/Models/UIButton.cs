@@ -13,8 +13,7 @@ namespace SomeGame.Main.Models
             Text = text;
             Location = location;
 
-            var fontTiles = font.FromString(text);
-            layer.TileMap.SetEach(location.X, location.X+fontTiles.Length, location.Y, location.Y+1, (x, y) => fontTiles[x-location.X]);
+            font.WriteToLayer(text, layer, location);
         }
 
         private bool CheckMouseOver(Point mouseTile)

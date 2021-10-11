@@ -2,7 +2,7 @@
 {
     class Sprite : TiledObject
     {
-        public int TileOffset { get; set; }
+        
         public SpritePriority Priority { get; set; }
         public Flip Flip { get; set; }
         public bool Enabled { get; set; }
