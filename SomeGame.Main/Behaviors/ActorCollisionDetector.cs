@@ -3,12 +3,12 @@ using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Behaviors
 {
-    class BulletCollisionDetector : ICollisionDetector
+    class ActorCollisionDetector : ICollisionDetector
     {
         private readonly ActorManager _actorManager;
         private readonly ActorType _collidesWith;
 
-        public BulletCollisionDetector(ActorManager actorManager, ActorType collidesWith)
+        public ActorCollisionDetector(ActorManager actorManager, ActorType collidesWith)
         {
             _actorManager = actorManager;
             _collidesWith = collidesWith;
@@ -18,8 +18,11 @@ namespace SomeGame.Main.Behaviors
         {
             foreach(var otherActor in _actorManager.GetActors(_collidesWith))
             {
-                if(otherActor.WorldPosition.IntersectsWith(actor.WorldPosition))                
-                    return new CollisionInfo(otherActor);                
+                if (otherActor.WorldPosition.IntersectsWith(actor.WorldPosition))
+                {
+                    otherActor.Behavior.HandleCollision(otherActor, actor);
+                    return new CollisionInfo(otherActor);
+                }
             }
 
             return new CollisionInfo();

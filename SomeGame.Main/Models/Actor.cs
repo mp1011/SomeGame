@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Behaviors;
 using SomeGame.Main.Content;
+using SomeGame.Main.Services;
 using System.Collections.Generic;
 
 namespace SomeGame.Main.Models
@@ -10,6 +11,8 @@ namespace SomeGame.Main.Models
         public ActorType ActorType { get; }
         public Behavior Behavior { get; }
         public Rectangle LocalHitbox { get; }
+
+        public SpriteAnimator Animator { get; }
 
         public ICollisionDetector CollisionDetector { get; }
         public GameRectangleWithSubpixels WorldPosition { get; set; }
@@ -23,9 +26,6 @@ namespace SomeGame.Main.Models
 
         public AnimationKey CurrentAnimation { get; set; }
 
-        private Dictionary<AnimationKey, byte> _animationSet = new Dictionary<AnimationKey, byte>();
-        public byte CurrentAnimationIndex => _animationSet[CurrentAnimation];
-
         public bool IsAnimationFinished { get; set; }
 
         public Actor(ActorType actorType,
@@ -34,7 +34,7 @@ namespace SomeGame.Main.Models
                      Behavior behavior,
                      ICollisionDetector collisionDetector,
                      Rectangle localHitbox,
-                     Dictionary<AnimationKey, byte> animationSet)
+                     SpriteAnimator animator)
         {
             ActorType = actorType;
             WorldPosition = new GameRectangleWithSubpixels(0, 0, 16, 16);
@@ -43,7 +43,7 @@ namespace SomeGame.Main.Models
             Palette = palette;
             Tileset = tilesetKey;
             LocalHitbox = localHitbox;
-            _animationSet = animationSet;
+            Animator = animator;
         }
     }
 }

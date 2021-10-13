@@ -45,5 +45,10 @@ namespace SomeGame.Main.Behaviors
                 _bullet.Flip = actor.Flip;
             }
         }
+
+        public override void HandleCollision(Actor actor, Actor other)
+        {
+            base.HandleCollision(actor, other);
+        }
     }
 }

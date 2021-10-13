@@ -2,13 +2,13 @@
 {
     class SpriteAnimation
     {
-        public byte AnimationIndex { get; }
+        public AnimationKey Key { get; }
         public byte FramesRemaining { get; set; }
         public byte CurrentIndex { get; set; }
 
-        public SpriteAnimation(byte animationIndex)
+        public SpriteAnimation(AnimationKey key)
         {
-            AnimationIndex = animationIndex;
+            Key = key;
             CurrentIndex = 254;
         }
     }

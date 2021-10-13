@@ -18,7 +18,6 @@ namespace SomeGame.Main.Modules
     {
         protected GameSystem GameSystem { get; }
         protected RenderService RenderService { get; }
-        protected SpriteAnimator SpriteAnimator { get; private set; }
         protected ActorManager ActorManager { get; private set; }
         protected SceneManager SceneManager { get; }
         protected InputManager InputManager { get; } 
@@ -66,8 +65,7 @@ namespace SomeGame.Main.Modules
 
             GameSystem.Input.Initialize(GameSystem.Screen);
 
-            SpriteAnimator = InitializeAnimations();
-            ActorManager = new ActorManager(GameSystem, SpriteAnimator, SceneManager);
+            ActorManager = new ActorManager(GameSystem, SceneManager);
             InitializeActors();
 
             SceneManager.SetScene(InitializeScene());
@@ -82,11 +80,6 @@ namespace SomeGame.Main.Modules
 
         protected virtual void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
-        }
-
-        protected virtual SpriteAnimator InitializeAnimations()
-        {
-            return new SpriteAnimator(GameSystem, new SpriteFrame[] { }, new AnimationFrame[] { }, new Animation[] { });
         }
 
         protected virtual void InitializeActors() { }

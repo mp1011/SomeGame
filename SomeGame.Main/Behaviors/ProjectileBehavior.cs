@@ -32,7 +32,7 @@ namespace SomeGame.Main.Behaviors
             }
 
             if (collisionInfo.Actor != null)
-                collisionInfo.Actor.Enabled = false;
+                actor.Enabled = false;
         }
     }
 }

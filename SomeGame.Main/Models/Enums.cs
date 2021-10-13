@@ -83,12 +83,13 @@
         Front
     }
 
-    public enum AnimationKey
+    public enum AnimationKey : byte
     {
         Idle,
         Moving,
         Jumping,
-        Attacking
+        Attacking,
+        Hurt
     }
 
     public enum Orientation
@@ -139,5 +140,13 @@
         None,
         Playing,
         Finished
+    }
+
+    public enum ActorId
+    {
+        Player,
+        PlayerBullet,
+        Skeleton,
+        SkeletonBone
     }
 }

@@ -9,12 +9,10 @@ namespace SomeGame.Main.Services
     {
         private readonly GameSystem _gameSystem;
         private readonly SceneManager _sceneManager;
-        private readonly SpriteAnimator _spriteAnimator;
         private Actor[] _actors = new Actor[Enum.GetValues<SpriteIndex>().Length];
 
-        public ActorManager(GameSystem gameSystem, SpriteAnimator spriteAnimator, SceneManager sceneManager)
+        public ActorManager(GameSystem gameSystem, SceneManager sceneManager)
         {
-            _spriteAnimator = spriteAnimator;
             _gameSystem = gameSystem;
             _sceneManager = sceneManager;
         }
@@ -71,7 +69,7 @@ namespace SomeGame.Main.Services
             actor.WorldPosition.XPixel += actor.MotionVector.X;
             actor.WorldPosition.YPixel += actor.MotionVector.Y;
 
-            var animationState = _spriteAnimator.Update(spriteIndex, actor.CurrentAnimationIndex);
+            var animationState = actor.Animator.Update(spriteIndex, actor.CurrentAnimation);
             actor.IsAnimationFinished = animationState == AnimationState.Finished;
 
             var collisionInfo = actor.CollisionDetector.DetectCollisions(actor, frameStartPosition);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -40,6 +41,11 @@ namespace SomeGame.Main.Services
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.png";
         }
 
+        private string GetAnimationPath(ActorId actorId)
+        {
+            return $"{_contentFolder.FullName}\\Data\\{actorId}_Animations.bin";
+        }
+
         private string GetSpriteFramePath(TilesetContentKey tilesetContentKey)
         {
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}_SpriteFrames.bin";
@@ -53,6 +59,25 @@ namespace SomeGame.Main.Services
 
             using var stream = File.OpenWrite(path);
             image.SaveAsPng(stream, image.Width, image.Height);
+        }
+
+        public void SaveAnimations(ActorId actorKey, Dictionary<AnimationKey, Animation> animations)
+        {
+            var path = GetAnimationPath(actorKey);
+            if (File.Exists(path))
+                File.Delete(path);
+
+            using var stream = File.OpenWrite(path);
+            using var writer = new DataWriter(stream);
+            writer.Write(animations);
+        }
+
+        public Dictionary<AnimationKey,Animation> LoadAnimations(ActorId actorKey)
+        {
+            var path = GetAnimationPath(actorKey);
+            using var stream = File.OpenRead(path);
+            using var reader = new DataReader(stream);
+            return reader.ReadAnimations();
         }
 
         public void Save(TileMap tileMap)

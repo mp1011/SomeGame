@@ -57,6 +57,24 @@ namespace SomeGame.Main.Services
                 Write(item);
         }
 
+        public void Write(Dictionary<AnimationKey, Animation> animations)
+        {
+            var keys = animations.Keys.ToArray();
+
+            WriteEnumerable(keys.Cast<byte>());
+
+            foreach(var key in keys)
+                Write(animations[key]);
+        }
+
+        public void Write(Animation animation) => WriteEnumerable(animation.Frames);
+        
+        public void Write(AnimationFrame animationFrame)
+        {
+            _writer.Write(animationFrame.SpriteFrameIndex);
+            _writer.Write(animationFrame.Duration);
+        }
+
         public void Write(EditorTile editorTile)
         {
             WriteEnumerable(editorTile.Themes);

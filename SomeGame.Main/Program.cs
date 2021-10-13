@@ -10,15 +10,15 @@ namespace SomeGame.Main
         [STAThread]
         static void Main()
         {
-
+      // var module = new AnimationDefinitionModule();
             //var module = new ImageSectionSplitter(ImageContentKey.Sheet, TilesetContentKey.Tiles);
             // var module = new GameSystemTestModule();
             //var module = new FontTestModule();
             //  var module = new LevelEditorModule();
           //var module = new TextureCreatorModule(ImageContentKey.Hud, TilesetContentKey.Hud);
-            var module = new LevelModule();
+         var module = new LevelModule();
             //  var module = new TileNeighborModule(new TileSetService());
-           // var module = new SpriteEditorModule(TilesetContentKey.Bullet);
+           // var module = new SpriteEditorModule(TilesetContentKey.Skeleton);
 
             using (var game = new GameEngine(module))
                 game.Run();

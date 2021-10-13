@@ -33,10 +33,10 @@ namespace SomeGame.Main.Behaviors
                 _enemyMotionBehavior.SetIdle(actor);
             if (_counter == 300)
                 _enemyMotionBehavior.SetMoving(actor, Direction.Right);
-          
+
             _counter++;
             if (_counter == 400)
-                _counter = 0;            
+                _counter = 0;
         }
 
         private void DoAttack(Actor actor)
@@ -44,7 +44,14 @@ namespace SomeGame.Main.Behaviors
             _enemyMotionBehavior.SetAttacking(actor);
             _projectile.Enabled = true;
             _projectile.WorldPosition.X = actor.WorldPosition.X;
-            _projectile.WorldPosition.Y = actor.WorldPosition.Y;           
+            _projectile.WorldPosition.Y = actor.WorldPosition.Y;
+        }
+
+
+        public override void HandleCollision(Actor actor, Actor other)
+        {
+            if (other.ActorType == (ActorType.Player | ActorType.Bullet))
+                actor.Enabled = false;
         }
     }
 }

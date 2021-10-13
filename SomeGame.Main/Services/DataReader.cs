@@ -107,6 +107,29 @@ namespace SomeGame.Main.Services
             return new SpriteFrame(ReadTile(), ReadTile(), ReadTile(), ReadTile());
         }
 
+        public Dictionary<AnimationKey, Animation> ReadAnimations()
+        {
+            var keys = ReadEnumerable<byte>()
+                .Select(b => (AnimationKey)b)
+                .ToArray();
+
+            var animations = new Dictionary<AnimationKey, Animation>();
+            foreach (var key in keys)
+                animations[key] = ReadAnimation();
+
+            return animations;
+        }
+
+        public Animation ReadAnimation() => new Animation(ReadEnumerable<AnimationFrame>());
+
+        public AnimationFrame ReadAnimationFrame() => new AnimationFrame(_reader.ReadByte(), _reader.ReadByte());
+
+        public T ReadEnum<T>() where T:Enum
+        {
+            var value = _reader.ReadByte();
+            return (T)Enum.ToObject(typeof(T), value);
+        }
+
         public T[] ReadEnumerable<T>()
         {
             var count = _reader.ReadInt32();
