@@ -27,15 +27,15 @@ namespace SomeGame.Main.Behaviors
                 _enemyMotionBehavior.SetIdle(actor);
             if (_counter == 100)
                 _enemyMotionBehavior.SetMoving(actor, Direction.Left);
-            if (_counter == 200)
+            if (_counter == 150)
                 DoAttack(actor);
-            if (_counter == 250)
+            if (_counter == 200)
                 _enemyMotionBehavior.SetIdle(actor);
-            if (_counter == 300)
+            if (_counter == 250)
                 _enemyMotionBehavior.SetMoving(actor, Direction.Right);
 
             _counter++;
-            if (_counter == 400)
+            if (_counter == 300)
                 _counter = 0;
         }
 

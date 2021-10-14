@@ -9,16 +9,18 @@ namespace SomeGame.Main.Behaviors
     class PlayerBehavior : Behavior
     {
         private readonly PlatformerPlayerMotionBehavior _motionBehavior;
+        private readonly PlayerHurtBehavior _playerHurtBehavior;
         private readonly CameraBehavior _cameraBehavior;
         private readonly AcceleratedMotion _gravity;
         private readonly InputManager _inputManager;
         private readonly Actor _bullet;
 
-        public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, CameraBehavior cameraBehavior, 
+        public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, CameraBehavior cameraBehavior, 
             AcceleratedMotion gravity, InputManager inputManager, Actor bullet)
         {
             _motionBehavior = motionBehavior;
             _cameraBehavior = cameraBehavior;
+            _playerHurtBehavior = playerHurtBehavior;
             _gravity = gravity;
             _bullet = bullet;
             _inputManager = inputManager;
@@ -26,9 +28,11 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
+            _playerHurtBehavior.Update(actor, frameStartPosition, collisionInfo);
             _motionBehavior.Update(actor, frameStartPosition, collisionInfo);
             _gravity.Update(actor, frameStartPosition, collisionInfo);
             _cameraBehavior.Update(actor, frameStartPosition, collisionInfo);
+
 
             if(!_bullet.Enabled && _inputManager.Input.B.IsPressed())
             {
@@ -48,7 +52,7 @@ namespace SomeGame.Main.Behaviors
 
         public override void HandleCollision(Actor actor, Actor other)
         {
-            base.HandleCollision(actor, other);
+            _playerHurtBehavior.HandleCollision(actor, other);
         }
     }
 }

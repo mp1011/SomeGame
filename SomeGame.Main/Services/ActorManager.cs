@@ -64,6 +64,7 @@ namespace SomeGame.Main.Services
         private void UpdateActor(Actor actor, SpriteIndex spriteIndex)
         {
             var sprite = _gameSystem.GetSprite(spriteIndex);
+            sprite.Palette = actor.Palette;
             var frameStartPosition = actor.WorldPosition.Copy();   
 
             actor.WorldPosition.XPixel += actor.MotionVector.X;

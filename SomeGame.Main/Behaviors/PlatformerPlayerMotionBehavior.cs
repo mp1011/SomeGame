@@ -44,7 +44,7 @@ namespace SomeGame.Main.Behaviors
                 actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
             }
 
-            if(actor.CurrentAnimation != AnimationKey.Attacking)
+            if(actor.CurrentAnimation != AnimationKey.Attacking && actor.CurrentAnimation != AnimationKey.Hurt)
                 actor.CurrentAnimation = GetAnimation(isMoving, backgroundCollisionInfo.IsOnGround);
         }
 

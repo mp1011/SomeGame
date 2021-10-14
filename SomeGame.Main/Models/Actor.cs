@@ -18,7 +18,7 @@ namespace SomeGame.Main.Models
         public GameRectangleWithSubpixels WorldPosition { get; set; }
         public PixelPoint MotionVector { get; set; } = new PixelPoint(0, 0);
         public TilesetContentKey Tileset { get; }
-        public PaletteIndex Palette { get; }
+        public PaletteIndex Palette { get; set; }
 
         public Flip Flip { get; set; } 
 

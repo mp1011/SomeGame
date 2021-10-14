@@ -92,6 +92,7 @@ namespace SomeGame.Main.Modules
                 paletteIndex: PaletteIndex.P2,
                 behavior: new PlayerBehavior(
                                 new PlatformerPlayerMotionBehavior(InputManager),
+                                new PlayerHurtBehavior(),
                                 new CameraBehavior(SceneManager, GameSystem),
                                 new Gravity(),
                                 InputManager, 
