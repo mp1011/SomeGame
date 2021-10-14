@@ -74,7 +74,14 @@ namespace SomeGame.Main.Services
             actor.IsAnimationFinished = animationState == AnimationState.Finished;
 
             var collisionInfo = actor.CollisionDetector.DetectCollisions(actor, frameStartPosition);
-            actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
+
+            if(actor.Destroying)
+            {
+                if (actor.DestroyedBehavior.Update(actor) == DestroyedState.Destroyed)
+                    actor.Enabled = false;
+            }
+            else 
+                actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
 
             var scene = _sceneManager.CurrentScene;
             var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);

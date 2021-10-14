@@ -10,6 +10,7 @@ namespace SomeGame.Main.Models
     {
         public ActorType ActorType { get; }
         public Behavior Behavior { get; }
+        public IDestroyedBehavior DestroyedBehavior { get; }
         public Rectangle LocalHitbox { get; }
 
         public SpriteAnimator Animator { get; }
@@ -28,10 +29,13 @@ namespace SomeGame.Main.Models
 
         public bool IsAnimationFinished { get; set; }
 
+        public bool Destroying { get; private set; }
+
         public Actor(ActorType actorType,
                      TilesetContentKey tilesetKey, 
                      PaletteIndex palette,
                      Behavior behavior,
+                     IDestroyedBehavior destroyedBehavior,
                      ICollisionDetector collisionDetector,
                      Rectangle localHitbox,
                      SpriteAnimator animator)
@@ -39,11 +43,27 @@ namespace SomeGame.Main.Models
             ActorType = actorType;
             WorldPosition = new GameRectangleWithSubpixels(0, 0, 16, 16);
             Behavior = behavior;
+            DestroyedBehavior = destroyedBehavior;
             CollisionDetector = collisionDetector;
             Palette = palette;
             Tileset = tilesetKey;
             LocalHitbox = localHitbox;
             Animator = animator;
+        }
+
+        public void Revive()
+        {
+            Enabled = true;
+            Destroying = false;
+        }
+
+        public void Destroy()
+        {
+            if (DestroyedBehavior == null)
+                Enabled = false;
+
+            Destroying = true;
+            DestroyedBehavior.OnDestroyed(this);
         }
     }
 }

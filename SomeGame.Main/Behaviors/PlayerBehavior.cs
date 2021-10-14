@@ -14,9 +14,10 @@ namespace SomeGame.Main.Behaviors
         private readonly AcceleratedMotion _gravity;
         private readonly InputManager _inputManager;
         private readonly Actor _bullet;
+        private PlayerState _playerState;
 
         public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, CameraBehavior cameraBehavior, 
-            AcceleratedMotion gravity, InputManager inputManager, Actor bullet)
+            AcceleratedMotion gravity, InputManager inputManager, Actor bullet, PlayerState playerState)
         {
             _motionBehavior = motionBehavior;
             _cameraBehavior = cameraBehavior;
@@ -24,6 +25,7 @@ namespace SomeGame.Main.Behaviors
             _gravity = gravity;
             _bullet = bullet;
             _inputManager = inputManager;
+            _playerState = playerState;
         }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
@@ -53,6 +55,7 @@ namespace SomeGame.Main.Behaviors
         public override void HandleCollision(Actor actor, Actor other)
         {
             _playerHurtBehavior.HandleCollision(actor, other);
+            _playerState.Health -= 5;
         }
     }
 }

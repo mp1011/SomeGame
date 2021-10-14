@@ -25,11 +25,12 @@ namespace SomeGame.Main.Services
             TilesetContentKey tileset,
             PaletteIndex paletteIndex,
             Behavior behavior,
+            IDestroyedBehavior destroyedBehavior,
             ICollisionDetector collisionDetector,
             PixelPoint position,
             Rectangle hitBox)
         {
-            var actor = new Actor(actorType, tileset, paletteIndex, behavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
+            var actor = new Actor(actorType, tileset, paletteIndex, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
             actor.WorldPosition = new GameRectangleWithSubpixels(position.X,position.Y, hitBox.Width,hitBox.Height);
 
             _actorManager.TryAddActor(_gameSystem, actor);

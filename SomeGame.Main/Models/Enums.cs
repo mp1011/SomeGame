@@ -149,4 +149,11 @@
         Skeleton,
         SkeletonBone
     }
+
+    public enum DestroyedState
+    {
+        None,
+        Destroying,
+        Destroyed
+    }
 }

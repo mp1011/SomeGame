@@ -1,6 +1,6 @@
 ﻿namespace SomeGame.Main.Models
 {
-    internal struct PlayerState
+    internal class PlayerState
     {
         public BoundedInt Health { get; set; } 
         public byte Lives { get; set; } 

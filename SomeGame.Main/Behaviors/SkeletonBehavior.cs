@@ -51,7 +51,7 @@ namespace SomeGame.Main.Behaviors
         public override void HandleCollision(Actor actor, Actor other)
         {
             if (other.ActorType == (ActorType.Player | ActorType.Bullet))
-                actor.Enabled = false;
+                actor.Destroy();
         }
     }
 }

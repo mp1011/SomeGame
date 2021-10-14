@@ -23,8 +23,6 @@ namespace SomeGame.Main.Modules
         {
             _hudManager = new HUDManager(GameSystem);
             _hudManager.DrawTiles();
-
-            _playerState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
         }
 
         protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
@@ -70,6 +68,7 @@ namespace SomeGame.Main.Modules
 
         protected override void InitializeActors()
         {
+            _playerState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
             var actorFactory = new ActorFactory(ActorManager, GameSystem, _dataSerializer);
 
             var playerProjectile = actorFactory.CreateActor(
@@ -78,6 +77,7 @@ namespace SomeGame.Main.Modules
                  tileset: TilesetContentKey.Bullet,
                  paletteIndex: PaletteIndex.P4,
                  behavior: new ProjectileBehavior(Direction.Right, new PixelValue(1, 0)),
+                 destroyedBehavior: new EmptyDestroyedBehavior(),
                  collisionDetector: new ActorCollisionDetector(ActorManager, ActorType.Enemy | ActorType.Character),
                  hitBox: new Rectangle(0,0,8,8),
                  position: new PixelPoint(0,0)
@@ -96,7 +96,9 @@ namespace SomeGame.Main.Modules
                                 new CameraBehavior(SceneManager, GameSystem),
                                 new Gravity(),
                                 InputManager, 
-                                playerProjectile),
+                                playerProjectile,
+                                _playerState),
+                destroyedBehavior: new EmptyDestroyedBehavior(),
                 collisionDetector: new BgCollisionDetector(GameSystem),
                 hitBox: new Rectangle(4,0,8,14),
                 position: new PixelPoint(50,100));
@@ -107,12 +109,12 @@ namespace SomeGame.Main.Modules
                 tileset: TilesetContentKey.Skeleton,
                 paletteIndex: PaletteIndex.P3,
                 behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1,0)),
+                destroyedBehavior: new EmptyDestroyedBehavior(),
                 collisionDetector: new ActorCollisionDetector(ActorManager, ActorType.Player | ActorType.Character),
                 hitBox: new Rectangle(0,0,8,8),
                 position: new PixelPoint(0,0));
 
             enemyProjectile.CurrentAnimation = AnimationKey.Moving;
-
 
            actorFactory.CreateActor(
                 actorId: ActorId.Skeleton,
@@ -120,6 +122,7 @@ namespace SomeGame.Main.Modules
                 tileset: TilesetContentKey.Skeleton,
                 paletteIndex: PaletteIndex.P3,
                 behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), enemyProjectile),
+                destroyedBehavior: new EnemyDestroyedBehavior(score:100, _playerState),
                 collisionDetector: new BgCollisionDetector(GameSystem),
                 hitBox: new Rectangle(4,0,8,15),
                 position: new PixelPoint(150, 40));
@@ -134,16 +137,8 @@ namespace SomeGame.Main.Modules
             return new Scene(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
         }
 
-        int dummy = 0;
-
         protected override void Update()
         {
-            dummy++;
-            if (dummy == 100)
-            {
-                dummy = 0;
-                _playerState.Health -= 1;
-            }
             _hudManager.UpdateHUD(_playerState);
         }
     }
