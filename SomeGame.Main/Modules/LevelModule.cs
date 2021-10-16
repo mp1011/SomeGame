@@ -30,6 +30,11 @@ namespace SomeGame.Main.Modules
             _hudManager.DrawTiles();
         }
 
+        protected override void LoadSounds(ResourceLoader resourceLoader)
+        {
+            AudioService.LoadSound(resourceLoader, SoundContentKey.Swish, 2);
+        }
+
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
             if(index == LayerIndex.FG)
@@ -75,7 +80,7 @@ namespace SomeGame.Main.Modules
         {
             _playerState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
             var actorFactory = new ActorFactory(ActorManager, GameSystem, _dataSerializer, InputManager,
-                SceneManager, _playerState);
+                SceneManager, _playerState,AudioService);
 
             actorFactory.CreatePlayer(new PixelPoint(50, 100));
             actorFactory.CreateSkeleton(new PixelPoint(100, 100));

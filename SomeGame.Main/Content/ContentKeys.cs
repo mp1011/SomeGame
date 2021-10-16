@@ -1,5 +1,11 @@
 ﻿namespace SomeGame.Main.Content
 {
+    public enum SoundContentKey
+    {
+        None,
+        Swish
+    }
+
     public enum ImageContentKey
     {
         None,

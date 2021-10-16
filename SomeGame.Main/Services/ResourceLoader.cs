@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using System.Collections.Generic;
@@ -45,6 +46,11 @@ namespace SomeGame.Main.Services
         public Texture2D LoadTexture(TilesetContentKey key)
         {
             return _contentManager.Load<Texture2D>(@$"Tilesets\{key}");
+        }
+
+        public SoundEffect LoadSound(SoundContentKey key)
+        {
+            return _contentManager.Load<SoundEffect>($@"Sounds\{key}");
         }
     }
 }

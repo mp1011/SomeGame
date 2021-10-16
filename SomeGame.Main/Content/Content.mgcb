@@ -829,6 +829,12 @@
 /processorParam:TextureFormat=Color
 /build:Images/wch2.png
 
+#begin Sounds/swish.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/swish.wav
+
 #begin Tilesets/Bullet.png
 /importer:TextureImporter
 /processor:TextureProcessor

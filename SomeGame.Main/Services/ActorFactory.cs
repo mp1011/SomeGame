@@ -16,8 +16,10 @@ namespace SomeGame.Main.Services
         private readonly InputManager _inputManager;
         private readonly SceneManager _sceneManager;
         private readonly PlayerState _playerState;
-
-        public ActorFactory(ActorManager actorManager, GameSystem gameSystem, DataSerializer dataSerializer, InputManager inputManager, SceneManager sceneManager, PlayerState playerState)
+        private readonly AudioService _audioService;
+        public ActorFactory(ActorManager actorManager, GameSystem gameSystem, DataSerializer dataSerializer, 
+            InputManager inputManager, SceneManager sceneManager, PlayerState playerState,
+            AudioService audioService)
         {
             _actorManager = actorManager;
             _gameSystem = gameSystem;
@@ -25,6 +27,7 @@ namespace SomeGame.Main.Services
             _inputManager = inputManager;
             _sceneManager = sceneManager;
             _playerState = playerState;
+            _audioService = audioService;
         }
 
         public Actor CreateActor(
@@ -83,7 +86,8 @@ namespace SomeGame.Main.Services
                                 new Gravity(),
                                 _inputManager,
                                 playerProjectiles,
-                                _playerState),
+                                _playerState,
+                                _audioService),
                 collisionDetector: new BgCollisionDetector(_gameSystem),
                 hitBox: new Rectangle(4, 0, 8, 14),
                 position: position);

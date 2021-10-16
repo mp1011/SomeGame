@@ -19,6 +19,8 @@ namespace SomeGame.Main.Modules
     {
         protected GameSystem GameSystem { get; }
         protected RenderService RenderService { get; }
+
+        protected AudioService AudioService { get; private set; }
         protected ActorManager ActorManager { get; private set; }
         protected SceneManager SceneManager { get; }
         protected InputManager InputManager { get; } 
@@ -32,6 +34,7 @@ namespace SomeGame.Main.Modules
             RenderService= new RenderService(GameSystem);
             SceneManager = new SceneManager();
             InputManager = new InputManager(GameSystem);
+            AudioService = new AudioService();
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -72,7 +75,14 @@ namespace SomeGame.Main.Modules
 
             SceneManager.SetScene(InitializeScene());
 
+            LoadSounds(resourceLoader);
+
             AfterInitialize(resourceLoader, graphicsDevice);
+        }
+
+        protected virtual void LoadSounds(ResourceLoader resourceLoader)
+        {
+
         }
 
         protected virtual PaletteKeys PaletteKeys => new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);

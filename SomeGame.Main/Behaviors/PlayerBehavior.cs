@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
@@ -14,11 +15,14 @@ namespace SomeGame.Main.Behaviors
         private readonly AcceleratedMotion _gravity;
         private readonly InputManager _inputManager;
         private readonly ActorPool _bullets;
+        private readonly AudioService _audioService;
+
         private PlayerState _playerState;
         private int _attackCooldown;
 
         public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, CameraBehavior cameraBehavior, 
-            AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets, PlayerState playerState)
+            AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets, PlayerState playerState,
+            AudioService audioService)
         {
             _motionBehavior = motionBehavior;
             _cameraBehavior = cameraBehavior;
@@ -27,6 +31,7 @@ namespace SomeGame.Main.Behaviors
             _bullets = bullets;
             _inputManager = inputManager;
             _playerState = playerState;
+            _audioService = audioService;
         }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
@@ -41,6 +46,7 @@ namespace SomeGame.Main.Behaviors
             {
                 actor.CurrentAnimation = AnimationKey.Attacking;
                 _attackCooldown = 30;
+                _audioService.Play(SoundContentKey.Swish);
             }
 
             if (_attackCooldown > 0)
