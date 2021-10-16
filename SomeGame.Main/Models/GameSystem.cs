@@ -25,6 +25,7 @@ namespace SomeGame.Main.Models
         public int LayerPixelHeight = 480;
         public int LayerTileWidth = 80;
         public int LayerTileHeight = 60;
+        public int ColorsPerPalette = 24;
 
         public IUserInputSource Input { get; }
 

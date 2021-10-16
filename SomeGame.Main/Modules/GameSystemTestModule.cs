@@ -3,21 +3,11 @@ using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
-using System.Linq;
 
 namespace SomeGame.Main.Modules
 {
     class GameSystemTestModule : GameModuleBase
     {
-        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
-        {
-            if (index == PaletteIndex.P1)
-                return tilesetImages[0].Palette;
-
-            return new Palette(Enumerable.Range(0, 32)
-                                         .Select(i => new Color(i * 4, i, i * 3)));
-        }
-
         protected override void Update()
         {
             var layer = GameSystem.GetLayer(LayerIndex.FG);

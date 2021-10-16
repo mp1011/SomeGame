@@ -7,7 +7,7 @@ namespace SomeGame.Main.Services
     {
         private readonly GameSystem _gameSystem;
 
-        public InputModel Input { get; private set; }
+        public InputModel Input { get; private set; } = new InputModel(ButtonState.None, ButtonState.None, ButtonState.None, ButtonState.None, ButtonState.None, ButtonState.None, ButtonState.None, 0, 0);
         private double _mouseScale = 1.0;
 
         public InputManager(GameSystem gameSystem)

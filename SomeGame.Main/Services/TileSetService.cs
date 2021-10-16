@@ -52,14 +52,9 @@ namespace SomeGame.Main.Services
             });
         }
 
-        public EditorTileSet BuildEditorTileset(EditorBlock[] blocks)
+        public void AddBlock(EditorTileSet tileSet, EditorBlock block)
         {
-            var tileset = new EditorTileSet();
-
-            foreach (var block in blocks)
-                FillEditorTiles(tileset, block.Grid, block.Theme);
-
-            return tileset;
+            FillEditorTiles(tileSet, block.Grid, block.Theme);
         }
 
         public EditorTile[] GetMatchingTiles(EditorTileSet editorTileSet, string theme, TileMap tileMap, 

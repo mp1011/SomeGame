@@ -16,11 +16,6 @@ namespace SomeGame.Main.Modules
 
         protected Tile SelectedTile { get; set; } = new Tile(1, TileFlags.None);
 
-        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
-        {
-            return tilesetImages[0].Palette;
-        }
-
         protected Point GetCurrentMouseTile()
         {
             var foreground = GameSystem.GetLayer(LayerIndex.FG);

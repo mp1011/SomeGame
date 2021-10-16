@@ -9,8 +9,6 @@ namespace SomeGame.Main.Modules
 {
     class FontTestModule : GameModuleBase
     {
-        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index) => tilesetImages[0].Palette;
-
         protected override void Update()
         {
         }

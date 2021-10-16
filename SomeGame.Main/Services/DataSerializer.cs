@@ -41,6 +41,11 @@ namespace SomeGame.Main.Services
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.png";
         }
 
+        private string GetImagePath(ImageContentKey key)
+        {
+            return $"{_contentFolder.FullName}\\Images\\{key}.png";
+        }
+
         private string GetAnimationPath(ActorId actorId)
         {
             return $"{_contentFolder.FullName}\\Data\\{actorId}_Animations.bin";
@@ -54,6 +59,16 @@ namespace SomeGame.Main.Services
         public void SaveTilesetImage(TilesetContentKey tilesetContentKey, Texture2D image)
         {
             var path = GetImagePath(tilesetContentKey);
+            if (File.Exists(path))
+                File.Delete(path);
+
+            using var stream = File.OpenWrite(path);
+            image.SaveAsPng(stream, image.Width, image.Height);
+        }
+
+        public void SaveImage(ImageContentKey key, Texture2D image)
+        {
+            var path = GetImagePath(key);
             if (File.Exists(path))
                 File.Delete(path);
 
@@ -132,9 +147,12 @@ namespace SomeGame.Main.Services
             return reader.ReadGrid<T>();
         }
 
-        public EditorTileSet Load(TilesetContentKey tilesetContentKey)
+        public EditorTileSet LoadEditorTileset(TilesetContentKey tilesetContentKey)
         {
             var path = GetPath(tilesetContentKey);
+            if (!File.Exists(path))
+                return null;
+
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);
             return reader.ReadEditorTileset();

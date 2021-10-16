@@ -86,7 +86,7 @@ namespace SomeGame.Main.Modules
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
-            _editorTileset = _dataSerializer.Load(TilesetContentKey.Tiles);
+            _editorTileset = _dataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
             _tileThemeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));

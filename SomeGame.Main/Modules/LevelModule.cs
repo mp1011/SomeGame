@@ -4,7 +4,6 @@ using SomeGame.Main.Behaviors;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
-using System.Collections.Generic;
 
 namespace SomeGame.Main.Modules
 {
@@ -23,17 +22,6 @@ namespace SomeGame.Main.Modules
         {
             _hudManager = new HUDManager(GameSystem);
             _hudManager.DrawTiles();
-        }
-
-        protected override Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index)
-        {
-            switch(index)
-            {
-                case PaletteIndex.P1: return tilesetImages[0].Palette;
-                case PaletteIndex.P2: return tilesetImages[1].Palette;
-                case PaletteIndex.P3: return tilesetImages[2].Palette;
-                default: return tilesetImages[1].Palette;
-            }            
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)

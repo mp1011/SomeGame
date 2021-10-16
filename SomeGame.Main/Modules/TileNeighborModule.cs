@@ -76,8 +76,9 @@ namespace SomeGame.Main.Modules
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
-            
-            _editorTileset = _dataSerializer.Load(TilesetContentKey.Tiles);
+
+            _editorTileset = StartNew(resourceLoader);
+            //_editorTileset = _dataSerializer.Load(TilesetContentKey.Tiles);
 
             SelectedThemeIndex = new RotatingInt(0, _editorTileset.Themes.Length);
             CurrentTileChoiceMode = TileChoiceMode.Free;
@@ -87,37 +88,12 @@ namespace SomeGame.Main.Modules
 
         private EditorTileSet StartNew(ResourceLoader resourceLoader)
         {
-            List<Texture2D> blockTextures = new List<Texture2D>();
-            blockTextures.AddRange(resourceLoader.LoadBlocks("bluerock"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("bush"));
-            //redo this blockTextures.AddRange(resourceLoader.LoadBlocks("crate"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("chest"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("fence"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("flower"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("grass"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("ladder"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("rock"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("sign"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("smallrock"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("smallcrate"));
-            //redo this blockTextures.AddRange(resourceLoader.LoadBlocks("spikes"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("spring"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("tree"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("vines"));
-            blockTextures.AddRange(resourceLoader.LoadBlocks("water"));
-
-            var tileset = GameSystem.GetTileSet(PaletteIndex.P1);
-            _blocks = blockTextures
-                                .Select(b =>
-                                {
-                                    var theme = b.Name.Split('\\')[1].Split('_')[0];
-                                    var indexedImage = b.ToIndexedImage(GameSystem.GetPalette(PaletteIndex.P1));
-                                    var grid = _tileSetService.CreateTileMapFromImageAndTileset(indexedImage, tileset);
-                                    return new EditorBlock(theme, grid);
-                                })
-                                .ToArray();
-
-            return _tileSetService.BuildEditorTileset(_blocks);
+            var tileSet = new EditorTileSet();
+            _tileSetService.AddBlock(tileSet, new EditorBlock("ROCK", new Grid<Tile>()));
+            _tileSetService.AddBlock(tileSet, new EditorBlock("BUSH", new Grid<Tile>()));
+            _tileSetService.AddBlock(tileSet, new EditorBlock("DECOR", new Grid<Tile>()));
+            _tileSetService.AddBlock(tileSet, new EditorBlock("FENCE", new Grid<Tile>()));
+            return tileSet;
         }
 
         protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)

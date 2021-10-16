@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 
@@ -52,10 +53,11 @@ namespace SomeGame.Main.Modules
         {
             var vramImages = LoadVramImages(resourceLoader);
 
-            GameSystem.SetPalettes(CreatePalette(vramImages, PaletteIndex.P1),
-                                CreatePalette(vramImages, PaletteIndex.P2),
-                                CreatePalette(vramImages, PaletteIndex.P3),
-                                CreatePalette(vramImages, PaletteIndex.P4));
+            GameSystem.SetPalettes(
+                resourceLoader.LoadTexture(PaletteKeys.P1).ToIndexedTilesetImage().Palette,
+                resourceLoader.LoadTexture(PaletteKeys.P2).ToIndexedTilesetImage().Palette,
+                resourceLoader.LoadTexture(PaletteKeys.P3).ToIndexedTilesetImage().Palette,
+                resourceLoader.LoadTexture(PaletteKeys.P4).ToIndexedTilesetImage().Palette);
 
             GameSystem.SetVram(graphicsDevice, vramImages);
 
@@ -73,6 +75,8 @@ namespace SomeGame.Main.Modules
             AfterInitialize(resourceLoader, graphicsDevice);
         }
 
+        protected virtual PaletteKeys PaletteKeys => new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);
+       
         protected virtual Scene InitializeScene()
         {
             return new Scene(new Rectangle(0,0,GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
@@ -85,8 +89,6 @@ namespace SomeGame.Main.Modules
         protected virtual void InitializeActors() { }
 
         protected abstract void InitializeLayer(LayerIndex index, Layer layer);
-
-        protected abstract Palette CreatePalette(IndexedTilesetImage[] tilesetImages, PaletteIndex index);
 
         protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader);
 

@@ -8,7 +8,10 @@
         Hero,
         Skeleton,
         Bullet,
-        Hud
+        Hud,
+        Palette1,
+        Palette2,
+        Palette1Inverse
     }
 
     public enum TilesetContentKey

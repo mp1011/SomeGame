@@ -16,12 +16,22 @@ namespace SomeGame.Main.Models
         {
             _colors = colors
                         .Distinct()
+                        .OrderBy(p=>p.A)
                         .ToArray();
         }
 
         public byte GetIndex(Color color)
         {
             return (byte)Array.IndexOf(_colors, color);
+        }
+
+        public byte? GetIndexOrDefault(Color color)
+        {
+            var index = Array.IndexOf(_colors, color);
+            if (index == -1)
+                return null;
+            else
+                return (byte)index;
         }
 
         public IEnumerator<Color> GetEnumerator()
@@ -37,6 +47,21 @@ namespace SomeGame.Main.Models
         public Palette CreateTransformed(Func<Color,Color> transform)
         {
             return new Palette(this.Select(transform));
+        }
+        
+        public Dictionary<byte, byte> CreateMap(Palette other)
+        {
+            var map = new Dictionary<byte, byte>();
+            for(byte index = 0; index < _colors.Length;index++)
+            {
+                var mapped = other.GetIndexOrDefault(_colors[index]);
+                if (mapped == null)
+                    return null;
+
+                map[index] = mapped.Value;
+            }
+
+            return map;
         }
     }
 }
