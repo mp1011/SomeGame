@@ -117,7 +117,8 @@
         Free,
         Auto,
         Copy,
-        Move
+        Move,
+        Relate
     }
 
     public enum StandardEnemyState

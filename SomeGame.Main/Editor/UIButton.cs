@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Extensions;
+using SomeGame.Main.Models;
 
-namespace SomeGame.Main.Models
+namespace SomeGame.Main.Editor
 {
     class UIButton
     {

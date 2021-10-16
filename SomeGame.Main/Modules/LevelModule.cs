@@ -18,6 +18,12 @@ namespace SomeGame.Main.Modules
             _dataSerializer = new DataSerializer();
         }
 
+        protected override PaletteKeys PaletteKeys { get; } = 
+            new PaletteKeys(ImageContentKey.Palette1, 
+                            ImageContentKey.Palette2, 
+                            ImageContentKey.Palette2, 
+                            ImageContentKey.Palette2);
+
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
             _hudManager = new HUDManager(GameSystem);
@@ -45,12 +51,23 @@ namespace SomeGame.Main.Modules
         {
             return new IndexedTilesetImage[]
             {
-                resourceLoader.LoadTexture(TilesetContentKey.Tiles).ToIndexedTilesetImage(),
-                resourceLoader.LoadTexture(TilesetContentKey.Hero).ToIndexedTilesetImage(),
-                resourceLoader.LoadTexture(TilesetContentKey.Skeleton).ToIndexedTilesetImage(),
-                resourceLoader.LoadTexture(TilesetContentKey.Bullet).ToIndexedTilesetImage(),
-                resourceLoader.LoadTexture(TilesetContentKey.Hud).ToIndexedTilesetImage(),
-                resourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage(),
+                resourceLoader.LoadTexture(TilesetContentKey.Tiles)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P1)),
+
+                resourceLoader.LoadTexture(TilesetContentKey.Hero)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P2)),
+
+                resourceLoader.LoadTexture(TilesetContentKey.Skeleton)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P2)),
+
+                resourceLoader.LoadTexture(TilesetContentKey.Bullet)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P2)),
+
+                resourceLoader.LoadTexture(TilesetContentKey.Hud)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P2)),
+
+                resourceLoader.LoadTexture(TilesetContentKey.Font)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P2)),
             };
         }
 
@@ -63,7 +80,7 @@ namespace SomeGame.Main.Modules
                  actorId: ActorId.PlayerBullet,
                  actorType: ActorType.Player | ActorType.Bullet,
                  tileset: TilesetContentKey.Bullet,
-                 paletteIndex: PaletteIndex.P4,
+                 paletteIndex: PaletteIndex.P2,
                  behavior: new ProjectileBehavior(Direction.Right, new PixelValue(1, 0)),
                  destroyedBehavior: new EmptyDestroyedBehavior(),
                  collisionDetector: new ActorCollisionDetector(ActorManager, ActorType.Enemy | ActorType.Character),
@@ -95,7 +112,7 @@ namespace SomeGame.Main.Modules
                 actorId: ActorId.SkeletonBone,
                 actorType: ActorType.Enemy | ActorType.Bullet,
                 tileset: TilesetContentKey.Skeleton,
-                paletteIndex: PaletteIndex.P3,
+                paletteIndex: PaletteIndex.P2,
                 behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1,0)),
                 destroyedBehavior: new EmptyDestroyedBehavior(),
                 collisionDetector: new ActorCollisionDetector(ActorManager, ActorType.Player | ActorType.Character),
@@ -108,7 +125,7 @@ namespace SomeGame.Main.Modules
                 actorId: ActorId.Skeleton,
                 actorType: ActorType.Enemy | ActorType.Character,
                 tileset: TilesetContentKey.Skeleton,
-                paletteIndex: PaletteIndex.P3,
+                paletteIndex: PaletteIndex.P2,
                 behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), enemyProjectile),
                 destroyedBehavior: new EnemyDestroyedBehavior(score:100, _playerState),
                 collisionDetector: new BgCollisionDetector(GameSystem),

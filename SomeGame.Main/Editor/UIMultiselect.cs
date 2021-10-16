@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SomeGame.Main.Models
+namespace SomeGame.Main.Editor
 {
     class EnumMultiSelect<T> : UIMultiSelect<T>
         where T : struct, Enum

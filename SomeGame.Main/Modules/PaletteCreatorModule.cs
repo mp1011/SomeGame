@@ -34,7 +34,7 @@ namespace SomeGame.Main.Modules
 
             CreatePaletteImage(palettes[0], ImageContentKey.Palette1, graphicsDevice);
             CreatePaletteImage(palettes[1], ImageContentKey.Palette2, graphicsDevice);
-            CreatePaletteImage(palettes[0].CreateTransformed(c=> new Color(255-c.R,255-c.G,255-c.B)), ImageContentKey.Palette1Inverse, graphicsDevice);
+            CreatePaletteImage(palettes[0].CreateTransformed(c=> new Color(255-c.R,255-c.G,255-c.B)), ImageContentKey.Palette1Inverse, graphicsDevice);       
         }
 
         private void CreatePaletteImage(Palette p, ImageContentKey key, GraphicsDevice graphicsDevice)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
+using SomeGame.Main.Editor;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
@@ -13,14 +14,17 @@ namespace SomeGame.Main.Modules
     class LevelEditorModule : TileEditorBaseModule
     {
         private readonly TileSetService _tileSetService;
-        private UIMultiSelect<string> _tileThemeSelector;
+        private readonly UIBlockSelect _blockSelect;
+        private UIMultiSelect<string> _themeSelector;
         private EnumMultiSelect<LevelEditorMode> _modeSelector;
         private Font _font;
         private EditorTileSet _editorTileset;
-        
+        private bool _nextClickPlacesTile;
+
         public LevelEditorModule()
         {
             _tileSetService = new TileSetService();
+            _blockSelect = new UIBlockSelect(RelateBlockRange);
         }
 
         protected override void Update()
@@ -50,21 +54,49 @@ namespace SomeGame.Main.Modules
                 foreground.ScrollY -= 2;
             }
 
-            _modeSelector.Update(ui, Input);
-            if (_tileThemeSelector.Update(ui, Input))
+            if (_modeSelector.Update(ui, Input))
+                _blockSelect.ClearSelection(foreground);
+
+            if (_themeSelector.Update(ui, Input))
                 ShowTilesInTheme();
 
             switch(_modeSelector.SelectedItem)
             {
                 case LevelEditorMode.Free:
                     HandleStandardInput();
+                    HandleSelectTile();
                     break;
                 case LevelEditorMode.Auto:
-                    HandleAutoPlaceTile();
+
+                    if (HandleSelectTile())
+                        _nextClickPlacesTile = true;
+                    else if (_nextClickPlacesTile)
+                    {
+                        HandleStandardInput();
+                        if (Input.A.IsPressed() || Input.B.IsPressed())
+                        {
+                            _nextClickPlacesTile = false;
+                            foreground.TileMap.SetEach((x, y) => new Tile(-1, TileFlags.None));
+                        }
+                    }
+                    else
+                    {
+                        if (Input.B.IsDown())
+                        {
+                            var mouseTile = GetCurrentMouseTile();
+                            background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(-1, TileFlags.None));
+                            AfterTilePlaced(mouseTile);
+                        }
+
+                        HandleAutoPlaceTile();
+                    }
+
+                    break;
+                case LevelEditorMode.Relate:
+                    _blockSelect.Update(GetCurrentMouseTile(), Input, foreground, background);
                     break;
 
             }
-            HandleSelectTile();
 
             if (Input.Start.IsPressed())
                 SaveMap(background.TileMap);
@@ -81,6 +113,18 @@ namespace SomeGame.Main.Modules
                 var loaded = _dataSerializer.Load(LevelContentKey.TestLevel);
                 layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
             }
+            else if(index == LayerIndex.FG)
+                layer.Palette = PaletteIndex.P3;
+        }
+
+        private void RelateBlockRange(Point start, Point end)
+        {
+            var bg = GameSystem.GetLayer(LayerIndex.BG);
+            var block = new EditorBlock(_themeSelector.SelectedItem,
+                bg.TileMap.GetGrid().Extract(start, end));
+
+            _tileSetService.AddBlock(_editorTileset, block);
+            _dataSerializer.Save(_editorTileset);
         }
 
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
@@ -89,7 +133,7 @@ namespace SomeGame.Main.Modules
             _editorTileset = _dataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
-            _tileThemeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
+            _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
             _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
 
             ShowTilesInTheme();
@@ -99,7 +143,7 @@ namespace SomeGame.Main.Modules
         {
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
             var themeTiles = _editorTileset.Tiles
-                                           .Where(p => p.ContainsTheme(_tileThemeSelector.SelectedItem))
+                                           .Where(p => p.ContainsTheme(_themeSelector.SelectedItem))
                                            .ToArray();
             int i = 0;
             layer.TileMap.SetEach(20, 38, 0, 2, (x, y) =>
@@ -115,17 +159,18 @@ namespace SomeGame.Main.Modules
             });
         }
 
-        private void HandleSelectTile()
+        private bool HandleSelectTile()
         {
             if (!Input.A.IsPressed())
-                return;
+                return false;
 
             var mouseTile = GetCurrentMouseTile();
             if (mouseTile.Y >= 2 || mouseTile.X < 20)
-                return;
+                return false;
 
             var interfaceLayer = GameSystem.GetLayer(LayerIndex.Interface);
             SelectedTile = interfaceLayer.TileMap.GetTile(mouseTile);
+            return true;
         }
 
         private void HandleAutoPlaceTile()
@@ -141,7 +186,7 @@ namespace SomeGame.Main.Modules
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             var mouseTile = GetCurrentMouseTile();
             var tileChoices = _tileSetService
-                .GetMatchingTiles(_editorTileset, _tileThemeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
+                .GetMatchingTiles(_editorTileset, _themeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
                 .Select(p => p.Tile)
                 .ToArray();
 

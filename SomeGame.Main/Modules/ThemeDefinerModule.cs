@@ -1,20 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
+using SomeGame.Main.Editor;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace SomeGame.Main.Modules
 {
-    class ThemeDefiner : GameModuleBase
+    class ThemeDefinerModule : GameModuleBase
     {
         private readonly TileSetService _tileSetService;
         private UIMultiSelect<string> _themeSelector;
         private UIButton _save;
+        private UIBlockSelect _blockSelect;
 
         private Font _font;
         private EditorTileSet _editorTileset;
@@ -24,12 +24,14 @@ namespace SomeGame.Main.Modules
         private TilesetContentKey _tileSetKey;
         private IndexedImage _image;
 
-        public ThemeDefiner(ImageContentKey imageKey, TilesetContentKey tilesetContentKey)
+        public ThemeDefinerModule(ImageContentKey imageKey, TilesetContentKey tilesetContentKey)
         {
             _imageKey = imageKey;
             _tileSetKey = tilesetContentKey;
             _tileSetService = new TileSetService();
             _dataSerializer = new DataSerializer();
+
+            _blockSelect = new UIBlockSelect(AssignTheme);
         }
 
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
@@ -89,8 +91,7 @@ namespace SomeGame.Main.Modules
             };
         }
 
-        private Point? _dragStart;
-        private Point? _dragEnd;
+
 
         private Point _mouseTile;
         private Point _lastMouseTile;
@@ -101,10 +102,10 @@ namespace SomeGame.Main.Modules
 
             var background = GameSystem.GetLayer(LayerIndex.BG);
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
-
+        
             _mouseTile = background.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
 
-            if (_dragEnd == null)
+            if (!_blockSelect.HasSelection)
             {
                 foreground.TileMap.SetTile(_mouseTile.X, _mouseTile.Y, background.TileMap.GetTile(_mouseTile));
 
@@ -112,21 +113,7 @@ namespace SomeGame.Main.Modules
                     foreground.TileMap.SetTile(_lastMouseTile.X, _lastMouseTile.Y, new Tile(-1, TileFlags.None));
             }
 
-            if (Input.A.IsPressed())
-            {
-                _dragStart = _mouseTile;
-                _dragEnd = null;
-            }
-            else if (Input.A.IsReleased() && _dragStart.HasValue)
-            {
-                _dragEnd = _mouseTile;
-            }
-
-            if (Input.A.IsDown() && _dragStart.HasValue)
-                ShowDragArea(_dragStart.Value, _mouseTile, foreground, background);
-
-            if (Input.B.IsPressed() && _dragEnd.HasValue)
-                AssignTheme(_dragStart.Value, _dragEnd.Value);
+            _blockSelect.Update(_mouseTile, Input, foreground,background);
 
             _lastMouseTile = _mouseTile;
 
@@ -143,23 +130,6 @@ namespace SomeGame.Main.Modules
             _tileSetService.AddBlock(_editorTileset, block);
         }
 
-        private void ShowDragArea(Point start, Point end, Layer foreground, Layer background)
-        {
-            foreground.TileMap.SetEach((x, y) =>
-            {
-                if(x >= start.X 
-                    && x <= end.X
-                    && y >= start.Y
-                    && y <= end.Y)
-                {
-                    return background.TileMap.GetTile(x, y);
-                }
-                else
-                {
-                    return new Tile(-1, TileFlags.None);
-                }
-            });
-        }
-
+      
     }
 }

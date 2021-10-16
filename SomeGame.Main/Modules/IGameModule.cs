@@ -51,14 +51,14 @@ namespace SomeGame.Main.Modules
 
         public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
-            var vramImages = LoadVramImages(resourceLoader);
-
             GameSystem.SetPalettes(
-                resourceLoader.LoadTexture(PaletteKeys.P1).ToIndexedTilesetImage().Palette,
-                resourceLoader.LoadTexture(PaletteKeys.P2).ToIndexedTilesetImage().Palette,
-                resourceLoader.LoadTexture(PaletteKeys.P3).ToIndexedTilesetImage().Palette,
-                resourceLoader.LoadTexture(PaletteKeys.P4).ToIndexedTilesetImage().Palette);
+               resourceLoader.LoadTexture(PaletteKeys.P1).ToIndexedTilesetImage().Palette,
+               resourceLoader.LoadTexture(PaletteKeys.P2).ToIndexedTilesetImage().Palette,
+               resourceLoader.LoadTexture(PaletteKeys.P3).ToIndexedTilesetImage().Palette,
+               resourceLoader.LoadTexture(PaletteKeys.P4).ToIndexedTilesetImage().Palette);
 
+            var vramImages = LoadVramImages(resourceLoader);
+           
             GameSystem.SetVram(graphicsDevice, vramImages);
 
             InitializeLayer(LayerIndex.BG, GameSystem.GetLayer(LayerIndex.BG));

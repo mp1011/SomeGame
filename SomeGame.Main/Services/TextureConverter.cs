@@ -42,6 +42,20 @@ namespace SomeGame.Main.Services
             return new IndexedTilesetImage(key, grid, palette);
         }
 
+        public static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, Palette palette)
+        {
+            var pixels = ToColorData(texture);
+            var key = texture.Name.Split('\\')
+                                  .Last()
+                                  .ParseEnum<TilesetContentKey>();
+
+            var grid = pixels.ToGrid(texture.Width, texture.Height)
+                             .Map(palette.GetIndex);
+
+            return new IndexedTilesetImage(key, grid, palette);
+        }
+
+
         public static IndexedImage ToIndexedImage(this Texture2D texture, Palette palette)
         {
             var pixels = ToColorData(texture);

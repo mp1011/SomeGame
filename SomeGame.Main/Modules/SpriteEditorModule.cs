@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Content;
+using SomeGame.Main.Editor;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
