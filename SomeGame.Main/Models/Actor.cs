@@ -51,12 +51,6 @@ namespace SomeGame.Main.Models
             Animator = animator;
         }
 
-        public void Revive()
-        {
-            Enabled = true;
-            Destroying = false;
-        }
-
         public void Destroy()
         {
             if (DestroyedBehavior == null)
@@ -64,6 +58,13 @@ namespace SomeGame.Main.Models
 
             Destroying = true;
             DestroyedBehavior.OnDestroyed(this);
+        }
+
+        public void Create()
+        {
+            Destroying = false;
+            Behavior.OnCreated(this);
+            Enabled = true;
         }
     }
 }

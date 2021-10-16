@@ -8,11 +8,18 @@ namespace SomeGame.Main.Behaviors
     {
         private PixelPoint _motionVector;
         private int _destroyTimer;
+        private int _duration;
 
-        public ProjectileBehavior(Direction direction, PixelValue speed)
+        public ProjectileBehavior(Direction direction, PixelValue speed, int duration)
         {
             var pt = direction.ToPoint();
             _motionVector = new PixelPoint(speed * pt.X, speed * pt.Y);
+            _duration = duration;
+        }
+
+        public override void OnCreated(Actor actor)
+        {
+            _destroyTimer = 0;
         }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
@@ -25,14 +32,11 @@ namespace SomeGame.Main.Behaviors
             actor.CurrentAnimation = AnimationKey.Moving;
 
             _destroyTimer++;
-            if(_destroyTimer == 100)
-            {
-                _destroyTimer = 0;
-                actor.Enabled = false;
-            }
-
+            if(_destroyTimer == _duration)
+                actor.Destroy();
+            
             if (collisionInfo.Actor != null)
-                actor.Enabled = false;
+                actor.Destroy();
         }
     }
 }

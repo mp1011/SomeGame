@@ -16,6 +16,12 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo backgroundCollisionInfo)
         {
+            if (actor.CurrentAnimation == AnimationKey.Attacking && !actor.IsAnimationFinished)
+            {
+                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+                return;
+            }
+
             if (backgroundCollisionInfo.XCorrection != 0)
                 actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
 

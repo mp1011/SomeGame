@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Models;
 
 namespace SomeGame.Main.Extensions
 {
@@ -9,5 +10,15 @@ namespace SomeGame.Main.Extensions
 
         public static Point Scale(this Point p, int scale) => new Point(p.X * scale, p.Y * scale);
 
+        public static Point GetRelativePosition(this Point p, int relativeX, int relativeY, Flip flip)
+        {
+            if ((flip & Flip.H) > 0)
+                relativeX *= -1;
+            if ((flip & Flip.V) > 0)
+                relativeY *= -1;
+
+            return p.Offset(relativeX, relativeY);
+
+        }
     }
 }

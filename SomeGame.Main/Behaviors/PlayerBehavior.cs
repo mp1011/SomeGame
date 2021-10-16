@@ -13,17 +13,18 @@ namespace SomeGame.Main.Behaviors
         private readonly CameraBehavior _cameraBehavior;
         private readonly AcceleratedMotion _gravity;
         private readonly InputManager _inputManager;
-        private readonly Actor _bullet;
+        private readonly ActorPool _bullets;
         private PlayerState _playerState;
+        private int _attackCooldown;
 
         public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, CameraBehavior cameraBehavior, 
-            AcceleratedMotion gravity, InputManager inputManager, Actor bullet, PlayerState playerState)
+            AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets, PlayerState playerState)
         {
             _motionBehavior = motionBehavior;
             _cameraBehavior = cameraBehavior;
             _playerHurtBehavior = playerHurtBehavior;
             _gravity = gravity;
-            _bullet = bullet;
+            _bullets = bullets;
             _inputManager = inputManager;
             _playerState = playerState;
         }
@@ -36,19 +37,26 @@ namespace SomeGame.Main.Behaviors
             _cameraBehavior.Update(actor, frameStartPosition, collisionInfo);
 
 
-            if(!_bullet.Enabled && _inputManager.Input.B.IsPressed())
+            if(_attackCooldown == 0 && _inputManager.Input.B.IsPressed())
             {
-                actor.CurrentAnimation = AnimationKey.Attacking;               
+                actor.CurrentAnimation = AnimationKey.Attacking;
+                _attackCooldown = 30;
             }
+
+            if (_attackCooldown > 0)
+                _attackCooldown--;
 
             if (actor.CurrentAnimation == AnimationKey.Attacking && actor.IsAnimationFinished)
             {
                 actor.CurrentAnimation = AnimationKey.Idle;
-                _bullet.WorldPosition.X = actor.WorldPosition.X;
-                _bullet.WorldPosition.Y = actor.WorldPosition.Y;
-                _bullet.Enabled = true;
+                var bullet = _bullets.ActivateNext();
+                if (bullet != null)
+                {
+                    bullet.WorldPosition.Center = actor.WorldPosition.Center
+                        .GetRelativePosition(4, 4, actor.Flip);
 
-                _bullet.Flip = actor.Flip;
+                    bullet.Flip = actor.Flip;
+                }
             }
         }
 

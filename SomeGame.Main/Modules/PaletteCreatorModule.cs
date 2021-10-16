@@ -11,7 +11,6 @@ namespace SomeGame.Main.Modules
 {
     class PaletteCreatorModule : GameModuleBase
     {
-        private IndexedTilesetImage[] _images;
         private readonly DataSerializer _dataSerializer;
 
         public PaletteCreatorModule()

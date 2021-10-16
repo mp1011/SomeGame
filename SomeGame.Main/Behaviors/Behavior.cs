@@ -6,10 +6,7 @@ namespace SomeGame.Main.Behaviors
     abstract class Behavior
     {
         public abstract void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo);
-
-        public virtual void HandleCollision(Actor actor, Actor other)
-        {
-
-        }
+        public virtual void OnCreated(Actor actor) { }
+        public virtual void HandleCollision(Actor actor, Actor other) { }
     }
 }

@@ -10,7 +10,7 @@ namespace SomeGame.Main
         [STAThread]
         static void Main()
         {
-            // var module = new AnimationDefinitionModule();
+            //var module = new AnimationDefinitionModule();
          //   var module = new PaletteCreatorModule();
           // var module = new ThemeDefinerModule(ImageContentKey.Sheet, TilesetContentKey.Tiles);
             // var module = new GameSystemTestModule();

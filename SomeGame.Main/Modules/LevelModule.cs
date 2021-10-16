@@ -74,67 +74,12 @@ namespace SomeGame.Main.Modules
         protected override void InitializeActors()
         {
             _playerState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
-            var actorFactory = new ActorFactory(ActorManager, GameSystem, _dataSerializer);
+            var actorFactory = new ActorFactory(ActorManager, GameSystem, _dataSerializer, InputManager,
+                SceneManager, _playerState);
 
-            var playerProjectile = actorFactory.CreateActor(
-                 actorId: ActorId.PlayerBullet,
-                 actorType: ActorType.Player | ActorType.Bullet,
-                 tileset: TilesetContentKey.Bullet,
-                 paletteIndex: PaletteIndex.P2,
-                 behavior: new ProjectileBehavior(Direction.Right, new PixelValue(1, 0)),
-                 destroyedBehavior: new EmptyDestroyedBehavior(),
-                 collisionDetector: new ActorCollisionDetector(ActorManager, ActorType.Enemy | ActorType.Character),
-                 hitBox: new Rectangle(0,0,8,8),
-                 position: new PixelPoint(0,0)
-            );;
-
-            playerProjectile.CurrentAnimation = AnimationKey.Moving;
-          
-            actorFactory.CreateActor(
-                actorId: ActorId.Player,
-                actorType: ActorType.Player | ActorType.Character,
-                tileset: TilesetContentKey.Hero,
-                paletteIndex: PaletteIndex.P2,
-                behavior: new PlayerBehavior(
-                                new PlatformerPlayerMotionBehavior(InputManager),
-                                new PlayerHurtBehavior(),
-                                new CameraBehavior(SceneManager, GameSystem),
-                                new Gravity(),
-                                InputManager, 
-                                playerProjectile,
-                                _playerState),
-                destroyedBehavior: new EmptyDestroyedBehavior(),
-                collisionDetector: new BgCollisionDetector(GameSystem),
-                hitBox: new Rectangle(4,0,8,14),
-                position: new PixelPoint(50,100));
-
-            var enemyProjectile = actorFactory.CreateActor(
-                actorId: ActorId.SkeletonBone,
-                actorType: ActorType.Enemy | ActorType.Bullet,
-                tileset: TilesetContentKey.Skeleton,
-                paletteIndex: PaletteIndex.P2,
-                behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1,0)),
-                destroyedBehavior: new EmptyDestroyedBehavior(),
-                collisionDetector: new ActorCollisionDetector(ActorManager, ActorType.Player | ActorType.Character),
-                hitBox: new Rectangle(0,0,8,8),
-                position: new PixelPoint(0,0));
-
-            enemyProjectile.CurrentAnimation = AnimationKey.Moving;
-
-           actorFactory.CreateActor(
-                actorId: ActorId.Skeleton,
-                actorType: ActorType.Enemy | ActorType.Character,
-                tileset: TilesetContentKey.Skeleton,
-                paletteIndex: PaletteIndex.P2,
-                behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), enemyProjectile),
-                destroyedBehavior: new EnemyDestroyedBehavior(score:100, _playerState),
-                collisionDetector: new BgCollisionDetector(GameSystem),
-                hitBox: new Rectangle(4,0,8,15),
-                position: new PixelPoint(150, 40));
-
-            enemyProjectile.Enabled = false;
-            playerProjectile.Enabled = false;
-
+            actorFactory.CreatePlayer(new PixelPoint(50, 100));
+            actorFactory.CreateSkeleton(new PixelPoint(100, 100));
+            actorFactory.CreateSkeleton(new PixelPoint(300, 100));
         }
 
         protected override Scene InitializeScene()

@@ -34,8 +34,8 @@ namespace SomeGame.Main.Modules
 
             playerAnimations.Add(AnimationKey.Attacking,
                  new Animation(
-                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 10),
-                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 10)));
+                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
+                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 5)));
 
             playerAnimations.Add(AnimationKey.Moving,
                   new Animation(
