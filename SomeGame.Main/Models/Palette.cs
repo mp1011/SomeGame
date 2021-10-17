@@ -14,9 +14,9 @@ namespace SomeGame.Main.Models
 
         public Palette(IEnumerable<Color> colors)
         {
-            _colors = colors
-                        .Distinct()
-                        .OrderBy(p=>p.A)
+
+            _colors = new Color[] { new Color(0, 0, 0, 0) }
+                        .Union(colors.Where(p => p.A == 255))
                         .ToArray();
         }
 

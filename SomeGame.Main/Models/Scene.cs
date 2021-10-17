@@ -13,7 +13,7 @@ namespace SomeGame.Main.Models
         {
             _gameSystem = gameSystem;
             Bounds = bounds;
-            Camera = new BoundedGameRectangle(0, 0, gameSystem.Screen.Width, gameSystem.Screen.Height, 
+            Camera = new BoundedGameRectangle(bounds.X, bounds.Y, gameSystem.Screen.Width, gameSystem.Screen.Height, 
                 maxX: bounds.Width - gameSystem.Screen.Width,
                 maxY: bounds.Height - gameSystem.Screen.Height);
         }
@@ -23,8 +23,9 @@ namespace SomeGame.Main.Models
             var bg = _gameSystem.GetLayer(LayerIndex.BG);
             var fg = _gameSystem.GetLayer(LayerIndex.FG);
 
-            bg.ScrollX = bg.ScrollX.Set(-Camera.X);
-            bg.ScrollY = bg.ScrollY.Set(-Camera.Y);
+            bg.ScrollX = bg.ScrollX.Set(-0.7 * Camera.X);
+            bg.ScrollY = bg.ScrollY.Set(-0.7 * Camera.Y);
+           
             fg.ScrollX = fg.ScrollX.Set(-Camera.X);
             fg.ScrollY = fg.ScrollY.Set(-Camera.Y);
         }

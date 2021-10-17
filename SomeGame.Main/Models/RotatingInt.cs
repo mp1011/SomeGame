@@ -24,6 +24,10 @@
         {
             return new RotatingInt(value, Max);
         }
+        public RotatingInt Set(double value)
+        {
+            return new RotatingInt((int)value, Max);
+        }
 
         public override string ToString()
         {

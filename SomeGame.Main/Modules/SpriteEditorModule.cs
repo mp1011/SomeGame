@@ -95,7 +95,7 @@ namespace SomeGame.Main.Modules
                 return;
 
             var background = GameSystem.GetLayer(LayerIndex.BG);
-            var mouseTile = GetCurrentMouseTile();
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
             var currentTile = background.TileMap.GetTile(mouseTile);
 
             if(currentTile == SelectedTile)
@@ -123,7 +123,7 @@ namespace SomeGame.Main.Modules
             if (!Input.A.IsPressed())
                 return;
 
-            var mouseTile = GetCurrentMouseTile();
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
             if (mouseTile.Y >= 4)
                 return;
 

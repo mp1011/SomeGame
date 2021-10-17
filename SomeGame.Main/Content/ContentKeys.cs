@@ -17,7 +17,9 @@
         Hud,
         Palette1,
         Palette2,
-        Palette1Inverse
+        Palette3,
+        Palette1Inverse,
+        Items
     }
 
     public enum TilesetContentKey
@@ -28,12 +30,14 @@
         Hero,
         Skeleton,
         Bullet,
-        Hud
+        Hud,
+        Items
     }
 
     public enum LevelContentKey
     {
         None,
-        TestLevel
+        TestLevel,
+        TestLevelBG
     }
 }

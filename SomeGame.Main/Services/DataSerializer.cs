@@ -97,7 +97,7 @@ namespace SomeGame.Main.Services
 
         public void Save(TileMap tileMap)
         {
-            Save(tileMap.GetGrid(), GetPath(LevelContentKey.TestLevel));
+            Save(tileMap.GetGrid(), GetPath(tileMap.LevelKey));
         }
 
         public void Save(TilesetContentKey tilesetContentKey, SpriteFrame[] spriteFrames)
@@ -134,14 +134,17 @@ namespace SomeGame.Main.Services
             writer.Write(grid);
         }
 
-        public TileMap Load(LevelContentKey key)
+        public TileMap LoadTileMap(LevelContentKey key)
         {
             var grid = LoadGrid<Tile>(GetPath(key));
-            return new TileMap(grid);
+            return new TileMap(key, grid);
         }
 
         private Grid<T> LoadGrid<T>(string path)
         {
+            if (!File.Exists(path))
+                return new Grid<T>(0,0);
+
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);
             return reader.ReadGrid<T>();

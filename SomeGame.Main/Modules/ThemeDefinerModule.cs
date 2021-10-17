@@ -31,7 +31,7 @@ namespace SomeGame.Main.Modules
             _tileSetService = new TileSetService();
             _dataSerializer = new DataSerializer();
 
-            _blockSelect = new UIBlockSelect(AssignTheme);
+            _blockSelect = new UIBlockSelect(AssignTheme,(x,y)=> { });
         }
 
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
@@ -39,6 +39,10 @@ namespace SomeGame.Main.Modules
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
             _editorTileset = _dataSerializer.LoadEditorTileset(_tileSetKey) ?? CreateNewTileset();
+
+           // var t = _editorTileset.GetOrAddTile(new Tile(-2, TileFlags.None));
+           // t.Themes.Add("TREE");
+          //  t.Themes.Add("VINE");
 
             _themeSelector = new UIMultiSelect<string>(GameSystem.GetLayer(LayerIndex.Interface), 
                 _font, _editorTileset.Themes, new Point(0, 0));
@@ -59,6 +63,8 @@ namespace SomeGame.Main.Modules
                     tile.Themes.Add("BUSH");
                     tile.Themes.Add("FENCE");
                     tile.Themes.Add("DECOR");
+                    tile.Themes.Add("TREE");
+                    tile.Themes.Add("VINE");
 
                     return ets;
                 default:

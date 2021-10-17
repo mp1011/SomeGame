@@ -16,20 +16,20 @@ namespace SomeGame.Main.Modules
 
         protected Tile SelectedTile { get; set; } = new Tile(1, TileFlags.None);
 
-        protected Point GetCurrentMouseTile()
+        protected Point GetCurrentMouseTile(LayerIndex layerIndex)
         {
-            var foreground = GameSystem.GetLayer(LayerIndex.FG);
-            return foreground.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
+            var layer = GameSystem.GetLayer(layerIndex);
+            return layer.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
         }
 
         protected void HandleStandardInput()
         {
+            if (GetCurrentMouseTile(LayerIndex.Interface).Y < 2)
+                return;
+
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
             var background = GameSystem.GetLayer(LayerIndex.BG);
-            var mouseTile = GetCurrentMouseTile();
-
-            if (mouseTile.Y < 2)
-                return;
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
 
             foreground.TileMap.SetEach((x, y) => {
                 if (x == mouseTile.X && y == mouseTile.Y)
@@ -38,7 +38,15 @@ namespace SomeGame.Main.Modules
                     return new Tile(-1, TileFlags.None);
             });
 
-            if (Input.A.IsDown())
+            var existingTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
+
+            if (Input.A.IsPressed())
+            {                
+                if(existingTile.Index == SelectedTile.Index)
+                    background.TileMap.SetTile(mouseTile.X, mouseTile.Y, existingTile.NextFlip());
+            }
+
+            if (Input.A.IsDown() && existingTile.Index != SelectedTile.Index)
             {
                 background.TileMap.SetTile(mouseTile.X, mouseTile.Y, SelectedTile);
                 AfterTilePlaced(mouseTile);

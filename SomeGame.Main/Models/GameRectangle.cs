@@ -98,8 +98,8 @@ namespace SomeGame.Main.Models
         public BoundedGameRectangle(int x, int y, int width, int height, int maxX, int maxY) 
             : base(x, y, width, height)
         {
-            _boundedX = new BoundedInt(x, maxX);
-            _boundedY = new BoundedInt(y, maxY);
+            _boundedX = new BoundedInt(x,x,maxX);
+            _boundedY = new BoundedInt(y,y,maxY);
         }
     }
 }

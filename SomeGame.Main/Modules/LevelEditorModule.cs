@@ -13,6 +13,7 @@ namespace SomeGame.Main.Modules
 
     class LevelEditorModule : TileEditorBaseModule
     {
+        private readonly LevelContentKey _levelKey;
         private readonly TileSetService _tileSetService;
         private readonly UIBlockSelect _blockSelect;
         private UIMultiSelect<string> _themeSelector;
@@ -21,10 +22,11 @@ namespace SomeGame.Main.Modules
         private EditorTileSet _editorTileset;
         private bool _nextClickPlacesTile;
 
-        public LevelEditorModule()
+        public LevelEditorModule(LevelContentKey level)
         {
+            _levelKey = level;
             _tileSetService = new TileSetService();
-            _blockSelect = new UIBlockSelect(RelateBlockRange);
+            _blockSelect = new UIBlockSelect(HandleBlockAction, HandleBlockMouseMove);
         }
 
         protected override void Update()
@@ -33,38 +35,37 @@ namespace SomeGame.Main.Modules
             var background = GameSystem.GetLayer(LayerIndex.BG);
             var ui = GameSystem.GetLayer(LayerIndex.Interface);
 
-            if (Input.Right.IsDown())
-            {
-                background.ScrollX -= 2;
-                foreground.ScrollX -= 2;
-            }
+            var camera = SceneManager.CurrentScene.Camera;
+
+            if (Input.Right.IsDown())            
+                camera.X += 2;            
             if (Input.Left.IsDown())
-            {
-                background.ScrollX += 2;
-                foreground.ScrollX += 2;
-            }
+                camera.X -= 2;
             if (Input.Down.IsDown())
-            {
-                background.ScrollY -= 2;
-                foreground.ScrollY -= 2;
-            }
+                camera.Y += 2;
             if (Input.Up.IsDown())
-            {
-                background.ScrollY += 2;
-                foreground.ScrollY -= 2;
-            }
+                camera.Y -= 2;
 
             if (_modeSelector.Update(ui, Input))
+            {
                 _blockSelect.ClearSelection(foreground);
+                return;
+            }
 
             if (_themeSelector.Update(ui, Input))
+            {
                 ShowTilesInTheme();
+                return;
+            }
 
             switch(_modeSelector.SelectedItem)
             {
                 case LevelEditorMode.Free:
+
+                    if (HandleSelectTile())
+                        break;
+                       
                     HandleStandardInput();
-                    HandleSelectTile();
                     break;
                 case LevelEditorMode.Auto:
 
@@ -83,7 +84,7 @@ namespace SomeGame.Main.Modules
                     {
                         if (Input.B.IsDown())
                         {
-                            var mouseTile = GetCurrentMouseTile();
+                            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
                             background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(-1, TileFlags.None));
                             AfterTilePlaced(mouseTile);
                         }
@@ -93,28 +94,76 @@ namespace SomeGame.Main.Modules
 
                     break;
                 case LevelEditorMode.Relate:
-                    _blockSelect.Update(GetCurrentMouseTile(), Input, foreground, background);
+                case LevelEditorMode.Move:
+                case LevelEditorMode.Copy:
+                    _blockSelect.Update(GetCurrentMouseTile(LayerIndex.BG), Input, foreground, background);
                     break;
-
             }
 
             if (Input.Start.IsPressed())
                 SaveMap(background.TileMap);
         }
+
         private void SaveMap(TileMap t)
         {
-            _dataSerializer.Save(t);
+            //todo, level shouldn't be same as background map
+            _dataSerializer.Save(new TileMap(_levelKey, t.GetGrid()));
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {           
             if(index == LayerIndex.BG)
             {
-                var loaded = _dataSerializer.Load(LevelContentKey.TestLevel);
+                var loaded = _dataSerializer.LoadTileMap(_levelKey) ;
+                if (loaded.GetGrid().Width == 0)
+                    loaded = CreateNew(_levelKey);
+
                 layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
             }
             else if(index == LayerIndex.FG)
                 layer.Palette = PaletteIndex.P3;
+        }
+
+        private TileMap CreateNew(LevelContentKey levelContentKey)
+        {
+            switch(levelContentKey)
+            {
+                case LevelContentKey.TestLevelBG:
+                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth, GameSystem.LayerTileHeight / 2);
+                default:
+                    throw new Exception($"No default set for level {levelContentKey}");
+            }
+        }
+        protected override Scene InitializeScene()
+        {
+            var scene = new Scene(new Rectangle(-1000, -1000, 2000, 2000), GameSystem);
+            scene.Camera.X = 0;
+            scene.Camera.Y = 0;
+            return scene;
+        }
+
+        private void HandleBlockAction(Point start, Point end)
+        {
+            switch(_modeSelector.SelectedItem)
+            {
+                case LevelEditorMode.Relate:
+                    RelateBlockRange(start, end);
+                    return;
+                case LevelEditorMode.Move:
+                    MoveBlockRange(start, end);
+                    return;
+            }
+        }
+
+        private void HandleBlockMouseMove(Point start, Point end)
+        {
+            switch (_modeSelector.SelectedItem)
+            {
+                case LevelEditorMode.Relate: return;
+                case LevelEditorMode.Move: 
+                    PreviewBlockMove(start, end);
+                    break;
+            }
         }
 
         private void RelateBlockRange(Point start, Point end)
@@ -125,6 +174,48 @@ namespace SomeGame.Main.Modules
 
             _tileSetService.AddBlock(_editorTileset, block);
             _dataSerializer.Save(_editorTileset);
+        }
+
+        private void MoveBlockRange(Point start, Point end)
+        {
+            var fg = GameSystem.GetLayer(LayerIndex.FG);
+            var bg = GameSystem.GetLayer(LayerIndex.BG);
+            var mouseTile = GetCurrentMouseTile(LayerIndex.FG);
+
+            var selection = bg.TileMap
+                                .GetGrid()
+                                .Extract(start, end);
+
+            bg.TileMap.SetEach(start, end, (x, y) => new Tile(-1, TileFlags.None));
+
+            int selectionWidth = (end.X - start.X) + 1;
+            int selectionHeight = (end.Y - start.Y) + 1;
+
+            bg.TileMap.SetEach(mouseTile, new Point(mouseTile.X + selectionWidth, mouseTile.Y + selectionHeight),
+                (x, y) => selection[x - mouseTile.X, y - mouseTile.Y]);
+        }
+
+        private void PreviewBlockMove(Point start, Point end)
+        {
+            var fg = GameSystem.GetLayer(LayerIndex.FG);
+            var bg = GameSystem.GetLayer(LayerIndex.BG);
+
+            var mouseTile = GetCurrentMouseTile(LayerIndex.FG);
+
+            fg.TileMap.SetEach((x, y) => 
+            {
+                int selectionX = start.X + (x - mouseTile.X);
+                int selectionY = start.Y + (y - mouseTile.Y);
+                if (selectionX >= start.X
+                    && selectionX <= end.X
+                    && selectionY >= start.Y
+                    && selectionY <= end.Y)
+                {
+                    return bg.TileMap.GetTile(selectionX, selectionY);
+                }
+                else
+                    return new Tile(-1, TileFlags.None);                
+            });
         }
 
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
@@ -164,7 +255,7 @@ namespace SomeGame.Main.Modules
             if (!Input.A.IsPressed())
                 return false;
 
-            var mouseTile = GetCurrentMouseTile();
+            var mouseTile = GetCurrentMouseTile(LayerIndex.Interface);
             if (mouseTile.Y >= 2 || mouseTile.X < 20)
                 return false;
 
@@ -184,7 +275,7 @@ namespace SomeGame.Main.Modules
                 return;
 
             var bg = GameSystem.GetLayer(LayerIndex.BG);
-            var mouseTile = GetCurrentMouseTile();
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
             var tileChoices = _tileSetService
                 .GetMatchingTiles(_editorTileset, _themeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
                 .Select(p => p.Tile)

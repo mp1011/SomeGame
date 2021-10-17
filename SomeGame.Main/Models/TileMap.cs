@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Services;
 using System;
@@ -9,13 +10,17 @@ namespace SomeGame.Main.Models
     {
         private Grid<Tile> _tiles;
 
-        public TileMap(int tilesX, int tilesY)
+        public LevelContentKey LevelKey { get; }
+
+        public TileMap(LevelContentKey levelContentKey, int tilesX, int tilesY)
         {
+            LevelKey = levelContentKey;
             _tiles = new Grid<Tile>(tilesX, tilesY, (x,y)=> new Tile(-1, TileFlags.None));
         }
 
-        public TileMap(Grid<Tile> tiles)
+        public TileMap(LevelContentKey levelContentKey, Grid<Tile> tiles)
         {
+            LevelKey = levelContentKey;
             _tiles = tiles;
         }
 
@@ -46,6 +51,11 @@ namespace SomeGame.Main.Models
         }
 
         public void SetEach(Func<int, int, Tile> createTile) => _tiles.SetEach(createTile);
-        public void SetEach(int xStart, int xEnd, int yStart, int yEnd, Func<int, int, Tile> createTile) => _tiles.SetEach(xStart, xEnd, yStart, yEnd, createTile);
+        public void SetEach(int xStart, int xEnd, int yStart, int yEnd, Func<int, int, Tile> createTile) => 
+            _tiles.SetEach(xStart, xEnd, yStart, yEnd, createTile);
+
+        public void SetEach(Point upperLeft, Point bottomRight, Func<int, int, Tile> createTile) => 
+            _tiles.SetEach(upperLeft.X, bottomRight.X, upperLeft.Y, bottomRight.Y, createTile);
+
     }
 }

@@ -35,11 +35,11 @@ namespace SomeGame.Main.Models
 
             _layers = new Layer[]
             {
-                new Layer(new TileMap(LayerTileWidth,LayerTileHeight), PaletteIndex.P1, 
+                new Layer(new TileMap(LevelContentKey.None, LayerTileWidth,LayerTileHeight), PaletteIndex.P1, 
                     new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize),
-                new Layer(new TileMap(LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
+                new Layer(new TileMap(LevelContentKey.None,LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
                     new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize),
-                new Layer(new TileMap(LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
+                new Layer(new TileMap(LevelContentKey.None,LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
                     new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize)
             };
 

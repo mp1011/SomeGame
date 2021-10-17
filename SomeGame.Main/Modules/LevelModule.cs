@@ -21,7 +21,7 @@ namespace SomeGame.Main.Modules
         protected override PaletteKeys PaletteKeys { get; } = 
             new PaletteKeys(ImageContentKey.Palette1, 
                             ImageContentKey.Palette2, 
-                            ImageContentKey.Palette2, 
+                            ImageContentKey.Palette3, 
                             ImageContentKey.Palette2);
 
         protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
@@ -37,9 +37,15 @@ namespace SomeGame.Main.Modules
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
-            if(index == LayerIndex.FG)
+            if (index == LayerIndex.BG)
             {
-                var loaded = _dataSerializer.Load(LevelContentKey.TestLevel);
+                var loaded = _dataSerializer.LoadTileMap(LevelContentKey.TestLevelBG);               
+                layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
+            }
+            
+            if (index == LayerIndex.FG)
+            {
+                var loaded = _dataSerializer.LoadTileMap(LevelContentKey.TestLevel);
 
                 //temporary
                 loaded.ForEach((x, y, t) =>
@@ -47,7 +53,6 @@ namespace SomeGame.Main.Modules
                     if (t.Index >= 0)
                         loaded.SetTile(x, y, new Tile(t.Index, TileFlags.Solid));
                 });
-
                 layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
             }
         }
@@ -73,6 +78,9 @@ namespace SomeGame.Main.Modules
 
                 resourceLoader.LoadTexture(TilesetContentKey.Font)
                               .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P2)),
+
+                resourceLoader.LoadTexture(TilesetContentKey.Items)
+                              .ToIndexedTilesetImage(GameSystem.GetPalette(PaletteIndex.P1)),
             };
         }
 
@@ -89,7 +97,7 @@ namespace SomeGame.Main.Modules
 
         protected override Scene InitializeScene()
         {
-            return new Scene(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
+            return new Scene(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.Screen.Height), GameSystem);
         }
 
         protected override void Update()

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
+using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SomeGame.Main.Modules
@@ -27,19 +29,73 @@ namespace SomeGame.Main.Modules
             var images = Enum.GetValues<TilesetContentKey>()
                 .Where(t => t != TilesetContentKey.None)
                 .Select(t => resourceLoader.LoadTexture(t).ToIndexedTilesetImage())
-                .ToArray();
+                .ToDictionary(k=>k.Key,v=>v);
 
-            var palettes = CreatePalettes(images);
+           // FitToPalette(images, TilesetContentKey.Tiles, TilesetContentKey.Items, graphicsDevice);
+      
+            //SaveReducedColorImage(images.Single(p => p.Key == TilesetContentKey.Items), 16, graphicsDevice);
 
-            CreatePaletteImage(palettes[0], ImageContentKey.Palette1, graphicsDevice);
-            CreatePaletteImage(palettes[1], ImageContentKey.Palette2, graphicsDevice);
-            CreatePaletteImage(palettes[0].CreateTransformed(c=> new Color(255-c.R,255-c.G,255-c.B)), ImageContentKey.Palette1Inverse, graphicsDevice);       
+         
+            CreatePaletteImage(images, ImageContentKey.Palette1, graphicsDevice, TilesetContentKey.Tiles);
+            CreatePaletteImage(images, ImageContentKey.Palette2, graphicsDevice, TilesetContentKey.Hero, TilesetContentKey.Bullet,
+                TilesetContentKey.Skeleton, TilesetContentKey.Hero, TilesetContentKey.Font);
+
+           // CreatePaletteImage(palettes[0].CreateTransformed(c=> new Color(255-c.R,255-c.G,255-c.B)), ImageContentKey.Palette1Inverse, graphicsDevice);
+           // CreatePaletteImage(palettes[2], ImageContentKey.Palette3, graphicsDevice);
+
         }
 
-        private void CreatePaletteImage(Palette p, ImageContentKey key, GraphicsDevice graphicsDevice)
+        private void FitToPalette(IndexedTilesetImage[] images, TilesetContentKey fromKey, TilesetContentKey toKey, GraphicsDevice graphicsDevice)
         {
+            var fromImage = images.Single(p => p.Key == fromKey);
+            var toImage = images.Single(p => p.Key == toKey);
+
+            Dictionary<byte, byte> map = new Dictionary<byte, byte>();
+            foreach(var color in toImage.Palette.ToArray())
+            {
+                var closestColor = fromImage.Palette
+                    .OrderBy(p => color.DistanceTo(p))
+                    .First();
+
+                map[toImage.Palette.GetIndex(color)] = fromImage.Palette.GetIndex(closestColor);
+            }
+
+            var adjustedImage = toImage.Image.Map(b => map.GetValueOrDefault(b, b));
+
+            var texture = new IndexedImage(adjustedImage, fromImage.Palette)
+                .ToTexture2D(graphicsDevice);
+
+            var fileName = $"{toKey}_adjustedTo_{fromKey}.png";
+            if (File.Exists(fileName))
+                File.Delete(fileName);
+
+            using (var fs = File.OpenWrite(fileName))
+                texture.SaveAsPng(fs, texture.Width, texture.Height);   
+        }
+
+        private void CreatePaletteImage(Dictionary<TilesetContentKey, IndexedTilesetImage> sourceImages, ImageContentKey key, GraphicsDevice graphicsDevice, 
+            params TilesetContentKey[] colorSources)
+        {
+            var colors = colorSources
+                .SelectMany(p => sourceImages[p].Palette)
+                .Distinct()
+                .ToArray();
+
+            if (colors.Length > GameSystem.ColorsPerPalette)
+                throw new Exception("Too many colors");
+            
             byte b = 0;
             var grid = new Grid<byte>(8, (int)Math.Ceiling(GameSystem.ColorsPerPalette / 8.0),
+                (x, y) => b++);
+
+            var indexedImage = new IndexedTilesetImage(TilesetContentKey.None, grid, new Palette(colors));
+            _dataSerializer.SaveImage(key, indexedImage.ToTexture2D(graphicsDevice));
+        }
+
+        private void CreateExtendedPaletteImage(Palette p, ImageContentKey key, GraphicsDevice graphicsDevice)
+        {
+            byte b = 0;
+            var grid = new Grid<byte>(8, p.Count() / 8,
                 (x, y) => b++);
 
             var indexedImage = new IndexedTilesetImage(TilesetContentKey.None, grid, p);
@@ -58,57 +114,73 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        public Palette[] CreatePalettes(IndexedTilesetImage[] images)
+        private void SaveReducedColorImage(IndexedTilesetImage image, int colors, GraphicsDevice graphicsDevice)
         {
-            List<Color> colors = new List<Color>();
-            List<Palette> palettes = new List<Palette>();
+            var fileName = $"{image.Key}_reduced_{colors}.png";
+            if (File.Exists(fileName))
+                File.Delete(fileName);
 
-            foreach (var image in images)
+            using (var fs = File.OpenWrite(fileName))
             {
-                var newColors = image.Palette
-                                     .Except(colors)
-                                     .ToArray();
-
-                if (newColors.Length > GameSystem.ColorsPerPalette)
-                    throw new Exception("Too many colors");
-
-                if (colors.Count + newColors.Length > GameSystem.ColorsPerPalette)
-                {
-                    palettes.Add(new Palette(colors));
-                    colors.Clear();
-                }
-
-                colors.AddRange(newColors);
+                var img = CreateReducedColorImage(image, colors, graphicsDevice);
+                img.SaveAsPng(fs, img.Width, img.Height);
             }
-
-            if (colors.Any())
-                palettes.Add(new Palette(colors));
-
-            if (palettes.Count > 4)
-                throw new Exception("Too many colors");
-
-
-            var adjustedImages = images.Select(img => AdjustToBestPalette(img, palettes))
-                .ToArray();
-
-            return palettes.ToArray();            
         }
 
-        private IndexedTilesetImage AdjustToBestPalette(IndexedTilesetImage image, IEnumerable<Palette> palettes)
+        private Texture2D CreateReducedColorImage(IndexedTilesetImage image, int maxColors, GraphicsDevice graphicsDevice)
         {
-            foreach (var palette in palettes)
+            var paletteColors = image.Palette.ToArray();
+
+            var colors = paletteColors.Select(c =>
             {
-                var map = image.Palette.CreateMap(palette);
-                if (map != null)
+                double minDistance = double.MaxValue;
+                Color closestColor = c;
+                
+                foreach (var otherColor in paletteColors)
                 {
-                    return new IndexedTilesetImage(
-                        image.Key,
-                        image.Image.Map(b => map[b]),
-                        palette);
+                    if (c.A == 0)
+                        break;
+                    else if (otherColor.A == 0)
+                        continue;
+                    else if (otherColor == c)
+                        continue;
+
+                    var distance = c.DistanceTo(otherColor);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestColor = otherColor;
+                    }
                 }
+
+                return new { Color = c, ClosestColor = closestColor, Distance = minDistance };
+            })
+            .OrderBy(p => p.Distance)
+            .ToArray();
+
+            Dictionary<Color, Color> map = new Dictionary<Color, Color>();
+
+            while(colors.Any() && paletteColors.Length > maxColors)
+            {
+                var closestColor = colors.First();
+                colors = colors.Where(c => c.Color != closestColor.Color && c.Color != closestColor.ClosestColor).ToArray();
+
+                map.Add(closestColor.Color, closestColor.ClosestColor);
+                paletteColors = paletteColors.Where(p => p != closestColor.Color).ToArray();
             }
 
-            return image;
+            var reducedPalette = new Palette(paletteColors);
+            var reducedColorImage = image.Image.Map(b =>
+            {
+                var newColor = map.GetValueOrDefault(image.Palette[b], image.Palette[b]);
+                return reducedPalette.GetIndex(newColor);
+            });
+
+            if (reducedPalette.Count() > maxColors)
+                return CreateReducedColorImage(new IndexedTilesetImage(image.Key, reducedColorImage, reducedPalette), maxColors, graphicsDevice);
+            else 
+                return new IndexedImage(reducedColorImage, reducedPalette)
+                    .ToTexture2D(graphicsDevice);
         }
 
     }

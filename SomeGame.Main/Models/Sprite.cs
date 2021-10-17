@@ -1,4 +1,6 @@
-﻿namespace SomeGame.Main.Models
+﻿using SomeGame.Main.Content;
+
+namespace SomeGame.Main.Models
 {
     class Sprite : TiledObject
     {
@@ -17,7 +19,7 @@
 
         private static TileMap CreateBlankTilemap()
         {
-            return new TileMap(2, 2);
+            return new TileMap(LevelContentKey.None, 2, 2);
         }
 
         public void SetTiles(Tile topLeft, Tile topRight, Tile bottomLeft, Tile bottomRight)

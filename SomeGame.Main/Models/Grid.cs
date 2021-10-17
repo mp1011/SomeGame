@@ -15,9 +15,12 @@ namespace SomeGame.Main.Models
             _grid = new T[width, height];
             var t = this;
 
+            if (width == 0 || height == 0)
+                return;
+
             if(generator == null)
                 generator = (x,y) => default(T);
-
+            
             ForEach((x, y, v) => t._grid[x, y] = generator(x, y));
         }
 

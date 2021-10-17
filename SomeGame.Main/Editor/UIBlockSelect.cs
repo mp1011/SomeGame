@@ -9,13 +9,16 @@ namespace SomeGame.Main.Editor
     {
         private Point? _dragStart;
         private Point? _dragEnd;
-        private Action<Point, Point> _action;
+        private Action<Point, Point> _onInput;
+        private Action<Point, Point> _onMouseMoved;
+        private Point _lastMouseTile;
 
         public bool HasSelection => _dragEnd != null;
 
-        public UIBlockSelect(Action<Point, Point> action)
+        public UIBlockSelect(Action<Point, Point> onInput, Action<Point,Point> onMouseMoved)
         {
-            _action = action;
+            _onInput = onInput;
+            _onMouseMoved = onMouseMoved;
         }
 
         public void Update(Point mouseTile, InputModel input, Layer foreground, Layer background)
@@ -34,7 +37,12 @@ namespace SomeGame.Main.Editor
                 ShowDragArea(_dragStart.Value, mouseTile, foreground, background);
 
             if (input.B.IsPressed() && _dragEnd.HasValue)
-                _action(_dragStart.Value, _dragEnd.Value);
+                _onInput(_dragStart.Value, _dragEnd.Value);
+
+            if (HasSelection && mouseTile != _lastMouseTile)
+                _onMouseMoved(_dragStart.Value, _dragEnd.Value);
+
+            _lastMouseTile = mouseTile;
         }
 
         public void ClearSelection(Layer foreground)
