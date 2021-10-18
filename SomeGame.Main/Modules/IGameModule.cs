@@ -21,6 +21,7 @@ namespace SomeGame.Main.Modules
         protected RenderService RenderService { get; }
 
         protected AudioService AudioService { get; private set; }
+        protected CollectiblesService CollectiblesService { get; private set; }
         protected ActorManager ActorManager { get; private set; }
         protected SceneManager SceneManager { get; }
         protected InputManager InputManager { get; } 
@@ -35,6 +36,7 @@ namespace SomeGame.Main.Modules
             SceneManager = new SceneManager();
             InputManager = new InputManager(GameSystem);
             AudioService = new AudioService();
+            CollectiblesService = new CollectiblesService(GameSystem);
         }
 
         public void Draw(SpriteBatch spriteBatch)

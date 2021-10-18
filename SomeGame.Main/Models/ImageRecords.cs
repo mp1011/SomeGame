@@ -9,6 +9,7 @@ namespace SomeGame.Main.Models
     public record Tile(int Index, TileFlags Flags)
     {
         public bool IsSolid => (Flags & TileFlags.Solid) != 0;
+        public bool IsCollectible => (Flags & TileFlags.Collectible) != 0;
 
         public Tile NextFlip() => new Tile(Index, GetNextFlipFlags(Flags));
 

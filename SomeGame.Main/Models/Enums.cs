@@ -47,7 +47,8 @@
         FlipH=1,
         FlipV=2,
         FlipHV=3,
-        Solid=4
+        Solid=4,
+        Collectible=8
     }
 
     public enum PaletteIndex
@@ -118,7 +119,8 @@
         Auto,
         Copy,
         Move,
-        Relate
+        Relate,
+        SetSolid
     }
 
     public enum StandardEnemyState
@@ -133,7 +135,8 @@
         Player=1,
         Enemy=2,
         Character=4,
-        Bullet=8
+        Bullet=8,
+        Item=16
     }
 
     public enum AnimationState
@@ -148,7 +151,11 @@
         Player,
         PlayerBullet,
         Skeleton,
-        SkeletonBone
+        SkeletonBone,
+        Coin,
+        Gem,
+        Apple,
+        Meat
     }
 
     public enum DestroyedState

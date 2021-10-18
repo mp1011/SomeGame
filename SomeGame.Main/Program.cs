@@ -15,11 +15,11 @@ namespace SomeGame.Main
          // var module = new ThemeDefinerModule(ImageContentKey.Sheet, TilesetContentKey.Tiles);
             // var module = new GameSystemTestModule();
             //var module = new FontTestModule();
-           var module = new LevelEditorModule(LevelContentKey.TestLevel);
+         // var module = new LevelEditorModule(LevelContentKey.TestLevel);
          
-          //  var module = new LevelModule();
+            var module = new LevelModule();
           // var module = new TileNeighborModule(new TileSetService());
-           // var module = new SpriteEditorModule(TilesetContentKey.Skeleton);
+          // var module = new SpriteEditorModule(TilesetContentKey.Items);
 
             using (var game = new GameEngine(module))
                 game.Run();

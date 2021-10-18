@@ -28,6 +28,8 @@ namespace SomeGame.Main.Modules
         {
             _hudManager = new HUDManager(GameSystem);
             _hudManager.DrawTiles();
+
+            CollectiblesService.AddCoins(new Point(8,10), new Point(12,10), GameSystem.GetLayer(LayerIndex.FG));
         }
 
         protected override void LoadSounds(ResourceLoader resourceLoader)
@@ -41,18 +43,12 @@ namespace SomeGame.Main.Modules
             {
                 var loaded = _dataSerializer.LoadTileMap(LevelContentKey.TestLevelBG);               
                 layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
+                layer.ScrollFactor = 70;
             }
             
             if (index == LayerIndex.FG)
             {
                 var loaded = _dataSerializer.LoadTileMap(LevelContentKey.TestLevel);
-
-                //temporary
-                loaded.ForEach((x, y, t) =>
-                {
-                    if (t.Index >= 0)
-                        loaded.SetTile(x, y, new Tile(t.Index, TileFlags.Solid));
-                });
                 layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
             }
         }
@@ -88,7 +84,7 @@ namespace SomeGame.Main.Modules
         {
             _playerState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
             var actorFactory = new ActorFactory(ActorManager, GameSystem, _dataSerializer, InputManager,
-                SceneManager, _playerState,AudioService);
+                SceneManager, _playerState,AudioService, CollectiblesService);
 
             actorFactory.CreatePlayer(new PixelPoint(50, 100));
             actorFactory.CreateSkeleton(new PixelPoint(100, 100));

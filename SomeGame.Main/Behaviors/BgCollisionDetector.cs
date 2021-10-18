@@ -1,16 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
+using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Behaviors
 {
     class BgCollisionDetector : ICollisionDetector
     {
         private readonly GameSystem _gameSystem;
+        private readonly CollectiblesService _collectiblesService;
 
-        public BgCollisionDetector(GameSystem gameSystem)
+        public BgCollisionDetector(GameSystem gameSystem, CollectiblesService collectiblesService=null)
         {
             _gameSystem = gameSystem;
+            _collectiblesService = collectiblesService;
         }
 
         public CollisionInfo DetectCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition)
@@ -35,6 +38,10 @@ namespace SomeGame.Main.Behaviors
 
                     if(!tileAbove.IsSolid)
                         collisionInfo += CheckTouchingGround(actor, tileBounds);
+                }
+                else if(_collectiblesService != null && t.IsCollectible)
+                {
+                    System.Diagnostics.Debug.WriteLine("!");
                 }
             });
 

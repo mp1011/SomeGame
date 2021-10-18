@@ -23,11 +23,23 @@ namespace SomeGame.Main.Models
             var bg = _gameSystem.GetLayer(LayerIndex.BG);
             var fg = _gameSystem.GetLayer(LayerIndex.FG);
 
-            bg.ScrollX = bg.ScrollX.Set(-0.7 * Camera.X);
-            bg.ScrollY = bg.ScrollY.Set(-0.7 * Camera.Y);
-           
-            fg.ScrollX = fg.ScrollX.Set(-Camera.X);
-            fg.ScrollY = fg.ScrollY.Set(-Camera.Y);
+            ScrollLayer(bg);
+            ScrollLayer(fg);
+        }
+
+        private void ScrollLayer(Layer layer)
+        {
+            if(layer.ScrollFactor == 100)
+            {
+                layer.ScrollX = layer.ScrollX.Set(-Camera.X);
+                layer.ScrollY = layer.ScrollY.Set(-Camera.Y);
+            }
+            else if(layer.ScrollFactor > 0)
+            {
+                var factor = layer.ScrollFactor / -100.0;
+                layer.ScrollX = layer.ScrollX.Set(factor * Camera.X);
+                layer.ScrollY = layer.ScrollY.Set(factor * Camera.Y);
+            }
         }
 
 

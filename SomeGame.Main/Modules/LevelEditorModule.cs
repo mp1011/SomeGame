@@ -98,10 +98,38 @@ namespace SomeGame.Main.Modules
                 case LevelEditorMode.Copy:
                     _blockSelect.Update(GetCurrentMouseTile(LayerIndex.BG), Input, foreground, background);
                     break;
+                case LevelEditorMode.SetSolid:
+                    HandleSetSolid(background, foreground);
+                    break;
             }
 
             if (Input.Start.IsPressed())
                 SaveMap(background.TileMap);
+        }
+
+        private void HandleSetSolid(Layer background, Layer foreground)
+        {
+            foreground.TileMap.SetEach((x, y) =>
+            {
+                var bgTile = background.TileMap.GetTile(x, y);
+                if (bgTile.IsSolid)
+                    return bgTile;
+                else
+                    return new Tile(-1, TileFlags.None);
+            });
+
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
+            if(Input.A.IsDown())
+            {
+                var bgTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
+                background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(bgTile.Index, bgTile.Flags | TileFlags.Solid));
+            }
+
+            if (Input.B.IsDown())
+            {
+                var bgTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
+                background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(bgTile.Index, bgTile.Flags & ~TileFlags.Solid));
+            }
         }
 
         private void SaveMap(TileMap t)

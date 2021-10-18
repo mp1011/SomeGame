@@ -17,9 +17,11 @@ namespace SomeGame.Main.Services
         private readonly SceneManager _sceneManager;
         private readonly PlayerState _playerState;
         private readonly AudioService _audioService;
+        private readonly CollectiblesService _collectiblesService;
+
         public ActorFactory(ActorManager actorManager, GameSystem gameSystem, DataSerializer dataSerializer, 
             InputManager inputManager, SceneManager sceneManager, PlayerState playerState,
-            AudioService audioService)
+            AudioService audioService, CollectiblesService collectiblesService)
         {
             _actorManager = actorManager;
             _gameSystem = gameSystem;
@@ -28,6 +30,7 @@ namespace SomeGame.Main.Services
             _sceneManager = sceneManager;
             _playerState = playerState;
             _audioService = audioService;
+            _collectiblesService = collectiblesService;
         }
 
         public Actor CreateActor(
@@ -88,7 +91,7 @@ namespace SomeGame.Main.Services
                                 playerProjectiles,
                                 _playerState,
                                 _audioService),
-                collisionDetector: new BgCollisionDetector(_gameSystem),
+                collisionDetector: new BgCollisionDetector(_gameSystem, _collectiblesService),
                 hitBox: new Rectangle(4, 0, 8, 14),
                 position: position);
         }

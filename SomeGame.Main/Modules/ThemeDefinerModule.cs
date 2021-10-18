@@ -40,6 +40,7 @@ namespace SomeGame.Main.Modules
 
             _editorTileset = _dataSerializer.LoadEditorTileset(_tileSetKey) ?? CreateNewTileset();
 
+
            // var t = _editorTileset.GetOrAddTile(new Tile(-2, TileFlags.None));
            // t.Themes.Add("TREE");
           //  t.Themes.Add("VINE");
