@@ -3,7 +3,8 @@
     public enum SoundContentKey
     {
         None,
-        Swish
+        Swish,
+        GetCoin
     }
 
     public enum ImageContentKey

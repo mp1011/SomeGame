@@ -79,10 +79,19 @@ namespace SomeGame.Main.Modules
                     new AnimationFrame(SpriteFrameIndex: 2, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 1, Duration: 5)));
 
+
+            var coinAnimations = new Dictionary<AnimationKey, Animation>();
+            coinAnimations.Add(AnimationKey.Idle,
+                new Animation(
+                    new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
+                    new AnimationFrame(SpriteFrameIndex: 6, Duration: 5)));
+
             _dataSerializer.SaveAnimations(ActorId.Player, playerAnimations);
             _dataSerializer.SaveAnimations(ActorId.PlayerBullet, playerBulletAnimations);
             _dataSerializer.SaveAnimations(ActorId.Skeleton, skeletonAnimations);
             _dataSerializer.SaveAnimations(ActorId.SkeletonBone, skeletonBoneAnimations);
+            _dataSerializer.SaveAnimations(ActorId.Coin, coinAnimations);
+
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

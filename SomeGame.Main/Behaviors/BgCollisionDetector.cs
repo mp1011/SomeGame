@@ -41,7 +41,9 @@ namespace SomeGame.Main.Behaviors
                 }
                 else if(_collectiblesService != null && t.IsCollectible)
                 {
-                    System.Diagnostics.Debug.WriteLine("!");
+                    var tileBounds = fg.GetTileWorldPosition(x, y);
+                    if (tileBounds.Intersects(actor.WorldPosition))
+                        collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y);
                 }
             });
 

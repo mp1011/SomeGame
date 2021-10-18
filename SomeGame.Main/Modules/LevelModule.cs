@@ -29,12 +29,13 @@ namespace SomeGame.Main.Modules
             _hudManager = new HUDManager(GameSystem);
             _hudManager.DrawTiles();
 
-            CollectiblesService.AddCoins(new Point(8,10), new Point(12,10), GameSystem.GetLayer(LayerIndex.FG));
+            CollectiblesService.AddCoins(new Point(8,15), new Point(12,15));
         }
 
         protected override void LoadSounds(ResourceLoader resourceLoader)
         {
             AudioService.LoadSound(resourceLoader, SoundContentKey.Swish, 2);
+            AudioService.LoadSound(resourceLoader, SoundContentKey.GetCoin, 2);
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
@@ -89,6 +90,7 @@ namespace SomeGame.Main.Modules
             actorFactory.CreatePlayer(new PixelPoint(50, 100));
             actorFactory.CreateSkeleton(new PixelPoint(100, 100));
             actorFactory.CreateSkeleton(new PixelPoint(300, 100));
+            CollectiblesService.CreateCollectedItemActors(actorFactory);
         }
 
         protected override Scene InitializeScene()

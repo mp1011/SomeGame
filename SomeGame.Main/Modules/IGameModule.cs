@@ -36,7 +36,6 @@ namespace SomeGame.Main.Modules
             SceneManager = new SceneManager();
             InputManager = new InputManager(GameSystem);
             AudioService = new AudioService();
-            CollectiblesService = new CollectiblesService(GameSystem);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -69,6 +68,8 @@ namespace SomeGame.Main.Modules
             InitializeLayer(LayerIndex.BG, GameSystem.GetLayer(LayerIndex.BG));
             InitializeLayer(LayerIndex.FG, GameSystem.GetLayer(LayerIndex.FG));
             InitializeLayer(LayerIndex.Interface, GameSystem.GetLayer(LayerIndex.Interface));
+
+            CollectiblesService = new CollectiblesService(GameSystem, GameSystem.GetLayer(LayerIndex.FG));
 
             GameSystem.Input.Initialize(GameSystem.Screen);
 

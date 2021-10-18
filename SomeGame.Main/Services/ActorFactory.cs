@@ -60,6 +60,7 @@ namespace SomeGame.Main.Services
                 case ActorId.PlayerBullet: return CreatePlayerBullet();
                 case ActorId.Skeleton: return CreateSkeleton(position);
                 case ActorId.SkeletonBone: return CreateSkeletonBone();
+                case ActorId.Coin: return CreateCoin();
                 default: throw new Exception($"Unknown ActorId {id}");
             }
         }
@@ -71,6 +72,22 @@ namespace SomeGame.Main.Services
                 actors.Add(CreateActor(id, new PixelPoint(0, 0)));
 
             return new ActorPool(actors);
+        }
+
+        public Actor CreateCoin()
+        {
+            var coin = CreateActor(
+               actorId: ActorId.Coin,
+               actorType: ActorType.Item,
+               tileset: TilesetContentKey.Items,
+               paletteIndex: PaletteIndex.P1,
+               behavior: new CollectibleBehavior(_audioService, _playerState),
+               collisionDetector: new EmptyCollisionDetector(),
+               hitBox: new Rectangle(0, 0, 8, 8),
+               position: new PixelPoint(0,0));
+
+            coin.Enabled = false;
+            return coin;
         }
 
         public Actor CreatePlayer(PixelPoint position)

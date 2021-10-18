@@ -75,7 +75,16 @@
         Sprite5,
         Sprite6,
         Sprite7,
-        Sprite8
+        Sprite8,
+        Sprite9,
+        Sprite10,
+        Sprite11,
+        Sprite12,
+        Sprite13,
+        Sprite14,
+        Sprite15,
+        Sprite16,
+
     }
 
     public enum SpritePriority

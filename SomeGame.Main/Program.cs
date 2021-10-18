@@ -9,7 +9,7 @@ namespace SomeGame.Main
         [STAThread]
         static void Main()
         {
-            //var module = new AnimationDefinitionModule();
+           // var module = new AnimationDefinitionModule();
            // var module = new TextureCreatorModule(ImageContentKey.Items, TilesetContentKey.Items);
           //  var module = new PaletteCreatorModule();
          // var module = new ThemeDefinerModule(ImageContentKey.Sheet, TilesetContentKey.Tiles);
@@ -19,7 +19,7 @@ namespace SomeGame.Main
          
             var module = new LevelModule();
           // var module = new TileNeighborModule(new TileSetService());
-          // var module = new SpriteEditorModule(TilesetContentKey.Items);
+         //  var module = new SpriteEditorModule(TilesetContentKey.Items);
 
             using (var game = new GameEngine(module))
                 game.Run();

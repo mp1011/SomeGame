@@ -55,9 +55,11 @@ namespace SomeGame.Main.Models
         {
             if (DestroyedBehavior == null)
                 Enabled = false;
-
-            Destroying = true;
-            DestroyedBehavior.OnDestroyed(this);
+            else
+            {
+                Destroying = true;
+                DestroyedBehavior.OnDestroyed(this);
+            }
         }
 
         public void Create()
@@ -65,6 +67,14 @@ namespace SomeGame.Main.Models
             Destroying = false;
             Behavior.OnCreated(this);
             Enabled = true;
+        }
+
+        public override string ToString()
+        {
+            if (Enabled)
+                return $"{ActorType}";
+            else
+                return $"{ActorType} (disabled)";
         }
     }
 }

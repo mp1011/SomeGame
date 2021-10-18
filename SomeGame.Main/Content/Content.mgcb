@@ -841,6 +841,12 @@
 /processorParam:TextureFormat=Color
 /build:Images/wch2.png
 
+#begin Sounds/GetCoin.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/GetCoin.wav
+
 #begin Sounds/swish.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
