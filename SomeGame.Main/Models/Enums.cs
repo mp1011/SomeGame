@@ -1,4 +1,6 @@
-﻿namespace SomeGame.Main.Models
+﻿using System;
+
+namespace SomeGame.Main.Models
 {
 
     public enum Direction
@@ -139,6 +141,7 @@
         Attacking
     }
 
+    [Flags]
     public enum ActorType
     {
         Player=1,

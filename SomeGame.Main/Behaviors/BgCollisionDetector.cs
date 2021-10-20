@@ -38,6 +38,9 @@ namespace SomeGame.Main.Behaviors
 
                     if(!tileAbove.IsSolid)
                         collisionInfo += CheckTouchingGround(actor, tileBounds);
+
+                    if (collisionInfo.IsOnGround && (!tileLeft.IsSolid || !tileRight.IsSolid))
+                        collisionInfo += CheckOnLedge(actor, tileBounds, tileLeft.IsSolid, tileRight.IsSolid);
                 }
                 else if(_collectiblesService != null && t.IsCollectible)
                 {
@@ -48,6 +51,26 @@ namespace SomeGame.Main.Behaviors
             });
 
             return collisionInfo;
+        }
+
+        private CollisionInfo CheckOnLedge(Actor actor, Rectangle tile, bool leftTileSolid, bool rightTileSolid)
+        {
+            if (actor.MotionVector.X > 0
+                && !rightTileSolid
+                && tile.Bottom > actor.WorldPosition.Bottom
+                && actor.WorldPosition.Right > tile.Center.X)
+            {
+                return new CollisionInfo(IsFacingLedge: true);
+            }
+            else if (actor.MotionVector.X < 0
+               && !leftTileSolid
+               && tile.Bottom > actor.WorldPosition.Bottom
+               && actor.WorldPosition.Left < tile.Center.X)
+            {
+                return new CollisionInfo(IsFacingLedge: true);
+            }
+            else
+                return new CollisionInfo();
         }
 
         private CollisionInfo HandleCollision(Actor actor, Rectangle collidingTile, Rectangle frameStartPosition,

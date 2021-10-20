@@ -30,6 +30,10 @@ namespace SomeGame.Main.Modules
             _hudManager.DrawTiles();
 
             CollectiblesService.AddCoins(new Point(8,15), new Point(12,15));
+
+            CollectiblesService.AddCoins(new Point(25, 12), new Point(30, 15));
+
+
         }
 
         protected override void LoadSounds(ResourceLoader resourceLoader)
@@ -88,7 +92,7 @@ namespace SomeGame.Main.Modules
                 SceneManager, _playerState,AudioService, CollectiblesService);
 
             actorFactory.CreatePlayer(new PixelPoint(50, 100));
-            actorFactory.CreateSkeleton(new PixelPoint(100, 100));
+            actorFactory.CreateSkeleton(new PixelPoint(150, 120));
             actorFactory.CreateSkeleton(new PixelPoint(300, 100));
             CollectiblesService.CreateCollectedItemActors(actorFactory);
         }

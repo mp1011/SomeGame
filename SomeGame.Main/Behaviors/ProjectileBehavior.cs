@@ -6,30 +6,30 @@ namespace SomeGame.Main.Behaviors
 {
     class ProjectileBehavior : Behavior
     {
-        private PixelPoint _motionVector;
         private int _destroyTimer;
         private int _duration;
+        private PixelValue _speed;
 
-        public ProjectileBehavior(Direction direction, PixelValue speed, int duration)
+        public ProjectileBehavior(PixelValue speed, int duration)
         {
-            var pt = direction.ToPoint();
-            _motionVector = new PixelPoint(speed * pt.X, speed * pt.Y);
             _duration = duration;
+            _speed = speed;
         }
 
         public override void OnCreated(Actor actor)
         {
             _destroyTimer = 0;
+            actor.CurrentAnimation = AnimationKey.Moving;           
         }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
-            if (actor.Flip == Flip.H)
-                actor.MotionVector = new PixelPoint(_motionVector.X * -1, _motionVector.Y);
-            else
-                actor.MotionVector = _motionVector;
-
-            actor.CurrentAnimation = AnimationKey.Moving;
+            if(_destroyTimer == 0)
+            {
+                var direction = actor.Flip == Flip.H ? Direction.Left : Direction.Right;
+                var pt = direction.ToPoint();
+                actor.MotionVector = new PixelPoint(_speed * pt.X, _speed * pt.Y);
+            }
 
             _destroyTimer++;
             if(_destroyTimer == _duration)

@@ -33,7 +33,6 @@ namespace SomeGame.Main.Services
             sprite.Priority = SpritePriority.Front;
             sprite.Palette = actor.Palette;
             sprite.Enabled = true;
-            actor.Enabled = true;
 
             _actors[(int)spriteIndex] = actor;
 

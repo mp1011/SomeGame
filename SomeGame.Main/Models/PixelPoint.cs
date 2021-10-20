@@ -60,6 +60,16 @@
         public static implicit operator int(PixelValue pv) => pv.Pixel;
         public static implicit operator PixelValue(int v) => new PixelValue(v,0);
 
+        public static bool operator >(PixelValue p, int i)
+        {
+            return p.Pixel > i || ((p.Pixel == i) && (p.SubPixel > 0));
+        }
+
+        public static bool operator <(PixelValue p, int i)
+        {
+            return p.Pixel < i || ((p.Pixel == i) && (p.SubPixel < 0));
+        }
+
         public override string ToString()
         {
             return $"{Pixel}.{SubPixel}";

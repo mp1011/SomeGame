@@ -30,12 +30,14 @@ namespace SomeGame.Main.Models
             {
                 _index += 1;
                 if (_index == originalIndex)
-                    return null;
+                    return HandleNoFreeItems(_items[originalIndex]);
             }
 
             Activate(_items[_index]);
             return _items[_index];
         }
+
+        protected abstract T HandleNoFreeItems(T itemToTry);
     }
 
 
@@ -48,6 +50,11 @@ namespace SomeGame.Main.Models
         protected override void Activate(Actor item) => item.Create();
         
         protected override bool IsActive(Actor item) => item.Enabled;
+
+        protected override Actor HandleNoFreeItems(Actor itemToTry)
+        {
+            return null;
+        }
     }
 
     class SoundEffectPool : Pool<SoundEffectInstance>
@@ -60,5 +67,12 @@ namespace SomeGame.Main.Models
         protected override void Activate(SoundEffectInstance item) => item.Play();
 
         protected override bool IsActive(SoundEffectInstance item) => item.State == SoundState.Playing;
+
+        protected override SoundEffectInstance HandleNoFreeItems(SoundEffectInstance itemToTry)
+        {
+            itemToTry.Stop();
+            itemToTry.Play();
+            return itemToTry;
+        }
     }
 }

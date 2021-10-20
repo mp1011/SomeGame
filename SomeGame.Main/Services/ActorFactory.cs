@@ -42,13 +42,16 @@ namespace SomeGame.Main.Services
             PixelPoint position,
             Rectangle hitBox,
             ICollisionDetector collisionDetector,
-            IDestroyedBehavior destroyedBehavior=null)
+            IDestroyedBehavior destroyedBehavior=null,
+            bool enabledAtStart=true)
         {
             var actor = new Actor(actorType, tileset, paletteIndex, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
             actor.WorldPosition = new GameRectangleWithSubpixels(position.X,position.Y, hitBox.Width,hitBox.Height);
 
-            _actorManager.TryAddActor(_gameSystem, actor);
-
+            if (enabledAtStart)            
+                actor.Create();
+            
+            _actorManager.TryAddActor(_gameSystem, actor);                
             return actor;
         }
 
@@ -84,9 +87,9 @@ namespace SomeGame.Main.Services
                behavior: new CollectibleBehavior(_audioService, _playerState),
                collisionDetector: new EmptyCollisionDetector(),
                hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0,0));
+               position: new PixelPoint(0,0),
+               enabledAtStart:false);
 
-            coin.Enabled = false;
             return coin;
         }
 
@@ -120,7 +123,7 @@ namespace SomeGame.Main.Services
                actorType: ActorType.Player | ActorType.Bullet,
                tileset: TilesetContentKey.Bullet,
                paletteIndex: PaletteIndex.P2,
-               behavior: new ProjectileBehavior(Direction.Right, new PixelValue(2, 0), duration:20),
+               behavior: new ProjectileBehavior(new PixelValue(2, 0), duration:20),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
@@ -155,7 +158,7 @@ namespace SomeGame.Main.Services
                actorType: ActorType.Enemy | ActorType.Bullet,
                tileset: TilesetContentKey.Skeleton,
                paletteIndex: PaletteIndex.P2,
-               behavior: new ProjectileBehavior(Direction.Left, new PixelValue(1, 0), duration:100),
+               behavior: new ProjectileBehavior(new PixelValue(1, 0), duration:100),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
