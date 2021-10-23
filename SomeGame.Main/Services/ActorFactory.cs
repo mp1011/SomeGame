@@ -57,11 +57,11 @@ namespace SomeGame.Main.Services
             return actor;
         }
 
-        public Actor CreateActor(ActorId id, PixelPoint position)
+        public Actor CreateActor(ActorId id, PixelPoint position, TransitionInfo transitionInfo)
         {
             switch(id)
             {
-                case ActorId.Player: return CreatePlayer(position);
+                case ActorId.Player: return CreatePlayer(position, transitionInfo);
                 case ActorId.PlayerBullet: return CreatePlayerBullet();
                 case ActorId.Skeleton: return CreateSkeleton(position);
                 case ActorId.SkeletonBone: return CreateSkeletonBone();
@@ -74,7 +74,7 @@ namespace SomeGame.Main.Services
         {
             List<Actor> actors = new List<Actor>();
             while (count-- > 0)
-                actors.Add(CreateActor(id, new PixelPoint(0, 0)));
+                actors.Add(CreateActor(id, new PixelPoint(0, 0), new TransitionInfo()));
 
             return new ActorPool(actors);
         }
@@ -95,7 +95,7 @@ namespace SomeGame.Main.Services
             return coin;
         }
 
-        public Actor CreatePlayer(PixelPoint position)
+        public Actor CreatePlayer(PixelPoint position, TransitionInfo transitionInfo)
         {
             var playerProjectiles = CreatePool(ActorId.PlayerBullet, 2);
 
@@ -111,8 +111,10 @@ namespace SomeGame.Main.Services
                                 new Gravity(),
                                 _inputManager,
                                 playerProjectiles,
-                                _playerStateManager,
-                                _audioService),
+                                new DestroyOnFall(_sceneManager),
+                                _sceneManager,
+                                _audioService,
+                                transitionInfo),
                 destroyedBehavior: new PlayerDeathBehavior(_sceneManager),
                 collisionDetector: new BgCollisionDetector(_gameSystem, _collectiblesService),
                 hitBox: new Rectangle(4, 0, 8, 14),

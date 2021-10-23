@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Models;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,6 +100,101 @@ namespace SomeGame.Main.Services
             Write(spriteFrame.TopRight);
             Write(spriteFrame.BottomLeft);
             Write(spriteFrame.BottomRight);
+        }
+
+        public void Write(SceneInfo scene)
+        {
+            Write(scene.BgMap);
+            Write(scene.FgMap);
+            _writer.Write((byte)scene.InterfaceType);
+            Write(scene.Bounds);
+            Write(scene.PaletteKeys);
+            WriteEnumerable(scene.VramImages);
+            WriteEnumerable(scene.Sounds);
+            WriteEnumerable(scene.Actors);
+            WriteEnumerable(scene.CollectiblePlacements);
+            Write(scene.Transitions);
+        }
+
+        public void Write(SceneTransitions sceneTransitions)
+        {
+            _writer.Write((byte)sceneTransitions.Left);
+            _writer.Write((byte)sceneTransitions.Right);
+            _writer.Write((byte)sceneTransitions.Up);
+            _writer.Write((byte)sceneTransitions.Down);
+            _writer.Write((byte)sceneTransitions.Door1);
+            _writer.Write((byte)sceneTransitions.Door2);
+        }
+
+        public void Write(ActorStart actorStart)
+        {
+            _writer.Write((byte)actorStart.ActorId);
+            Write(actorStart.Position);
+        }
+
+        public void Write(CollectiblePlacement collectiblePlacement)
+        {
+            _writer.Write((byte)collectiblePlacement.Id);
+
+            _writer.Write(collectiblePlacement.Position.X);
+            _writer.Write(collectiblePlacement.Position.Y);
+
+            if (collectiblePlacement.Position2.HasValue)
+            {
+                _writer.Write((byte)2);
+                _writer.Write(collectiblePlacement.Position2.Value.X);
+                _writer.Write(collectiblePlacement.Position2.Value.Y);
+            }
+            else
+            {
+                _writer.Write((byte)1);
+            }
+        }
+
+        public void Write(PixelPoint pixelPoint)
+        {
+            Write(pixelPoint.X);
+            Write(pixelPoint.Y);
+        }
+
+        public void Write(PixelValue pixelValue)
+        {
+            _writer.Write(pixelValue.Pixel);
+            _writer.Write(pixelValue.SubPixel);
+        }
+
+        public void Write(Rectangle rectangle)
+        {
+            _writer.Write(rectangle.X);
+            _writer.Write(rectangle.Y);
+            _writer.Write(rectangle.Width);
+            _writer.Write(rectangle.Height);
+        }
+
+        public void Write(LayerInfo layerInfo)
+        {
+            _writer.Write((byte)layerInfo.Key);
+            _writer.Write((byte)layerInfo.ScrollFactor);
+        }
+
+        public void Write(PaletteKeys paletteKeys)
+        {
+            _writer.Write((byte)paletteKeys.P1);
+            _writer.Write((byte)paletteKeys.P2);
+            _writer.Write((byte)paletteKeys.P3);
+            _writer.Write((byte)paletteKeys.P4);
+        }
+
+        public void Write(TilesetWithPalette tilesetWithPalette)
+        {
+            _writer.Write((byte)tilesetWithPalette.TileSet);
+            _writer.Write((byte)tilesetWithPalette.Palette);
+        }
+
+        public void Write(SoundInfo soundInfo)
+        {
+            _writer.Write((byte)soundInfo.Key);
+            _writer.Write(soundInfo.MaxOccurences);
         }
 
         private void Write(object o)

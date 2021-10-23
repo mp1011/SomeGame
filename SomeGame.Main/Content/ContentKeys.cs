@@ -1,13 +1,13 @@
 ﻿namespace SomeGame.Main.Content
 {
-    public enum SoundContentKey
+    public enum SoundContentKey : byte
     {
         None,
         Swish,
         GetCoin
     }
 
-    public enum ImageContentKey
+    public enum ImageContentKey : byte
     {
         None,
         Sheet,
@@ -23,7 +23,7 @@
         Items
     }
 
-    public enum TilesetContentKey
+    public enum TilesetContentKey : byte
     {
         None,
         Tiles,
@@ -35,10 +35,18 @@
         Items
     }
 
-    public enum LevelContentKey
+    public enum LevelContentKey : byte
     {
         None,
         TestLevel,
+        TestLevel2,
         TestLevelBG
+    }
+
+    public enum SceneContentKey
+    {
+        None,
+        Test1,
+        Test2
     }
 }

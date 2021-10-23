@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
-using System;
 using System.Collections.Generic;
 
 namespace SomeGame.Main.Modules

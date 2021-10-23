@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
+using SomeGame.Main.Scenes;
 using System.Linq;
 
 namespace SomeGame.Main.Services
@@ -15,11 +17,16 @@ namespace SomeGame.Main.Services
         private readonly HUDManager _hudManager;
         private readonly CollectiblesService _collectiblesService;
         private readonly Scroller _scroller;
+        private readonly PlayerStateManager _playerStateManager;
+        private readonly ActorManager _actorManager;
 
         public SceneLoader(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice, 
             DataSerializer dataSerializer, ActorFactory actorFactory, AudioService audioService, 
-            HUDManager hudManager, CollectiblesService collectiblesService, Scroller scroller, GameSystem gameSystem)
+            HUDManager hudManager, CollectiblesService collectiblesService, Scroller scroller, 
+            GameSystem gameSystem, PlayerStateManager playerStateManager, ActorManager actorManager)
         {
+            _actorManager = actorManager;
+            _playerStateManager = playerStateManager;
             _gameSystem = gameSystem;
             _scroller = scroller;
             _actorFactory = actorFactory;
@@ -31,7 +38,13 @@ namespace SomeGame.Main.Services
             _hudManager = hudManager;
         }
 
-        public void InitializeScene(SceneInfo sceneInfo)
+        public Scene LoadScene(TransitionInfo sceneTransition)
+        {
+            UnloadPreviousScene();
+            return new Scene(sceneTransition.NextScene, _dataSerializer.Load(sceneTransition.NextScene), _gameSystem);
+        }
+
+        public void InitializeScene(SceneInfo sceneInfo, TransitionInfo sceneTransition)
         {
             _gameSystem.SetPalettes(
                _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P1).ToIndexedTilesetImage().Palette,
@@ -51,7 +64,7 @@ namespace SomeGame.Main.Services
             InitializeLayer(sceneInfo.FgMap, LayerIndex.FG);
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
             PlaceCollectibles(sceneInfo);
-            InitializeActors(sceneInfo);
+            InitializeActors(sceneInfo, sceneTransition);
             InitializeSounds(sceneInfo);
 
             _scroller.SetCameraBounds(sceneInfo.Bounds);
@@ -75,10 +88,10 @@ namespace SomeGame.Main.Services
             layer.ScrollFactor = layerInfo.ScrollFactor;            
         }
 
-        private void InitializeActors(SceneInfo sceneInfo)
+        private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)
         {
             foreach (var actorStart in sceneInfo.Actors)
-                _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position);
+                _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
 
             _collectiblesService.CreateCollectedItemActors(_actorFactory);
         }
@@ -98,6 +111,13 @@ namespace SomeGame.Main.Services
         {
             foreach (var sfx in sceneInfo.Sounds)
                 _audioService.LoadSound(sfx.Key, sfx.MaxOccurences);
+        }
+
+        private void UnloadPreviousScene()
+        {
+            _playerStateManager.ResetPlayerState();
+            _audioService.UnloadSounds();
+            _actorManager.UnloadAll();
         }
     }
 }

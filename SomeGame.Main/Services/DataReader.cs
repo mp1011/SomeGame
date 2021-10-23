@@ -1,4 +1,6 @@
-﻿using SomeGame.Main.Models;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
+using SomeGame.Main.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -123,6 +125,76 @@ namespace SomeGame.Main.Services
         public Animation ReadAnimation() => new Animation(ReadEnumerable<AnimationFrame>());
 
         public AnimationFrame ReadAnimationFrame() => new AnimationFrame(_reader.ReadByte(), _reader.ReadByte());
+
+        public SceneInfo ReadScene()
+        {
+            return new SceneInfo(
+                BgMap: ReadLayerInfo(),
+                FgMap: ReadLayerInfo(),
+                InterfaceType: ReadEnum<InterfaceType>(),
+                Bounds: ReadRectangle(),
+                PaletteKeys: ReadPaletteKeys(),
+                VramImages: ReadEnumerable<TilesetWithPalette>(),
+                Sounds: ReadEnumerable<SoundInfo>(),
+                Actors: ReadEnumerable<ActorStart>(),
+                CollectiblePlacements: ReadEnumerable<CollectiblePlacement>(),
+                Transitions: ReadSceneTransitions());
+        }
+
+        public SceneTransitions ReadSceneTransitions() => new SceneTransitions(
+            ReadEnum<SceneContentKey>(),
+            ReadEnum<SceneContentKey>(),
+            ReadEnum<SceneContentKey>(),
+            ReadEnum<SceneContentKey>(),
+            ReadEnum<SceneContentKey>(),
+            ReadEnum<SceneContentKey>());
+
+        public LayerInfo ReadLayerInfo() => new LayerInfo(ReadEnum<LevelContentKey>(), _reader.ReadByte());
+
+        public Rectangle ReadRectangle() => new Rectangle(
+            _reader.ReadInt32(), 
+            _reader.ReadInt32(), 
+            _reader.ReadInt32(), 
+            _reader.ReadInt32());
+
+        public PaletteKeys ReadPaletteKeys() => new PaletteKeys(
+            ReadEnum<ImageContentKey>(),
+            ReadEnum<ImageContentKey>(),
+            ReadEnum<ImageContentKey>(),
+            ReadEnum<ImageContentKey>());
+
+
+        public TilesetWithPalette ReadTilesetWithPalette() =>
+            new TilesetWithPalette(ReadEnum<TilesetContentKey>(), ReadEnum<PaletteIndex>());
+
+        public SoundInfo ReadSoundInfo() =>
+            new SoundInfo(ReadEnum<SoundContentKey>(), _reader.ReadByte());
+
+        public ActorStart ReadActorStart() =>
+            new ActorStart(ReadEnum<ActorId>(), ReadPixelPoint());
+
+        public PixelPoint ReadPixelPoint() => new PixelPoint(ReadPixelValue(), ReadPixelValue());
+
+        public PixelValue ReadPixelValue() => new PixelValue(_reader.ReadInt32(), _reader.ReadInt32());
+
+        public CollectiblePlacement ReadCollectiblePlacement()
+        {
+            var id = ReadEnum<CollectibleId>();
+            int x = _reader.ReadInt32();
+            int y = _reader.ReadInt32();
+
+            var n = _reader.ReadByte();
+            if(n==2)
+            {
+                int x2 = _reader.ReadInt32();
+                int y2 = _reader.ReadInt32();
+                return new CollectiblePlacement(id, new Point(x, y), new Point(x2, y2));
+            }
+            else
+            {
+                return new CollectiblePlacement(id, new Point(x, y));
+            }
+        }
 
         public T ReadEnum<T>() where T:Enum
         {

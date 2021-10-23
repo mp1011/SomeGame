@@ -176,6 +176,8 @@ namespace SomeGame.Main.Modules
             {
                 case LevelContentKey.TestLevelBG:
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth, GameSystem.LayerTileHeight / 2);
+                case LevelContentKey.TestLevel2:
+                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth/2, GameSystem.LayerTileHeight / 2);
                 default:
                     throw new Exception($"No default set for level {levelContentKey}");
             }

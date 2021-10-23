@@ -1,38 +1,56 @@
-﻿using SomeGame.Main.Models;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
+using SomeGame.Main.Extensions;
+using SomeGame.Main.Models;
 using SomeGame.Main.Scenes;
 
 namespace SomeGame.Main.Services
 {
     class SceneManager
     {
-        private readonly GameSystem _gameSystem;
-
-        private Scene _nextScene;
+        private TransitionInfo _transitionInfo = new TransitionInfo();
         public Scene CurrentScene { get; private set; }
 
-        public SceneManager(GameSystem gameSystem)
+ 
+        public void RestartCurrentScene() => QueueNextScene(CurrentScene.Key);
+
+        public void QueueNextScene(SceneContentKey sceneContentKey)
         {
-            _gameSystem = gameSystem;
+            _transitionInfo = new TransitionInfo(sceneContentKey, Rectangle.Empty, Point.Zero, Direction.None);
         }
-
-        public void QueueNextScene(Scene scene)
-        {
-            _nextScene = scene;
-        }
-
-        public void RestartCurrentScene() => QueueNextScene(CurrentScene);
-
        
-        public SceneUpdateResult Update()
+        public void Update(SceneLoader sceneLoader)
         {
-            if (_nextScene != null)
+            if (_transitionInfo.NextScene != SceneContentKey.None)
             {
-                CurrentScene = _nextScene;
-                _nextScene = null;
-                return new SceneUpdateResult(LoadScene: CurrentScene);
+                CurrentScene = sceneLoader.LoadScene(_transitionInfo);
+                sceneLoader.InitializeScene(CurrentScene.SceneInfo, _transitionInfo);
+                _transitionInfo = new TransitionInfo();
+            }
+        }
+
+        public bool CheckLevelTransitions(Actor actor)
+        {
+            var transitions = CurrentScene.SceneInfo.Transitions;
+
+            return CheckEdgeTransition(actor, transitions.Left, CurrentScene.LeftEdge, Direction.Left)
+                || CheckEdgeTransition(actor, transitions.Right, CurrentScene.RightEdge, Direction.Right)
+                || CheckEdgeTransition(actor, transitions.Up, CurrentScene.TopEdge, Direction.Up)
+                || CheckEdgeTransition(actor, transitions.Door1, CurrentScene.BottomEdge, Direction.Down);
+        }
+
+        private bool CheckEdgeTransition(Actor actor, SceneContentKey nextScene, Rectangle exitSide, Direction direction)
+        {
+            if (nextScene == SceneContentKey.None)
+                return false;
+
+            if(actor.WorldPosition.IntersectsWith(exitSide))
+            {
+                _transitionInfo = new TransitionInfo(nextScene, exitSide, actor.WorldPosition.Center, direction);
+                return true;
             }
 
-            return new SceneUpdateResult();
+            return false;
         }
     }
 }

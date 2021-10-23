@@ -16,26 +16,65 @@ namespace SomeGame.Main.Behaviors
         private readonly InputManager _inputManager;
         private readonly ActorPool _bullets;
         private readonly AudioService _audioService;
+        private readonly DestroyOnFall _destroyOnFall;
+        private readonly SceneManager _sceneManager;
+        private readonly TransitionInfo _incomingTransition;
 
-        private PlayerStateManager _playerStateManager;
         private int _attackCooldown;
 
-        public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, CameraBehavior cameraBehavior, 
-            AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets, PlayerStateManager playerStateManager,
-            AudioService audioService)
+        public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, 
+            CameraBehavior cameraBehavior, AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets,  
+            DestroyOnFall destroyOnFall, SceneManager sceneManager, AudioService audioService, TransitionInfo incomingTransition)
         {
+            _destroyOnFall = destroyOnFall;
             _motionBehavior = motionBehavior;
             _cameraBehavior = cameraBehavior;
             _playerHurtBehavior = playerHurtBehavior;
             _gravity = gravity;
             _bullets = bullets;
             _inputManager = inputManager;
-            _playerStateManager = playerStateManager;
             _audioService = audioService;
+            _sceneManager = sceneManager;
+            _incomingTransition = incomingTransition;
+        }
+
+        public override void OnCreated(Actor actor)
+        {
+            if (_incomingTransition.ExitSide.Width == 0)
+                return;
+
+            var relativeExitPosition = new Point(
+                _incomingTransition.PlayerExitPosition.X - _incomingTransition.ExitSide.Center.X,
+                _incomingTransition.PlayerExitPosition.Y - _incomingTransition.ExitSide.Center.Y);
+
+            var enterSide = _sceneManager.CurrentScene.GetEdge(_incomingTransition.Direction.Opposite());
+
+            var relativeEnterPosition = new Point(
+                enterSide.Center.X + relativeExitPosition.X,
+                enterSide.Center.Y + relativeExitPosition.Y);
+
+            switch(_incomingTransition.Direction)
+            {
+                case Direction.Left:
+                    relativeEnterPosition = new Point(enterSide.Left - actor.WorldPosition.Width - 5, relativeEnterPosition.Y);
+                    break;
+                case Direction.Right:
+                    relativeEnterPosition = new Point(enterSide.Right + actor.WorldPosition.Width + 5, relativeEnterPosition.Y);
+                    break;
+                case Direction.Up:
+                    relativeEnterPosition = new Point(relativeEnterPosition.X, enterSide.Top - actor.WorldPosition.Height - 5);
+                    break;
+                case Direction.Down:
+                    relativeEnterPosition = new Point(relativeEnterPosition.X, enterSide.Bottom + actor.WorldPosition.Height + 5);
+                    break;
+            }
+
+            actor.WorldPosition.Center = relativeEnterPosition;
         }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
+            _destroyOnFall.Update(actor);
             _playerHurtBehavior.Update(actor, frameStartPosition, collisionInfo);
             _motionBehavior.Update(actor, frameStartPosition, collisionInfo);
             _gravity.Update(actor, frameStartPosition, collisionInfo);
@@ -64,6 +103,8 @@ namespace SomeGame.Main.Behaviors
                     bullet.Flip = actor.Flip;
                 }
             }
+
+            _sceneManager.CheckLevelTransitions(actor);
         }
 
         public override void HandleCollision(Actor actor, Actor other)

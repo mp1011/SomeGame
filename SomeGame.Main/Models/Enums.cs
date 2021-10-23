@@ -164,7 +164,7 @@ namespace SomeGame.Main.Models
         Finished
     }
 
-    public enum ActorId
+    public enum ActorId : byte
     {
         Player,
         PlayerBullet,
@@ -176,7 +176,7 @@ namespace SomeGame.Main.Models
         Meat
     }
 
-    public enum CollectibleId
+    public enum CollectibleId : byte
     {
         Coin = ActorId.Coin,
         Gem = ActorId.Gem,

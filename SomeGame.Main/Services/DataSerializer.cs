@@ -31,6 +31,12 @@ namespace SomeGame.Main.Services
         {
             return $"{_contentFolder.FullName}\\Levels\\{levelContentKey}.bin";
         }
+
+        private string GetPath(SceneContentKey contentKey)
+        {
+            return $"{_contentFolder.FullName}\\Levels\\Scene_{contentKey}.bin";
+        }
+
         private string GetPath(TilesetContentKey tilesetContentKey)
         {
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.bin";
@@ -98,6 +104,22 @@ namespace SomeGame.Main.Services
         public void Save(TileMap tileMap)
         {
             Save(tileMap.GetGrid(), GetPath(tileMap.LevelKey));
+        }
+
+        public void Save(SceneContentKey sceneContentKey, SceneInfo scene)
+        {
+            var path = GetPath(sceneContentKey);
+            using var stream = File.OpenWrite(path);
+            using var writer = new DataWriter(stream);
+            writer.Write(scene);
+        }
+
+        public SceneInfo Load(SceneContentKey sceneContentKey)
+        {
+            var path = GetPath(sceneContentKey);
+            using var stream = File.OpenRead(path);
+            using var reader = new DataReader(stream);
+            return reader.ReadScene();
         }
 
         public void Save(TilesetContentKey tilesetContentKey, SpriteFrame[] spriteFrames)
