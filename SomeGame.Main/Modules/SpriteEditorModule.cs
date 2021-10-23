@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Editor;
 using SomeGame.Main.Extensions;
@@ -15,7 +17,8 @@ namespace SomeGame.Main.Modules
         private UIButton _save;        
         private Point _previewSpriteTile = new Point(0, 4);
 
-        public SpriteEditorModule(TilesetContentKey spriteKey)
+        public SpriteEditorModule(TilesetContentKey spriteKey, ContentManager contentManager, GraphicsDevice graphicsDevice) 
+            : base(contentManager, graphicsDevice)
         {
             _spriteKey = spriteKey;
         }
@@ -41,12 +44,12 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override void AfterInitialize(ResourceLoader resourceLoader, Microsoft.Xna.Framework.Graphics.GraphicsDevice graphicsDevice)
+        protected override void AfterInitialize()
         {
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
             _save = new UIButton("SAVE", new Point(30, 0), GameSystem.GetLayer(LayerIndex.Interface), _font);
 
-            var spriteFrames = _dataSerializer.LoadSpriteFrames(_spriteKey);
+            var spriteFrames = DataSerializer.LoadSpriteFrames(_spriteKey);
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             Point p = new Point(0, 4);
             foreach(var frame in spriteFrames)
@@ -168,9 +171,8 @@ namespace SomeGame.Main.Modules
         private void Save()
         {
             var frames = CreateSpriteFrames();
-            _dataSerializer.Save(_spriteKey, frames);
+            DataSerializer.Save(_spriteKey, frames);
         }
-
 
         private void PreviewSprite()
         {

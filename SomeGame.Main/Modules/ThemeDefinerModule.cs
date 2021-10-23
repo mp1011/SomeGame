@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Editor;
@@ -9,7 +10,7 @@ using System;
 
 namespace SomeGame.Main.Modules
 {
-    class ThemeDefinerModule : GameModuleBase
+    class ThemeDefinerModule : EditorModule
     {
         private readonly TileSetService _tileSetService;
         private UIMultiSelect<string> _themeSelector;
@@ -24,7 +25,8 @@ namespace SomeGame.Main.Modules
         private TilesetContentKey _tileSetKey;
         private IndexedImage _image;
 
-        public ThemeDefinerModule(ImageContentKey imageKey, TilesetContentKey tilesetContentKey)
+        public ThemeDefinerModule(ImageContentKey imageKey, TilesetContentKey tilesetContentKey, 
+            ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager,graphicsDevice)
         {
             _imageKey = imageKey;
             _tileSetKey = tilesetContentKey;
@@ -34,7 +36,7 @@ namespace SomeGame.Main.Modules
             _blockSelect = new UIBlockSelect(AssignTheme,(x,y)=> { });
         }
 
-        protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+        protected override void AfterInitialize()
         {
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 

@@ -15,12 +15,13 @@ namespace SomeGame.Main.Services
         private readonly DataSerializer _dataSerializer;
         private readonly InputManager _inputManager;
         private readonly SceneManager _sceneManager;
-        private readonly PlayerState _playerState;
+        private readonly Scroller _scroller;
+        private readonly PlayerStateManager _playerStateManager;
         private readonly AudioService _audioService;
         private readonly CollectiblesService _collectiblesService;
 
         public ActorFactory(ActorManager actorManager, GameSystem gameSystem, DataSerializer dataSerializer, 
-            InputManager inputManager, SceneManager sceneManager, PlayerState playerState,
+            InputManager inputManager, SceneManager sceneManager, Scroller scroller, PlayerStateManager playerStateManager,
             AudioService audioService, CollectiblesService collectiblesService)
         {
             _actorManager = actorManager;
@@ -28,9 +29,10 @@ namespace SomeGame.Main.Services
             _dataSerializer = dataSerializer;
             _inputManager = inputManager;
             _sceneManager = sceneManager;
-            _playerState = playerState;
+            _playerStateManager = playerStateManager;
             _audioService = audioService;
             _collectiblesService = collectiblesService;
+            _scroller = scroller;
         }
 
         public Actor CreateActor(
@@ -84,7 +86,7 @@ namespace SomeGame.Main.Services
                actorType: ActorType.Item,
                tileset: TilesetContentKey.Items,
                paletteIndex: PaletteIndex.P1,
-               behavior: new CollectibleBehavior(_audioService, _playerState),
+               behavior: new CollectibleBehavior(_audioService, _playerStateManager),
                collisionDetector: new EmptyCollisionDetector(),
                hitBox: new Rectangle(0, 0, 8, 8),
                position: new PixelPoint(0,0),
@@ -104,13 +106,14 @@ namespace SomeGame.Main.Services
                 paletteIndex: PaletteIndex.P2,
                 behavior: new PlayerBehavior(
                                 new PlatformerPlayerMotionBehavior(_inputManager),
-                                new PlayerHurtBehavior(),
-                                new CameraBehavior(_sceneManager, _gameSystem),
+                                new PlayerHurtBehavior(_playerStateManager),
+                                new CameraBehavior(_scroller, _gameSystem),
                                 new Gravity(),
                                 _inputManager,
                                 playerProjectiles,
-                                _playerState,
+                                _playerStateManager,
                                 _audioService),
+                destroyedBehavior: new PlayerDeathBehavior(_sceneManager),
                 collisionDetector: new BgCollisionDetector(_gameSystem, _collectiblesService),
                 hitBox: new Rectangle(4, 0, 8, 14),
                 position: position);
@@ -145,7 +148,7 @@ namespace SomeGame.Main.Services
                  tileset: TilesetContentKey.Skeleton,
                  paletteIndex: PaletteIndex.P2,
                  behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), bone),
-                 destroyedBehavior: new EnemyDestroyedBehavior(score: 100, _playerState),
+                 destroyedBehavior: new EnemyDestroyedBehavior(score: 100, _playerStateManager),
                  collisionDetector: new BgCollisionDetector(_gameSystem),
                  hitBox: new Rectangle(4, 0, 8, 15),
                  position: position);

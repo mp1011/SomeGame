@@ -7,20 +7,19 @@ namespace SomeGame.Main.Behaviors
 {
     class CameraBehavior : Behavior
     {
-        private readonly SceneManager _sceneManager;
+        private readonly Scroller _scroller;
         private readonly GameSystem _gameSystem;
 
-        public CameraBehavior(SceneManager sceneManager, GameSystem gameSystem)
+        public CameraBehavior(Scroller scroller, GameSystem gameSystem)
         {
-            _sceneManager = sceneManager;
+            _scroller = scroller;
             _gameSystem = gameSystem;
         }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
-            var scene = _sceneManager.CurrentScene;
-            scene.Camera.X = actor.WorldPosition.X - _gameSystem.Screen.Width / 2;
-            scene.Camera.Y = actor.WorldPosition.Y - _gameSystem.Screen.Height / 2;
+            _scroller.Camera.X = actor.WorldPosition.X - _gameSystem.Screen.Width / 2;
+            _scroller.Camera.Y = actor.WorldPosition.Y - _gameSystem.Screen.Height / 2;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SomeGame.Main.Models;
+using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Behaviors
 {
@@ -19,18 +20,18 @@ namespace SomeGame.Main.Behaviors
 
     class EnemyDestroyedBehavior : IDestroyedBehavior
     {
-        private PlayerState _playerState;
+        private PlayerStateManager _playerStateManager;
         private int _score;
 
-        public EnemyDestroyedBehavior(int score, PlayerState playerState)
+        public EnemyDestroyedBehavior(int score, PlayerStateManager playerStateManager)
         {
-            _playerState = playerState;
+            _playerStateManager = playerStateManager;
             _score = score;
         }
 
         public void OnDestroyed(Actor actor)
         {
-            _playerState.Score += _score;
+            _playerStateManager.CurrentState.Score += _score;
         }
 
         public virtual DestroyedState Update(Actor actor) => DestroyedState.Destroyed;

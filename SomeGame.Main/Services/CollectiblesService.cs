@@ -22,6 +22,16 @@ namespace SomeGame.Main.Services
             _coins = actorFactory.CreatePool(ActorId.Coin, 3);
         }
 
+        public void AddCollectible(CollectibleId collectibleId, Point position, Point? position2=null)
+        {
+            switch(collectibleId)
+            {
+                case CollectibleId.Coin:
+                    AddCoins(position, position2 ?? position);
+                    break;
+            }
+        }
+
         public void AddCoins(Point upperLeft, Point lowerRight)
         {
             var tile = upperLeft;

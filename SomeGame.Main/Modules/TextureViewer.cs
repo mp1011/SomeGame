@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Services;
@@ -9,9 +10,11 @@ namespace SomeGame.Main.Modules
     {
         private ImageContentKey _imageKey;
         private Texture2D _texture;
+        private readonly ResourceLoader _resourceLoader;
 
-        public TextureViewer(ImageContentKey imageKey)
+        public TextureViewer(ImageContentKey imageKey, ContentManager contentManager)
         {
+            _resourceLoader = new ResourceLoader(contentManager);
             _imageKey = imageKey;
         }
 
@@ -22,9 +25,9 @@ namespace SomeGame.Main.Modules
             spriteBatch.Draw(_texture, Vector2.Zero, Color.White);
         }
 
-        public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+        public void Initialize()
         {
-            _texture = resourceLoader.LoadTexture(_imageKey);
+            _texture = _resourceLoader.LoadTexture(_imageKey);
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

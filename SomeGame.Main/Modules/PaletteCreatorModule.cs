@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
@@ -11,24 +12,21 @@ using System.Linq;
 
 namespace SomeGame.Main.Modules
 {
-    class PaletteCreatorModule : GameModuleBase
+    class PaletteCreatorModule : EditorModule
     {
-        private readonly DataSerializer _dataSerializer;
-
-        public PaletteCreatorModule()
+        public PaletteCreatorModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
         {
-            _dataSerializer = new DataSerializer();
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
         }
 
-        protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+        protected override void AfterInitialize()
         {
             var images = Enum.GetValues<TilesetContentKey>()
                 .Where(t => t != TilesetContentKey.None)
-                .Select(t => resourceLoader.LoadTexture(t).ToIndexedTilesetImage())
+                .Select(t => ResourceLoader.LoadTexture(t).ToIndexedTilesetImage())
                 .ToDictionary(k=>k.Key,v=>v);
 
            // FitToPalette(images, TilesetContentKey.Tiles, TilesetContentKey.Items, graphicsDevice);
@@ -36,9 +34,9 @@ namespace SomeGame.Main.Modules
             //SaveReducedColorImage(images.Single(p => p.Key == TilesetContentKey.Items), 16, graphicsDevice);
 
          
-            CreatePaletteImage(images, ImageContentKey.Palette1, graphicsDevice, TilesetContentKey.Tiles);
-            CreatePaletteImage(images, ImageContentKey.Palette2, graphicsDevice, TilesetContentKey.Hero, TilesetContentKey.Bullet,
-                TilesetContentKey.Skeleton, TilesetContentKey.Hero, TilesetContentKey.Font);
+            CreatePaletteImage(images, ImageContentKey.Palette1, GraphicsDevice, TilesetContentKey.Tiles);
+            CreatePaletteImage(images, ImageContentKey.Palette2, GraphicsDevice, TilesetContentKey.Hero, TilesetContentKey.Bullet,
+                TilesetContentKey.Skeleton, TilesetContentKey.Hero, TilesetContentKey.Font, TilesetContentKey.Hud);
 
            // CreatePaletteImage(palettes[0].CreateTransformed(c=> new Color(255-c.R,255-c.G,255-c.B)), ImageContentKey.Palette1Inverse, graphicsDevice);
            // CreatePaletteImage(palettes[2], ImageContentKey.Palette3, graphicsDevice);
@@ -89,7 +87,7 @@ namespace SomeGame.Main.Modules
                 (x, y) => b++);
 
             var indexedImage = new IndexedTilesetImage(TilesetContentKey.None, grid, new Palette(colors));
-            _dataSerializer.SaveImage(key, indexedImage.ToTexture2D(graphicsDevice));
+            DataSerializer.SaveImage(key, indexedImage.ToTexture2D(graphicsDevice));
         }
 
         private void CreateExtendedPaletteImage(Palette p, ImageContentKey key, GraphicsDevice graphicsDevice)
@@ -99,7 +97,7 @@ namespace SomeGame.Main.Modules
                 (x, y) => b++);
 
             var indexedImage = new IndexedTilesetImage(TilesetContentKey.None, grid, p);
-            _dataSerializer.SaveImage(key, indexedImage.ToTexture2D(graphicsDevice));
+            DataSerializer.SaveImage(key, indexedImage.ToTexture2D(graphicsDevice));
         }
 
         protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)

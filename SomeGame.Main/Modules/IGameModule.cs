@@ -1,14 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
+using SomeGame.Main.Scenes;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Modules
 {
     interface IGameModule
     {
-        void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice);
+        void Initialize();
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
         void OnWindowSizeChanged(Viewport viewport);
@@ -17,25 +19,25 @@ namespace SomeGame.Main.Modules
 
     abstract class GameModuleBase : IGameModule
     {
+        protected GraphicsDevice GraphicsDevice { get; }
+        protected ResourceLoader ResourceLoader { get; }
+        protected DataSerializer DataSerializer { get; }
         protected GameSystem GameSystem { get; }
         protected RenderService RenderService { get; }
-
-        protected AudioService AudioService { get; private set; }
-        protected CollectiblesService CollectiblesService { get; private set; }
-        protected ActorManager ActorManager { get; private set; }
-        protected SceneManager SceneManager { get; }
         protected InputManager InputManager { get; } 
         protected InputModel Input => InputManager.Input;
+        
 
         public Rectangle Screen => GameSystem.Screen;
 
-        public GameModuleBase()
+        public GameModuleBase(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
             GameSystem = new GameSystem();
             RenderService= new RenderService(GameSystem);
-            SceneManager = new SceneManager();
             InputManager = new InputManager(GameSystem);
-            AudioService = new AudioService();
+            DataSerializer = new DataSerializer();
+            ResourceLoader = new ResourceLoader(contentManager);
+            GraphicsDevice = graphicsDevice;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -53,63 +55,56 @@ namespace SomeGame.Main.Modules
 
         }
 
-        public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
-        {
-            GameSystem.SetPalettes(
-               resourceLoader.LoadTexture(PaletteKeys.P1).ToIndexedTilesetImage().Palette,
-               resourceLoader.LoadTexture(PaletteKeys.P2).ToIndexedTilesetImage().Palette,
-               resourceLoader.LoadTexture(PaletteKeys.P3).ToIndexedTilesetImage().Palette,
-               resourceLoader.LoadTexture(PaletteKeys.P4).ToIndexedTilesetImage().Palette);
+        public abstract void Initialize();
+       // {
+            //GameSystem.Input.Initialize(GameSystem.Screen);
+            //CollectiblesService = new CollectiblesService(GameSystem, GameSystem.GetLayer(LayerIndex.FG));
 
-            var vramImages = LoadVramImages(resourceLoader);
+          
+            //var actorFactory = new ActorFactory(ActorManager, GameSystem, _dataSerializer, InputManager, SceneManager,
+            //    null, AudioService, CollectiblesService);
+
+            //var sceneLoader = new SceneLoader(resourceLoader, graphicsDevice, _dataSerializer, actorFactory, GameSystem);
+            //SceneManager = new SceneManager(GameSystem, sceneLoader);
+
+            //AfterInitialize(resourceLoader, graphicsDevice);
+
+            //SceneManager.QueueNextScene(GetInitialScene());
+            //SceneManager.Update();
+
+            //todo 
+            //GameSystem.SetPalettes(
+            //   resourceLoader.LoadTexture(PaletteKeys.P1).ToIndexedTilesetImage().Palette,
+            //   resourceLoader.LoadTexture(PaletteKeys.P2).ToIndexedTilesetImage().Palette,
+            //   resourceLoader.LoadTexture(PaletteKeys.P3).ToIndexedTilesetImage().Palette,
+            //   resourceLoader.LoadTexture(PaletteKeys.P4).ToIndexedTilesetImage().Palette);
+
+            //var vramImages = LoadVramImages(resourceLoader);
            
-            GameSystem.SetVram(graphicsDevice, vramImages);
+            //GameSystem.SetVram(graphicsDevice, vramImages);
 
-            InitializeLayer(LayerIndex.BG, GameSystem.GetLayer(LayerIndex.BG));
-            InitializeLayer(LayerIndex.FG, GameSystem.GetLayer(LayerIndex.FG));
-            InitializeLayer(LayerIndex.Interface, GameSystem.GetLayer(LayerIndex.Interface));
+            //InitializeLayer(LayerIndex.BG, GameSystem.GetLayer(LayerIndex.BG));
+            //InitializeLayer(LayerIndex.FG, GameSystem.GetLayer(LayerIndex.FG));
+            //InitializeLayer(LayerIndex.Interface, GameSystem.GetLayer(LayerIndex.Interface));
 
-            CollectiblesService = new CollectiblesService(GameSystem, GameSystem.GetLayer(LayerIndex.FG));
+            //
+            //
+            //
+            //InitializeActors();
 
-            GameSystem.Input.Initialize(GameSystem.Screen);
+            //SceneManager.QueueNextScene(GetInitialScene());
 
-            ActorManager = new ActorManager(GameSystem, SceneManager);
-            InitializeActors();
+            //LoadSounds(resourceLoader);
 
-            SceneManager.SetScene(InitializeScene());
+            //AfterInitialize(resourceLoader, graphicsDevice);
+       // }
 
-            LoadSounds(resourceLoader);
-
-            AfterInitialize(resourceLoader, graphicsDevice);
-        }
-
-        protected virtual void LoadSounds(ResourceLoader resourceLoader)
-        {
-
-        }
-
-        protected virtual PaletteKeys PaletteKeys => new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);
-       
-        protected virtual Scene InitializeScene()
-        {
-            return new Scene(new Rectangle(0,0,GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight), GameSystem);
-        }
-
-        protected virtual void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
-        {
-        }
-
-        protected virtual void InitializeActors() { }
-
-        protected abstract void InitializeLayer(LayerIndex index, Layer layer);
-
-        protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader);
 
         public void Update(GameTime gameTime)
         {
             InputManager.Update();
-            SceneManager.Update();
-            ActorManager.Update();
+            //SceneManager.Update();
+           // ActorManager.Update(SceneManager.CurrentScene);
             Update();
         }
 

@@ -13,13 +13,19 @@ namespace SomeGame.Main.Modules
 {
     class TextureCreatorModule : IGameModule
     {
+        private readonly ResourceLoader _resourceLoader;
+        private readonly GraphicsDevice _graphicsDevice;
+
         private readonly ImageContentKey _src;
         private readonly TilesetContentKey _dest;
         private readonly TileSetService _tileSetService = new TileSetService();
         private readonly DataSerializer _dataSerializer = new DataSerializer();
 
-        public TextureCreatorModule(ImageContentKey src, TilesetContentKey dest)
+        public TextureCreatorModule(ImageContentKey src, TilesetContentKey dest, 
+            ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
         {
+            _resourceLoader = resourceLoader;
+            _graphicsDevice = graphicsDevice;
             _src = src;
             _dest = dest;
         }
@@ -30,13 +36,13 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+        public void Initialize()
         {
-            var img = resourceLoader.LoadTexture(_src)
+            var img = _resourceLoader.LoadTexture(_src)
                                     .ToIndexedImage();
 
             var tileset = _tileSetService.CreateTilesetFromImage(img)
-                                         .ToTexture2D(graphicsDevice);
+                                         .ToTexture2D(_graphicsDevice);
 
             _dataSerializer.SaveTilesetImage(_dest, tileset);
         }

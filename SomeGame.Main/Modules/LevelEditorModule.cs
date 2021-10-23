@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Editor;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
+using SomeGame.Main.Scenes;
 using SomeGame.Main.Services;
 using System;
 using System.Linq;
@@ -13,6 +15,7 @@ namespace SomeGame.Main.Modules
 
     class LevelEditorModule : TileEditorBaseModule
     {
+        private readonly Scroller _scroller;
         private readonly LevelContentKey _levelKey;
         private readonly TileSetService _tileSetService;
         private readonly UIBlockSelect _blockSelect;
@@ -22,22 +25,37 @@ namespace SomeGame.Main.Modules
         private EditorTileSet _editorTileset;
         private bool _nextClickPlacesTile;
 
-        public LevelEditorModule(LevelContentKey level)
+        public LevelEditorModule(LevelContentKey level, ContentManager contentManager, GraphicsDevice graphicsDevice) 
+            : base(contentManager, graphicsDevice)
         {
             _levelKey = level;
             _tileSetService = new TileSetService();
             _blockSelect = new UIBlockSelect(HandleBlockAction, HandleBlockMouseMove);
+            _scroller = new Scroller(GameSystem);
+        }
+
+        protected override void AfterInitialize()
+        {
+            _scroller.SetCameraBounds(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight));
+            var layer = GameSystem.GetLayer(LayerIndex.Interface);
+            _editorTileset = DataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
+            _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
+
+            _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
+            _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
+
+            ShowTilesInTheme();
         }
 
         protected override void Update()
         {
+            _scroller.Update();
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
             var background = GameSystem.GetLayer(LayerIndex.BG);
             var ui = GameSystem.GetLayer(LayerIndex.Interface);
 
-            var camera = SceneManager.CurrentScene.Camera;
-
-            if (Input.Right.IsDown())            
+            var camera = _scroller.Camera;
+            if (Input.Right.IsDown())
                 camera.X += 2;            
             if (Input.Left.IsDown())
                 camera.X -= 2;
@@ -135,14 +153,14 @@ namespace SomeGame.Main.Modules
         private void SaveMap(TileMap t)
         {
             //todo, level shouldn't be same as background map
-            _dataSerializer.Save(new TileMap(_levelKey, t.GetGrid()));
+            DataSerializer.Save(new TileMap(_levelKey, t.GetGrid()));
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {           
             if(index == LayerIndex.BG)
             {
-                var loaded = _dataSerializer.LoadTileMap(_levelKey) ;
+                var loaded = DataSerializer.LoadTileMap(_levelKey) ;
                 if (loaded.GetGrid().Width == 0)
                     loaded = CreateNew(_levelKey);
 
@@ -161,13 +179,6 @@ namespace SomeGame.Main.Modules
                 default:
                     throw new Exception($"No default set for level {levelContentKey}");
             }
-        }
-        protected override Scene InitializeScene()
-        {
-            var scene = new Scene(new Rectangle(-1000, -1000, 2000, 2000), GameSystem);
-            scene.Camera.X = 0;
-            scene.Camera.Y = 0;
-            return scene;
         }
 
         private void HandleBlockAction(Point start, Point end)
@@ -201,7 +212,7 @@ namespace SomeGame.Main.Modules
                 bg.TileMap.GetGrid().Extract(start, end));
 
             _tileSetService.AddBlock(_editorTileset, block);
-            _dataSerializer.Save(_editorTileset);
+            DataSerializer.Save(_editorTileset);
         }
 
         private void MoveBlockRange(Point start, Point end)
@@ -244,18 +255,6 @@ namespace SomeGame.Main.Modules
                 else
                     return new Tile(-1, TileFlags.None);                
             });
-        }
-
-        protected override void AfterInitialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
-        {
-            var layer = GameSystem.GetLayer(LayerIndex.Interface);
-            _editorTileset = _dataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
-            _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
-
-            _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
-            _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
-
-            ShowTilesInTheme();
         }
 
         private void ShowTilesInTheme()
@@ -326,7 +325,11 @@ namespace SomeGame.Main.Modules
             using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
 
             using var fontImage = resourceLoader.LoadTexture(TilesetContentKey.Font);
-            return new IndexedTilesetImage[] { image.ToIndexedTilesetImage(), fontImage.ToIndexedTilesetImage() };
+
+            return new IndexedTilesetImage[] { 
+                image.ToIndexedTilesetImage(), 
+                fontImage.ToIndexedTilesetImage()
+            };
         }
     }
 }

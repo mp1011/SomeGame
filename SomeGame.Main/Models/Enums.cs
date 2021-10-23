@@ -3,6 +3,12 @@
 namespace SomeGame.Main.Models
 {
 
+    public enum InterfaceType
+    {
+        None,
+        PlayerStatus
+    }
+
     public enum Direction
     {
         None,
@@ -168,6 +174,14 @@ namespace SomeGame.Main.Models
         Gem,
         Apple,
         Meat
+    }
+
+    public enum CollectibleId
+    {
+        Coin = ActorId.Coin,
+        Gem = ActorId.Gem,
+        Apple = ActorId.Apple,
+        Meat = ActorId.Meat,
     }
 
     public enum DestroyedState

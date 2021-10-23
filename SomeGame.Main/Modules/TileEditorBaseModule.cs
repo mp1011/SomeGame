@@ -1,17 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 namespace SomeGame.Main.Modules
 {
-    abstract class TileEditorBaseModule : GameModuleBase
+    abstract class TileEditorBaseModule : EditorModule
     {
-        protected readonly DataSerializer _dataSerializer;
         private Point _lastMouseTile;
 
-        public TileEditorBaseModule()
+        protected TileEditorBaseModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
         {
-            _dataSerializer = new DataSerializer();
         }
 
         protected Tile SelectedTile { get; set; } = new Tile(1, TileFlags.None);

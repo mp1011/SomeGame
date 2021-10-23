@@ -1,15 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Models;
+using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Behaviors
 {
     class PlayerHurtBehavior : Behavior
     {
+        private PlayerStateManager _playerStateManager;
         private int _hurtTimer;
         private const int _recoilTime = 20;
         private const int _invulnerableTime = 200;
-
+         
         public bool IsRecoiling => _hurtTimer > 0 && _hurtTimer < _recoilTime;
+        public bool IsInvulnerable => _hurtTimer > 0 && _hurtTimer < _invulnerableTime;
+
+        public PlayerHurtBehavior(PlayerStateManager playerStateManager)
+        {
+            _playerStateManager = playerStateManager;
+        }
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
@@ -39,9 +47,17 @@ namespace SomeGame.Main.Behaviors
                 _hurtTimer = 0;
         }
 
+
         public override void HandleCollision(Actor actor, Actor other)
         {
-            if((other.ActorType & ActorType.Enemy) > 0)
+            if (!IsInvulnerable)
+            {
+                _playerStateManager.CurrentState.Health -= 5;
+                if (_playerStateManager.CurrentState.Health == 0)
+                    actor.Destroy();
+            }
+
+            if (_hurtTimer == 0 && (other.ActorType & ActorType.Enemy) > 0)
                 _hurtTimer = 1;
         }
     }

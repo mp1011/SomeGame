@@ -17,7 +17,7 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        public void Initialize(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+        public void Initialize()
         {
             var playerAnimations = new Dictionary<AnimationKey, Animation>();          
             playerAnimations.Add(AnimationKey.Idle,

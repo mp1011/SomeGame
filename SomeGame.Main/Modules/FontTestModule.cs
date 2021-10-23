@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
@@ -7,8 +9,12 @@ using System.Linq;
 
 namespace SomeGame.Main.Modules
 {
-    class FontTestModule : GameModuleBase
+    class FontTestModule : EditorModule
     {
+        public FontTestModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
+        {
+        }
+
         protected override void Update()
         {
         }

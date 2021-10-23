@@ -1,27 +1,27 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Modules;
 using SomeGame.Main.Services;
+using System;
 
 namespace SomeGame.Main
 {
     class GameEngine : Game
     {
-        private GraphicsDeviceManager _graphics;
         private Texture2D _debugTexture;
         private SpriteBatch _spriteBatch;
-        private ResourceLoader _resourceLoader;
         private RenderTarget2D _renderTarget;
 
+        private readonly Func<ContentManager, GraphicsDevice, IGameModule> _createModule;
         private IGameModule _currentModule;
 
-        public GameEngine(IGameModule module)
+        public GameEngine(Func<ContentManager,GraphicsDevice,IGameModule> createModule)
         {
-            _graphics = new GraphicsDeviceManager(this);
+            _createModule = createModule;
+            new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _currentModule = module;
-
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += Window_ClientSizeChanged;
         }
@@ -33,14 +33,14 @@ namespace SomeGame.Main
 
         protected override void Initialize()
         {
-            _resourceLoader = new ResourceLoader(Content);
+            _currentModule = _createModule(Content, GraphicsDevice);
+            _currentModule.Initialize();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _currentModule.Initialize(_resourceLoader, GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);           
             _currentModule.OnWindowSizeChanged(GraphicsDevice.Viewport);
             _renderTarget = new RenderTarget2D(GraphicsDevice, _currentModule.Screen.Width, _currentModule.Screen.Height);
 

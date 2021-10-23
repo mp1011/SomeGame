@@ -17,11 +17,11 @@ namespace SomeGame.Main.Behaviors
         private readonly ActorPool _bullets;
         private readonly AudioService _audioService;
 
-        private PlayerState _playerState;
+        private PlayerStateManager _playerStateManager;
         private int _attackCooldown;
 
         public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, CameraBehavior cameraBehavior, 
-            AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets, PlayerState playerState,
+            AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets, PlayerStateManager playerStateManager,
             AudioService audioService)
         {
             _motionBehavior = motionBehavior;
@@ -30,7 +30,7 @@ namespace SomeGame.Main.Behaviors
             _gravity = gravity;
             _bullets = bullets;
             _inputManager = inputManager;
-            _playerState = playerState;
+            _playerStateManager = playerStateManager;
             _audioService = audioService;
         }
 
@@ -68,8 +68,7 @@ namespace SomeGame.Main.Behaviors
 
         public override void HandleCollision(Actor actor, Actor other)
         {
-            _playerHurtBehavior.HandleCollision(actor, other);
-            _playerState.Health -= 5;
+            _playerHurtBehavior.HandleCollision(actor, other);            
         }
     }
 }

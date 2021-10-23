@@ -1,4 +1,5 @@
 ﻿using SomeGame.Main.Models;
+using SomeGame.Main.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +8,28 @@ namespace SomeGame.Main.Services
 {
     class ActorManager
     {
+        private readonly Scroller _scroller;
         private readonly GameSystem _gameSystem;
-        private readonly SceneManager _sceneManager;
         private Actor[] _actors = new Actor[Enum.GetValues<SpriteIndex>().Length];
 
-        public ActorManager(GameSystem gameSystem, SceneManager sceneManager)
+        public ActorManager(GameSystem gameSystem, Scroller scroller)
         {
+            _scroller = scroller;
             _gameSystem = gameSystem;
-            _sceneManager = sceneManager;
         }
 
         public IEnumerable<Actor> GetActors(ActorType actorType)
         {
             return _actors.Where(a => a != null && a.Enabled && a.ActorType == actorType);
+        }
+
+        public void UnloadAll()
+        {
+            foreach (SpriteIndex spriteIndex in Enum.GetValues<SpriteIndex>())
+            {
+                _actors[(int)spriteIndex] = null;
+                _gameSystem.GetSprite(spriteIndex).Enabled = false;
+            }
         }
 
         public bool TryAddActor(GameSystem system, Actor actor)
@@ -41,7 +51,7 @@ namespace SomeGame.Main.Services
             return true;
         }
 
-        public void Update()
+        public void Update(Scene currentScene)
         {
             foreach (SpriteIndex spriteIndex in Enum.GetValues<SpriteIndex>())
             {
@@ -54,13 +64,13 @@ namespace SomeGame.Main.Services
 
                 if (actor.Enabled)
                 {
-                    UpdateActor(actor, spriteIndex);
+                    UpdateActor(actor, spriteIndex, currentScene);
                     sprite.Flip = actor.Flip;
                 }
             }
         }
 
-        private void UpdateActor(Actor actor, SpriteIndex spriteIndex)
+        private void UpdateActor(Actor actor, SpriteIndex spriteIndex, Scene scene)
         {
             var sprite = _gameSystem.GetSprite(spriteIndex);
             sprite.Palette = actor.Palette;
@@ -82,14 +92,7 @@ namespace SomeGame.Main.Services
             else 
                 actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
 
-            var scene = _sceneManager.CurrentScene;
-            var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X - scene.Camera.X);
-            var actorScreenY = sprite.ScrollX.Set(actor.WorldPosition.Y - scene.Camera.Y);
-
-            sprite.ScrollX = actorScreenX - actor.LocalHitbox.X;
-            sprite.ScrollY = actorScreenY - actor.LocalHitbox.Y;
-
-
+            _scroller.ScrollActor(actor, sprite);
         }
     }
 }
