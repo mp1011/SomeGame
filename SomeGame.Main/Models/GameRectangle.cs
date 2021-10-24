@@ -14,7 +14,15 @@ namespace SomeGame.Main.Models
         public int Width { get; }
         public int Height { get;}
 
-        public Point TopLeft => new Point(X, Y);
+        public Point TopLeft
+        {
+            get => new Point(X, Y);
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+            }
+        }
         public Point BottomRight => new Point(X+Width-1, Y+Height-1);
 
         public Point Center

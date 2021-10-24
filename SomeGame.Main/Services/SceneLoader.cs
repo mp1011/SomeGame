@@ -60,14 +60,14 @@ namespace SomeGame.Main.Services
 
             _gameSystem.SetVram(_graphicsDevice, vramImages);
 
-            InitializeLayer(sceneInfo.BgMap, LayerIndex.BG);
-            InitializeLayer(sceneInfo.FgMap, LayerIndex.FG);
+            var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG);
+            var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG);
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
             PlaceCollectibles(sceneInfo);
             InitializeActors(sceneInfo, sceneTransition);
             InitializeSounds(sceneInfo);
 
-            _scroller.SetCameraBounds(sceneInfo.Bounds);
+            _scroller.SetTileMaps(bg, fg);
         }
 
         private void InitializeInterfaceLayer(InterfaceType interfaceType)
@@ -80,12 +80,13 @@ namespace SomeGame.Main.Services
             }
         }
 
-        private void InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex)
+        private TileMap InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex)
         {
             var tileMap = _dataSerializer.LoadTileMap(layerInfo.Key);
             var layer = _gameSystem.GetLayer(layerIndex);
             layer.TileMap.SetEach((x, y) => tileMap.GetTile(x, y));
-            layer.ScrollFactor = layerInfo.ScrollFactor;            
+            layer.ScrollFactor = layerInfo.ScrollFactor;
+            return tileMap;
         }
 
         private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)

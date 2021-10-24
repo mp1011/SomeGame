@@ -19,6 +19,7 @@ namespace SomeGame.Main.Modules
         private readonly LevelContentKey _levelKey;
         private readonly TileSetService _tileSetService;
         private readonly UIBlockSelect _blockSelect;
+        private TileMap _tileMap;
         private UIMultiSelect<string> _themeSelector;
         private EnumMultiSelect<LevelEditorMode> _modeSelector;
         private Font _font;
@@ -36,7 +37,6 @@ namespace SomeGame.Main.Modules
 
         protected override void AfterInitialize()
         {
-            _scroller.SetCameraBounds(new Rectangle(0, 0, GameSystem.LayerPixelWidth, GameSystem.LayerPixelHeight));
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
             _editorTileset = DataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
@@ -122,7 +122,14 @@ namespace SomeGame.Main.Modules
             }
 
             if (Input.Start.IsPressed())
-                SaveMap(background.TileMap);
+                SaveMap();
+        }
+
+        protected override void AfterTilePlaced(Point location)
+        {
+            var bgTile = GameSystem.GetLayer(LayerIndex.BG).TileMap.GetTile(location);
+            var topLeftTile = _scroller.GetTopLeftTile(LayerIndex.BG);
+            _tileMap.SetTile(location.X + topLeftTile.X, location.Y+topLeftTile.Y, bgTile);
         }
 
         private void HandleSetSolid(Layer background, Layer foreground)
@@ -150,21 +157,20 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        private void SaveMap(TileMap t)
+        private void SaveMap()
         {
-            //todo, level shouldn't be same as background map
-            DataSerializer.Save(new TileMap(_levelKey, t.GetGrid()));
+            DataSerializer.Save(_tileMap);
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {           
             if(index == LayerIndex.BG)
             {
-                var loaded = DataSerializer.LoadTileMap(_levelKey) ;
-                if (loaded.GetGrid().Width == 0)
-                    loaded = CreateNew(_levelKey);
+                _tileMap = DataSerializer.LoadTileMap(_levelKey) ;
+                if (_tileMap.GetGrid().Width == 0)
+                    _tileMap = CreateNew(_levelKey);
 
-                layer.TileMap.SetEach((x, y) => loaded.GetTile(x, y));
+                _scroller.SetTileMaps(_tileMap, new TileMap(LevelContentKey.None, _tileMap.TilesX, _tileMap.TilesY));
             }
             else if(index == LayerIndex.FG)
                 layer.Palette = PaletteIndex.P3;
@@ -178,6 +184,8 @@ namespace SomeGame.Main.Modules
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel2:
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth/2, GameSystem.LayerTileHeight / 2);
+                case LevelContentKey.LongMapTest:
+                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth * 4, GameSystem.LayerTileHeight / 2);
                 default:
                     throw new Exception($"No default set for level {levelContentKey}");
             }

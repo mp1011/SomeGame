@@ -40,7 +40,8 @@
         None,
         TestLevel,
         TestLevel2,
-        TestLevelBG
+        TestLevelBG,
+        LongMapTest
     }
 
     public enum SceneContentKey

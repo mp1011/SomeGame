@@ -1,34 +1,55 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Scenes;
+using System;
 
 namespace SomeGame.Main.Services
 {
     class Scroller
     {
         private readonly GameSystem _gameSystem;
+        private ScrollingLayer _bgLayer;
+        private ScrollingLayer _fgLayer;
+
         public GameRectangle Camera { get; private set; }
 
         public Scroller(GameSystem gameSystem)
         {
             _gameSystem = gameSystem;
-            SetCameraBounds(gameSystem.Screen);
+            SetTileMaps(new TileMap(LevelContentKey.None,2,2),new TileMap(LevelContentKey.None, 2, 2));
         }
 
-        public void SetCameraBounds(Rectangle bounds)
+
+
+        public Point GetTopLeftTile(LayerIndex layerIndex)
         {
+            switch(layerIndex)
+            {
+                case LayerIndex.BG: return _bgLayer.TopLeftTile;
+                case LayerIndex.FG: return _bgLayer.TopLeftTile;
+                default: throw new Exception("Scrollong of Interface Layer not supported");
+            }
+        }
+
+        public void SetTileMaps(TileMap bg, TileMap fg)
+        {
+            var maxWidth = Math.Max(bg.TilesX, fg.TilesX) * _gameSystem.TileSize;
+            var maxHeight = Math.Max(bg.TilesY, fg.TilesY) * _gameSystem.TileSize;
+
+            var bounds = new Rectangle(0, 0, maxWidth, maxHeight);
             Camera = new BoundedGameRectangle(bounds.X, bounds.Y, _gameSystem.Screen.Width, _gameSystem.Screen.Height,
                     maxX: bounds.Width - _gameSystem.Screen.Width,
                     maxY: bounds.Height - _gameSystem.Screen.Height);
-        }
 
+            _bgLayer = new ScrollingLayer(_gameSystem, bg, _gameSystem.GetLayer(LayerIndex.BG));
+            _fgLayer = new ScrollingLayer(_gameSystem, fg, _gameSystem.GetLayer(LayerIndex.FG));
+        }
 
         public void Update()
         {
-            var bg = _gameSystem.GetLayer(LayerIndex.BG);
-            var fg = _gameSystem.GetLayer(LayerIndex.FG);
-            ScrollLayer(bg);
-            ScrollLayer(fg);
+            _bgLayer.ScrollLayer(Camera);
+            _fgLayer.ScrollLayer(Camera);
         }
 
         public void ScrollActor(Actor actor, Sprite sprite)
@@ -40,22 +61,7 @@ namespace SomeGame.Main.Services
             sprite.ScrollY = actorScreenY - actor.LocalHitbox.Y;
         }
 
-        private void ScrollLayer(Layer layer)
-        {
-            var camera = Camera;
-
-            if (layer.ScrollFactor == 100)
-            {
-                layer.ScrollX = layer.ScrollX.Set(-camera.X);
-                layer.ScrollY = layer.ScrollY.Set(-camera.Y);
-            }
-            else if (layer.ScrollFactor > 0)
-            {
-                var factor = layer.ScrollFactor / -100.0;
-                layer.ScrollX = layer.ScrollX.Set(factor * camera.X);
-                layer.ScrollY = layer.ScrollY.Set(factor * camera.Y);
-            }
-        }
+        
 
     }
 }

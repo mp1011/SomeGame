@@ -41,9 +41,12 @@ namespace SomeGame.Main.Modules
             var existingTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
 
             if (Input.A.IsPressed())
-            {                
-                if(existingTile.Index == SelectedTile.Index)
+            {
+                if (existingTile.Index == SelectedTile.Index)
+                {
                     background.TileMap.SetTile(mouseTile.X, mouseTile.Y, existingTile.NextFlip());
+                    AfterTilePlaced(mouseTile);
+                }
             }
 
             if (Input.A.IsDown() && existingTile.Index != SelectedTile.Index)

@@ -20,12 +20,13 @@ namespace SomeGame.Main.Models
         private Sprite[] _sprites;
 
         public readonly Rectangle Screen = new Rectangle(0, 0, 320, 240);
-        public int TileSize = 8;
-        public int LayerPixelWidth = 640;
-        public int LayerPixelHeight = 480;
-        public int LayerTileWidth = 80;
-        public int LayerTileHeight = 60;
-        public int ColorsPerPalette = 24;
+        public readonly int TileSize = 8;
+        public readonly int LayerPixelWidth = 640;
+        public readonly int LayerPixelHeight = 480;
+        public readonly int LayerTileWidth = 80;
+        public readonly int LayerTileHeight = 60;
+
+        public readonly int ColorsPerPalette = 24;
 
         public IUserInputSource Input { get; }
 
