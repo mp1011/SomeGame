@@ -66,27 +66,30 @@ namespace SomeGame.Main.Models
 
         public void ScrollLayer(Rectangle cameraPosition)
         {
-            if(cameraPosition.Right > _scrollBounds.Right
-                || cameraPosition.Bottom > _scrollBounds.Bottom
-                || cameraPosition.Left < _scrollBounds.Left
-                || cameraPosition.Top < _scrollBounds.Top)
+            if (_layer.ScrollFactor == 100)
             {
-                var tileX = new BoundedInt(cameraPosition.X / _gameSystem.TileSize, TileMap.TilesX);
-                var tileY = new BoundedInt(cameraPosition.Y / _gameSystem.TileSize, TileMap.TilesY);
+                if (cameraPosition.Right > _scrollBounds.Right
+                    || cameraPosition.Bottom > _scrollBounds.Bottom
+                    || cameraPosition.Left < _scrollBounds.Left
+                    || cameraPosition.Top < _scrollBounds.Top)
+                {
+                    var tileX = new BoundedInt(cameraPosition.X / _gameSystem.TileSize, TileMap.TilesX);
+                    var tileY = new BoundedInt(cameraPosition.Y / _gameSystem.TileSize, TileMap.TilesY);
 
-                if (cameraPosition.Right > _scrollBounds.Right)
-                    tileX -= 8;
+                    if (cameraPosition.Right > _scrollBounds.Right)
+                        tileX -= 8;
 
-                if (cameraPosition.Left < _scrollBounds.Left)
-                    tileX -= _gameSystem.LayerTileWidth / 2;
+                    if (cameraPosition.Left < _scrollBounds.Left)
+                        tileX -= _gameSystem.LayerTileWidth / 2;
 
-                if (cameraPosition.Bottom > _scrollBounds.Bottom)
-                    tileY += 8;
+                    if (cameraPosition.Bottom > _scrollBounds.Bottom)
+                        tileY += 8;
 
-                if (cameraPosition.Top > _scrollBounds.Top)
-                    tileY -= _gameSystem.LayerTileHeight / 2;
+                    if (cameraPosition.Top > _scrollBounds.Top)
+                        tileY -= _gameSystem.LayerTileHeight / 2;
 
-                SetTopLeftTile(tileX, tileY);
+                    SetTopLeftTile(tileX, tileY);
+                }
             }
 
             if (_layer.ScrollFactor == 100)
