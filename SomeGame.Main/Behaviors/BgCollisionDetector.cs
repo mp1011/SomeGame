@@ -9,9 +9,11 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly GameSystem _gameSystem;
         private readonly CollectiblesService _collectiblesService;
+        private readonly Scroller _scroller;
 
-        public BgCollisionDetector(GameSystem gameSystem, CollectiblesService collectiblesService=null)
+        public BgCollisionDetector(GameSystem gameSystem, Scroller scroller, CollectiblesService collectiblesService=null)
         {
+            _scroller = scroller;
             _gameSystem = gameSystem;
             _collectiblesService = collectiblesService;
         }
@@ -20,8 +22,11 @@ namespace SomeGame.Main.Behaviors
         {
             var collisionInfo = new CollisionInfo();
             var fg = _gameSystem.GetLayer(LayerIndex.FG);
-            var topLeftTile = fg.TilePointFromWorldPixelPoint(actor.WorldPosition.TopLeft).Offset(-2, -2);
-            var bottomRightTile = fg.TilePointFromWorldPixelPoint(actor.WorldPosition.BottomRight).Offset(2, 2);
+
+            var layerPosition = _scroller.WorldPositionToLayerPosition(actor.WorldPosition, LayerIndex.FG);
+
+            var topLeftTile = fg.TilePointFromLayerPixelPoint(layerPosition.TopLeft).Offset(-2, -2);
+            var bottomRightTile = fg.TilePointFromLayerPixelPoint(layerPosition.BottomRight).Offset(2, 2);
 
             fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x,y,t) =>
             {
@@ -32,7 +37,9 @@ namespace SomeGame.Main.Behaviors
                     var tileLeft = fg.TileMap.GetTile(x - 1, y);
                     var tileRight = fg.TileMap.GetTile(x + 1, y);
 
-                    var tileBounds = fg.GetTileWorldPosition(x, y);
+                    var tileBounds = fg.GetTileLayerPosition(x, y);
+                    tileBounds = _scroller.LayerPositionToWorldPosition(tileBounds, LayerIndex.FG);
+
                     if (tileBounds.Intersects(actor.WorldPosition))                    
                         collisionInfo += HandleCollision(actor, tileBounds, frameStartPosition, tileAbove, tileBelow, tileLeft, tileRight);
 
@@ -44,7 +51,8 @@ namespace SomeGame.Main.Behaviors
                 }
                 else if(_collectiblesService != null && t.IsCollectible)
                 {
-                    var tileBounds = fg.GetTileWorldPosition(x, y);
+                    var tileBounds = fg.GetTileLayerPosition(x, y);
+                    tileBounds = _scroller.LayerPositionToWorldPosition(tileBounds, LayerIndex.FG);
                     if (tileBounds.Intersects(actor.WorldPosition))
                         collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y);
                 }

@@ -22,7 +22,7 @@ namespace SomeGame.Main.Models
             ScrollY = scrollY;
         }
 
-        public Point TilePointFromWorldPixelPoint(Point pixelPoint)
+        public Point TilePointFromLayerPixelPoint(Point pixelPoint)
         {
             var tileX = (pixelPoint.X / _tileSize).Clamp(0, TileMap.TilesX - 1);
             var tileY = (pixelPoint.Y / _tileSize).Clamp(0, TileMap.TilesY - 1);
@@ -39,7 +39,7 @@ namespace SomeGame.Main.Models
             return new Point(tileX, tileY);
         }
 
-        public Rectangle GetTileWorldPosition(int tileX, int tileY)
+        public Rectangle GetTileLayerPosition(int tileX, int tileY)
         {
             return new Rectangle(tileX * _tileSize, tileY * _tileSize, _tileSize, _tileSize);
         }

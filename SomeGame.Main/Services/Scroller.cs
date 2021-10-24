@@ -20,14 +20,32 @@ namespace SomeGame.Main.Services
             SetTileMaps(new TileMap(LevelContentKey.None,2,2),new TileMap(LevelContentKey.None, 2, 2));
         }
 
+        public GameRectangleWithSubpixels WorldPositionToLayerPosition(GameRectangleWithSubpixels worldPosition, LayerIndex layerIndex)
+        {
+            switch (layerIndex)
+            {
+                case LayerIndex.BG: return _bgLayer.WorldPositionToLayerPosition(worldPosition);
+                case LayerIndex.FG: return _fgLayer.WorldPositionToLayerPosition(worldPosition);
+                default: throw new Exception("Scrollong of Interface Layer not supported");
+            }
+        }
 
+        public Rectangle LayerPositionToWorldPosition(Rectangle layerPosition, LayerIndex layerIndex)
+        {
+            switch (layerIndex)
+            {
+                case LayerIndex.BG: return _bgLayer.LayerPositionToWorldPosition(layerPosition);
+                case LayerIndex.FG: return _fgLayer.LayerPositionToWorldPosition(layerPosition);
+                default: throw new Exception("Scrollong of Interface Layer not supported");
+            }
+        }
 
         public Point GetTopLeftTile(LayerIndex layerIndex)
         {
             switch(layerIndex)
             {
                 case LayerIndex.BG: return _bgLayer.TopLeftTile;
-                case LayerIndex.FG: return _bgLayer.TopLeftTile;
+                case LayerIndex.FG: return _fgLayer.TopLeftTile;
                 default: throw new Exception("Scrollong of Interface Layer not supported");
             }
         }

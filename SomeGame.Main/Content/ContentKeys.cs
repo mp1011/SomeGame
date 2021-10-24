@@ -44,10 +44,11 @@
         LongMapTest
     }
 
-    public enum SceneContentKey
+    public enum SceneContentKey : byte
     {
         None,
         Test1,
-        Test2
+        Test2,
+        LongMapTest
     }
 }

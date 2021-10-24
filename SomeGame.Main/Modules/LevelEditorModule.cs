@@ -148,12 +148,14 @@ namespace SomeGame.Main.Modules
             {
                 var bgTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
                 background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(bgTile.Index, bgTile.Flags | TileFlags.Solid));
+                AfterTilePlaced(mouseTile);
             }
 
             if (Input.B.IsDown())
             {
                 var bgTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
                 background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(bgTile.Index, bgTile.Flags & ~TileFlags.Solid));
+                AfterTilePlaced(mouseTile);
             }
         }
 
@@ -327,6 +329,7 @@ namespace SomeGame.Main.Modules
             currentIndex = currentIndex + delta;
 
             bg.TileMap.SetTile(mouseTile.X, mouseTile.Y, tileChoices[currentIndex]);
+            AfterTilePlaced(mouseTile);
         }
 
 

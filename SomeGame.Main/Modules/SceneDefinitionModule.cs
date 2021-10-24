@@ -87,6 +87,37 @@ namespace SomeGame.Main.Modules
                 },
                 Transitions: new SceneTransitions(Left: SceneContentKey.Test1));
         }
+        private SceneInfo CreateLongMapTest()
+        {
+            return new SceneInfo(
+                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, ScrollFactor: 70),
+                FgMap: new LayerInfo(LevelContentKey.LongMapTest, ScrollFactor: 100),
+                InterfaceType.PlayerStatus,
+                Bounds: new Rectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height),
+                PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
+                VramImages: new TilesetWithPalette[]
+                {
+                    new TilesetWithPalette(TilesetContentKey.Tiles, PaletteIndex.P1),
+                    new TilesetWithPalette(TilesetContentKey.Hero, PaletteIndex.P2),
+                    new TilesetWithPalette(TilesetContentKey.Bullet, PaletteIndex.P2),
+                    new TilesetWithPalette(TilesetContentKey.Hud, PaletteIndex.P2),
+                    new TilesetWithPalette(TilesetContentKey.Font, PaletteIndex.P2),
+                    new TilesetWithPalette(TilesetContentKey.Items, PaletteIndex.P1)
+                },
+                Sounds: new SoundInfo[]
+                {
+                    new SoundInfo(SoundContentKey.GetCoin,3),
+                    new SoundInfo(SoundContentKey.Swish, 2)
+                },
+                Actors: new ActorStart[]
+                {
+                    new ActorStart(ActorId.Player, new PixelPoint(50,100)),
+                },
+                CollectiblePlacements: new CollectiblePlacement[]
+                {
+                },
+                Transitions: new SceneTransitions());
+        }
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -96,6 +127,8 @@ namespace SomeGame.Main.Modules
         {
             _dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
             _dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
+            _dataSerializer.Save(SceneContentKey.LongMapTest, CreateLongMapTest());
+
 
         }
 

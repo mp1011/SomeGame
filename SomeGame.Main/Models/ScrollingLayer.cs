@@ -32,6 +32,24 @@ namespace SomeGame.Main.Models
             SetTopLeftTile(0, 0);
         }
 
+        public GameRectangleWithSubpixels WorldPositionToLayerPosition(GameRectangleWithSubpixels worldPosition)
+        {
+            var layerPos = worldPosition.Copy();
+            layerPos.XPixel -= _scrollBounds.X;
+            layerPos.YPixel -= _scrollBounds.Y;
+            return layerPos;
+        }
+
+        public Rectangle LayerPositionToWorldPosition(Rectangle layerPosition)
+        {
+            return new Rectangle(
+                layerPosition.X + _scrollBounds.X,
+                layerPosition.Y + _scrollBounds.Y,
+                layerPosition.Width,
+                layerPosition.Height);
+        }
+
+
         private void SetTopLeftTile(int x, int y)
         {
             TopLeftTile = new Point(x,y);

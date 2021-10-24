@@ -116,7 +116,7 @@ namespace SomeGame.Main.Services
                                 _audioService,
                                 transitionInfo),
                 destroyedBehavior: new PlayerDeathBehavior(_sceneManager),
-                collisionDetector: new BgCollisionDetector(_gameSystem, _collectiblesService),
+                collisionDetector: new BgCollisionDetector(_gameSystem, _scroller, _collectiblesService),
                 hitBox: new Rectangle(4, 0, 8, 14),
                 position: position);
         }
@@ -151,7 +151,7 @@ namespace SomeGame.Main.Services
                  paletteIndex: PaletteIndex.P2,
                  behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), bone),
                  destroyedBehavior: new EnemyDestroyedBehavior(score: 100, _playerStateManager),
-                 collisionDetector: new BgCollisionDetector(_gameSystem),
+                 collisionDetector: new BgCollisionDetector(_gameSystem, _scroller),
                  hitBox: new Rectangle(4, 0, 8, 15),
                  position: position);
         }
