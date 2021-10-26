@@ -69,6 +69,20 @@ namespace SomeGame.Main.Modules
                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 10),
                     new AnimationFrame(SpriteFrameIndex: 7, Duration: 10)));
 
+            var skullAnimations = new Dictionary<AnimationKey, Animation>();
+            skullAnimations.Add(AnimationKey.Moving,
+                new Animation(
+                    new AnimationFrame(SpriteFrameIndex: 9, Duration: 10)));
+
+            var deadSkeletonBoneAnimations = new Dictionary<AnimationKey, Animation>();
+            deadSkeletonBoneAnimations.Add(AnimationKey.Moving,
+                new Animation(
+                    new AnimationFrame(SpriteFrameIndex: 4, Duration: 5),
+                    new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
+                    new AnimationFrame(SpriteFrameIndex: 6, Duration: 5),
+                    new AnimationFrame(SpriteFrameIndex: 7, Duration: 5)));
+
+
             var playerBulletAnimations = new Dictionary<AnimationKey, Animation>();
             playerBulletAnimations.Add(AnimationKey.Moving,
                 new Animation(
@@ -89,6 +103,8 @@ namespace SomeGame.Main.Modules
             _dataSerializer.SaveAnimations(ActorId.Skeleton, skeletonAnimations);
             _dataSerializer.SaveAnimations(ActorId.SkeletonBone, skeletonBoneAnimations);
             _dataSerializer.SaveAnimations(ActorId.Coin, coinAnimations);
+            _dataSerializer.SaveAnimations(ActorId.Skull, skullAnimations);
+            _dataSerializer.SaveAnimations(ActorId.DeadSkeletonBone, deadSkeletonBoneAnimations);
 
         }
 

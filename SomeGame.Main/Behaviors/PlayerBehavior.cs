@@ -21,6 +21,7 @@ namespace SomeGame.Main.Behaviors
         private readonly TransitionInfo _incomingTransition;
 
         private int _attackCooldown;
+        private bool _queueAttack;
 
         public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, 
             CameraBehavior cameraBehavior, AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets,  
@@ -74,23 +75,6 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
         {
-            _destroyOnFall.Update(actor);
-            _playerHurtBehavior.Update(actor, frameStartPosition, collisionInfo);
-            _motionBehavior.Update(actor, frameStartPosition, collisionInfo);
-            _gravity.Update(actor, frameStartPosition, collisionInfo);
-            _cameraBehavior.Update(actor, frameStartPosition, collisionInfo);
-
-
-            if(_attackCooldown == 0 && _inputManager.Input.B.IsPressed())
-            {
-                actor.CurrentAnimation = AnimationKey.Attacking;
-                _attackCooldown = 30;
-                _audioService.Play(SoundContentKey.Swish);
-            }
-
-            if (_attackCooldown > 0)
-                _attackCooldown--;
-
             if (actor.CurrentAnimation == AnimationKey.Attacking && actor.IsAnimationFinished)
             {
                 actor.CurrentAnimation = AnimationKey.Idle;
@@ -98,11 +82,34 @@ namespace SomeGame.Main.Behaviors
                 if (bullet != null)
                 {
                     bullet.WorldPosition.Center = actor.WorldPosition.Center
-                        .GetRelativePosition(4, 4, actor.Flip);
+                        .GetRelativePosition(8, 4, actor.Flip);
 
                     bullet.Flip = actor.Flip;
                 }
             }
+
+
+            _destroyOnFall.Update(actor);
+            _playerHurtBehavior.Update(actor, frameStartPosition, collisionInfo);
+            _motionBehavior.Update(actor, frameStartPosition, collisionInfo);
+            _gravity.Update(actor, frameStartPosition, collisionInfo);
+            _cameraBehavior.Update(actor, frameStartPosition, collisionInfo);
+
+
+            if(_attackCooldown == 0 && (_queueAttack || _inputManager.Input.B.IsPressed()))
+            {
+                _queueAttack = false;
+                actor.CurrentAnimation = AnimationKey.Attacking;
+                _attackCooldown = 15;
+                _audioService.Play(SoundContentKey.Swish);
+            }
+            else if(_inputManager.Input.B.IsPressed())
+            {
+                _queueAttack = true;
+            }
+
+            if (_attackCooldown > 0)
+                _attackCooldown--;
 
             _sceneManager.CheckLevelTransitions(actor);
         }

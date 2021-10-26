@@ -6,7 +6,7 @@ namespace SomeGame.Main.Behaviors
     {
         public Gravity() : base(Orientation.Vertical)
         {
-            SubPixelAcceleration = 10;
+            SubPixelAcceleration = 30;
         }
     }
 }

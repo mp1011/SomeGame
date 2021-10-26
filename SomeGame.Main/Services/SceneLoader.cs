@@ -62,12 +62,14 @@ namespace SomeGame.Main.Services
 
             var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG);
             var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG);
+            _scroller.SetTileMaps(bg, fg);
+
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
             PlaceCollectibles(sceneInfo);
             InitializeActors(sceneInfo, sceneTransition);
             InitializeSounds(sceneInfo);
 
-            _scroller.SetTileMaps(bg, fg);
+            
         }
 
         private void InitializeInterfaceLayer(InterfaceType interfaceType)

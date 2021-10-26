@@ -32,6 +32,12 @@ namespace SomeGame.Main.Behaviors
         public void OnDestroyed(Actor actor)
         {
             _playerStateManager.CurrentState.Score += _score;
+            OnDestroyedStart(actor);
+        }
+
+        protected virtual void OnDestroyedStart(Actor actor)
+        {
+
         }
 
         public virtual DestroyedState Update(Actor actor) => DestroyedState.Destroyed;

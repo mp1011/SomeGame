@@ -52,7 +52,7 @@ namespace SomeGame.Main.Modules
                 CollectiblePlacements: new CollectiblePlacement[]
                 {
                     new CollectiblePlacement(CollectibleId.Coin, new Point(8,15), new Point(12,15)),
-                    new CollectiblePlacement(CollectibleId.Coin, new Point(25, 12), new Point(30, 15))
+                    new CollectiblePlacement(CollectibleId.Coin, new Point(25, 9), new Point(30, 10))
                 },
                 Transitions: new SceneTransitions(Right: SceneContentKey.Test2));
         }

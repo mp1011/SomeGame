@@ -39,6 +39,9 @@ namespace SomeGame.Main.Modules
         {
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
             _editorTileset = DataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
+
+            _editorTileset.Tiles.RemoveAll(t => t.Tile.Index >= GameSystem.GetTileOffset(TilesetContentKey.Font));
+
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
             _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
@@ -184,6 +187,8 @@ namespace SomeGame.Main.Modules
             {
                 case LevelContentKey.TestLevelBG:
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth, GameSystem.LayerTileHeight / 2);
+                case LevelContentKey.TestLevel:
+                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth*2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel2:
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth/2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.LongMapTest:
@@ -201,7 +206,10 @@ namespace SomeGame.Main.Modules
                     RelateBlockRange(start, end);
                     return;
                 case LevelEditorMode.Move:
-                    MoveBlockRange(start, end);
+                    MoveOrCopyBlockRange(start, end, isCopy:false);
+                    return;
+                case LevelEditorMode.Copy:
+                    MoveOrCopyBlockRange(start, end, isCopy:true);
                     return;
             }
         }
@@ -211,7 +219,8 @@ namespace SomeGame.Main.Modules
             switch (_modeSelector.SelectedItem)
             {
                 case LevelEditorMode.Relate: return;
-                case LevelEditorMode.Move: 
+                case LevelEditorMode.Move:
+                case LevelEditorMode.Copy:
                     PreviewBlockMove(start, end);
                     break;
             }
@@ -227,7 +236,7 @@ namespace SomeGame.Main.Modules
             DataSerializer.Save(_editorTileset);
         }
 
-        private void MoveBlockRange(Point start, Point end)
+        private void MoveOrCopyBlockRange(Point start, Point end, bool isCopy)
         {
             var fg = GameSystem.GetLayer(LayerIndex.FG);
             var bg = GameSystem.GetLayer(LayerIndex.BG);
@@ -237,13 +246,34 @@ namespace SomeGame.Main.Modules
                                 .GetGrid()
                                 .Extract(start, end);
 
-            bg.TileMap.SetEach(start, end, (x, y) => new Tile(-1, TileFlags.None));
+            if (!isCopy)
+            {
+                bg.TileMap.SetEach(start, end, (x, y) => new Tile(-1, TileFlags.None));
+                AfterBlockAction(start, end);
+            }
 
             int selectionWidth = (end.X - start.X) + 1;
             int selectionHeight = (end.Y - start.Y) + 1;
 
             bg.TileMap.SetEach(mouseTile, new Point(mouseTile.X + selectionWidth, mouseTile.Y + selectionHeight),
                 (x, y) => selection[x - mouseTile.X, y - mouseTile.Y]);
+
+            AfterBlockAction(mouseTile, new Point(mouseTile.X + selectionWidth, mouseTile.Y + selectionHeight));
+        }
+
+        private void AfterBlockAction(Point upperLeft, Point lowerRight)
+        {
+            var p = upperLeft;
+            while(true)
+            {
+                AfterTilePlaced(p);
+                p = p.Offset(1, 0);
+                if(p.X > lowerRight.X)
+                    p = new Point(upperLeft.X, p.Y + 1);
+
+                if (p.Y > lowerRight.Y)
+                    return;
+            }
         }
 
         private void PreviewBlockMove(Point start, Point end)
@@ -305,12 +335,7 @@ namespace SomeGame.Main.Modules
 
         private void HandleAutoPlaceTile()
         {
-            int delta = 0;
-            if (Input.A.IsPressed())
-                delta = 1;
-            else if (Input.A.IsPressed())
-                delta = -1;
-            else
+            if (!Input.A.IsPressed())
                 return;
 
             var bg = GameSystem.GetLayer(LayerIndex.BG);
@@ -326,9 +351,10 @@ namespace SomeGame.Main.Modules
             var currentTile = bg.TileMap.GetTile(mouseTile);
 
             var currentIndex = tileChoices.GetRotatingIndex(currentTile);
-            currentIndex = currentIndex + delta;
+            currentIndex = currentIndex + 1;
 
             bg.TileMap.SetTile(mouseTile.X, mouseTile.Y, tileChoices[currentIndex]);
+            System.Diagnostics.Debug.WriteLine($"Autoplaced Tile: {tileChoices[currentIndex]}");
             AfterTilePlaced(mouseTile);
         }
 

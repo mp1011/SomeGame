@@ -50,6 +50,11 @@ namespace SomeGame.Main.Models
         public bool ContainsTheme(string theme) => Themes.Contains(theme);
         public Dictionary<Direction, List<EditorTile>> Matches { get; } = new Dictionary<Direction, List<EditorTile>>();
 
+        public override string ToString() 
+        {
+            return $"#{Tile.Index} {string.Join("+", Themes.ToArray())}";
+        }
+
         public EditorTile(Tile tile)
         {
             Tile = tile;

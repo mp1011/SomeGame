@@ -66,6 +66,8 @@ namespace SomeGame.Main.Services
                 case ActorId.Skeleton: return CreateSkeleton(position);
                 case ActorId.SkeletonBone: return CreateSkeletonBone();
                 case ActorId.Coin: return CreateCoin();
+                case ActorId.Skull: return CreateSkull();
+                case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone();
                 default: throw new Exception($"Unknown ActorId {id}");
             }
         }
@@ -128,7 +130,7 @@ namespace SomeGame.Main.Services
                actorType: ActorType.Player | ActorType.Bullet,
                tileset: TilesetContentKey.Bullet,
                paletteIndex: PaletteIndex.P2,
-               behavior: new ProjectileBehavior(new PixelValue(2, 0), duration:20),
+               behavior: new ProjectileBehavior(new PixelValue(2, 150), duration:20),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
@@ -144,13 +146,16 @@ namespace SomeGame.Main.Services
         {
             var bone = CreateSkeletonBone();
 
+            var skull = CreateSkull();
+            var bones = CreatePool(ActorId.DeadSkeletonBone, 3);
+
             return CreateActor(
                  actorId: ActorId.Skeleton,
                  actorType: ActorType.Enemy | ActorType.Character,
                  tileset: TilesetContentKey.Skeleton,
                  paletteIndex: PaletteIndex.P2,
                  behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), bone),
-                 destroyedBehavior: new EnemyDestroyedBehavior(score: 100, _playerStateManager),
+                 destroyedBehavior: new SkeletonDestroyedBehavior(score: 100, _playerStateManager, skull,bones),
                  collisionDetector: new BgCollisionDetector(_gameSystem, _scroller),
                  hitBox: new Rectangle(4, 0, 8, 15),
                  position: position);
@@ -172,6 +177,30 @@ namespace SomeGame.Main.Services
             enemyProjectile.CurrentAnimation = AnimationKey.Moving;
             enemyProjectile.Enabled = false;
             return enemyProjectile;
+        }
+
+        public Actor CreateSkull() => 
+            CreateDebris(ActorId.Skull, TilesetContentKey.Skeleton, PaletteIndex.P2);
+
+        public Actor CreateDeadSkeletonBone() =>
+            CreateDebris(ActorId.DeadSkeletonBone, TilesetContentKey.Skeleton, PaletteIndex.P2);
+
+        private Actor CreateDebris(ActorId id, TilesetContentKey tileSet, PaletteIndex paletteIndex)
+        {
+            var debris = CreateActor(
+               actorId: id,
+               actorType: ActorType.Decoration,
+               tileset: tileSet,
+               paletteIndex: paletteIndex,
+               behavior: new DebrisBehavior(new Gravity(), _scroller),
+               destroyedBehavior: new EmptyDestroyedBehavior(),
+               collisionDetector: new EmptyCollisionDetector(),
+               hitBox: new Rectangle(0, 0, 8, 8),
+               position: new PixelPoint(0, 0),
+               enabledAtStart: false);
+
+            debris.CurrentAnimation = AnimationKey.Moving;
+            return debris;
         }
 
         private SpriteAnimator CreateAnimator(ActorId actorId, TilesetContentKey tileset)
