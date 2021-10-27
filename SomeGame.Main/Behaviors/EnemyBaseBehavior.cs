@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 
 namespace SomeGame.Main.Behaviors
@@ -37,16 +38,9 @@ namespace SomeGame.Main.Behaviors
             CurrentState = StandardEnemyState.Moving;
             actor.CurrentAnimation = AnimationKey.Moving;
 
-            if (direction == Direction.Left)
-            {
-                actor.Flip = Flip.H;
-                actor.MotionVector = new PixelPoint(_walkSpeed * -1, actor.MotionVector.Y);
-            }
-            else
-            {
-                actor.Flip = Flip.None;
-                actor.MotionVector = new PixelPoint(_walkSpeed, actor.MotionVector.Y);
-            }
+            actor.FacingDirection = direction;
+            actor.MotionVector = new PixelPoint(_walkSpeed * direction.GetSpeedMod(), actor.MotionVector.Y);
+            
         }
     }
 }

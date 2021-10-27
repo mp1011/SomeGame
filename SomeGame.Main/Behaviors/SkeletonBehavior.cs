@@ -33,7 +33,7 @@ namespace SomeGame.Main.Behaviors
             if(_enemyMotionBehavior.CurrentState == StandardEnemyState.Moving && 
                 (collisionInfo.IsFacingLedge || collisionInfo.XCorrection.Pixel != 0 || collisionInfo.XCorrection.SubPixel != 0))
             {
-                if (actor.MotionVector.X > 0)
+                if (actor.FacingDirection == Direction.Right)
                     _enemyMotionBehavior.SetMoving(actor, Direction.Left);
                 else
                     _enemyMotionBehavior.SetMoving(actor, Direction.Right);

@@ -5,6 +5,14 @@ namespace SomeGame.Main.Extensions
 {
     public static class DirectionExtensions
     {
+
+        public static int GetSpeedMod(this Direction d)
+        {
+            if (d == Direction.Left)
+                return -1;
+            else
+                return 1;
+        }
         public static Direction Opposite(this Direction d)
         {
             switch (d)

@@ -31,6 +31,19 @@ namespace SomeGame.Main.Models
 
         public bool Destroying { get; private set; }
 
+        //todo, assumes left/right
+        public Direction FacingDirection
+        {
+            get => Flip == Flip.None ? Direction.Right : Direction.Left;
+            set
+            {
+                if (value == Direction.Right)
+                    Flip = Flip.None;
+                else if (value == Direction.Left)
+                    Flip = Flip.H;
+            }
+        }
+
         public Actor(ActorType actorType,
                      TilesetContentKey tilesetKey, 
                      PaletteIndex palette,
