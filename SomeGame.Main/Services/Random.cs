@@ -11,5 +11,10 @@ namespace SomeGame.Main.Services
             int index = _random.Next(0, choices.Length);
             return choices[index];
         }
+
+        public static bool RandomBit()
+        {
+            return _random.Next(0, 2) == 0;
+        }
     }
 }

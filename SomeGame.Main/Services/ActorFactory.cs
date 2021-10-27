@@ -53,7 +53,7 @@ namespace SomeGame.Main.Services
             if (enabledAtStart)            
                 actor.Create();
             
-            _actorManager.TryAddActor(_gameSystem, actor);                
+            _actorManager.AddActor(actor);                
             return actor;
         }
 
@@ -130,15 +130,15 @@ namespace SomeGame.Main.Services
                actorType: ActorType.Player | ActorType.Bullet,
                tileset: TilesetContentKey.Bullet,
                paletteIndex: PaletteIndex.P2,
-               behavior: new ProjectileBehavior(new PixelValue(2, 150), duration:20),
+               behavior: new ProjectileBehavior(new PixelValue(2, 150), duration:20),               
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0,0)
+               position: new PixelPoint(0,0),
+               enabledAtStart:false
             ); 
 
             bullet.CurrentAnimation = AnimationKey.Moving;
-            bullet.Enabled = false;
             return bullet;
         }
 
@@ -172,10 +172,10 @@ namespace SomeGame.Main.Services
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0, 0));
+               position: new PixelPoint(0, 0),
+               enabledAtStart: false);
 
             enemyProjectile.CurrentAnimation = AnimationKey.Moving;
-            enemyProjectile.Enabled = false;
             return enemyProjectile;
         }
 

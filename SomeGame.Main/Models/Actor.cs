@@ -54,7 +54,9 @@ namespace SomeGame.Main.Models
         public void Destroy()
         {
             if (DestroyedBehavior == null)
+            {
                 Enabled = false;
+            }
             else
             {
                 Destroying = true;

@@ -20,7 +20,7 @@ namespace SomeGame.Main.Services
         }
 
 
-        public AnimationState Update(SpriteIndex spriteIndex, AnimationKey animationKey)
+        public AnimationState Update(SpriteIndex spriteIndex, AnimationKey animationKey, bool needsSprite)
         {
             if(_spriteAnimation == null || _spriteAnimation.Key != animationKey)
                 _spriteAnimation = new SpriteAnimation(animationKey);
@@ -42,21 +42,23 @@ namespace SomeGame.Main.Services
                 newFrame = true;
             }
 
+            var animationFrame = animation.Frames[_spriteAnimation.CurrentIndex];
+            var spriteFrame = _spriteFrames[animationFrame.SpriteFrameIndex];
+
             if (newFrame)
+                _spriteAnimation.FramesRemaining = animationFrame.Duration;         
+            else
+                _spriteAnimation.FramesRemaining--;
+
+
+            if (!needsSprite)
             {
-                var animationFrame = animation.Frames[_spriteAnimation.CurrentIndex];
-                var spriteFrame = _spriteFrames[animationFrame.SpriteFrameIndex];
-
-                _spriteAnimation.FramesRemaining = animationFrame.Duration;
-
                 _gameSystem.GetSprite(spriteIndex).SetTiles(
                     topLeft: spriteFrame.TopLeft,
                     topRight: spriteFrame.TopRight,
                     bottomLeft: spriteFrame.BottomLeft,
                     bottomRight: spriteFrame.BottomRight);
             }
-            else
-                _spriteAnimation.FramesRemaining--;
 
             if (finished)
                 return AnimationState.Finished;
