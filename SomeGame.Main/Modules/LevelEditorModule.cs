@@ -8,6 +8,7 @@ using SomeGame.Main.Models;
 using SomeGame.Main.Scenes;
 using SomeGame.Main.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SomeGame.Main.Modules
@@ -98,6 +99,7 @@ namespace SomeGame.Main.Modules
                         if (Input.A.IsPressed() || Input.B.IsPressed())
                         {
                             _nextClickPlacesTile = false;
+                            _lastAutoplacedTile = GetCurrentMouseTile(LayerIndex.BG);
                             foreground.TileMap.SetEach((x, y) => new Tile(-1, TileFlags.None));
                         }
                     }
@@ -333,11 +335,27 @@ namespace SomeGame.Main.Modules
             return true;
         }
 
+        private Point _lastAutoplacedTile;
         private void HandleAutoPlaceTile()
         {
-            if (!Input.A.IsPressed())
+            if (GetCurrentMouseTile(LayerIndex.Interface).Y < 2)
                 return;
 
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
+            bool mouseTileChanged = false;
+
+            if(_lastAutoplacedTile != mouseTile)
+            {
+                _lastAutoplacedTile = mouseTile;
+                mouseTileChanged = true;
+            }
+
+            if (Input.A.IsPressed() || (Input.A.IsDown() && mouseTileChanged))
+                AutoPlaceTile();
+        }
+
+        private void AutoPlaceTile()
+        {
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
             var tileChoices = _tileSetService

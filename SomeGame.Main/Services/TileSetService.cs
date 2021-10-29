@@ -100,9 +100,6 @@ namespace SomeGame.Main.Services
         {
             grid.ForEach((x, y, t) =>
             {
-                if (t.Index < 0)
-                    return;
-
                 var editorTile = tileSet.GetOrAddTile(t);
                 if(theme != null)
                     editorTile.AddTheme(theme);
@@ -113,7 +110,7 @@ namespace SomeGame.Main.Services
                         continue;
 
                     var neighbor = grid.GetNeighborOrDefault(x, y, direction);
-                    if (neighbor == null || neighbor.Index < 0)
+                    if (neighbor == null)
                         continue;
 
                     editorTile.AddMatch(direction, tileSet.GetOrAddTile(neighbor));

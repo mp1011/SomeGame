@@ -26,7 +26,7 @@ namespace SomeGame.Main.Modules
                 BgMap: new LayerInfo(LevelContentKey.TestLevelBG, ScrollFactor: 70),
                 FgMap: new LayerInfo(LevelContentKey.TestLevel, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
-                Bounds: new Rectangle(0, 0, _gameSystem.LayerPixelWidth, _gameSystem.Screen.Height),
+                Bounds: new Rectangle(0, 0, _gameSystem.LayerPixelWidth*2, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
                 VramImages: new TilesetWithPalette[]
                 {

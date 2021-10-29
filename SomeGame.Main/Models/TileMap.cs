@@ -35,7 +35,7 @@ namespace SomeGame.Main.Models
 
         public void SetTile(int x, int y, Tile tile)
         {
-            _tiles[x, y] = tile;
+            _tiles[new BoundedInt(x,TilesX), new BoundedInt(y,TilesY)] = tile;
         }
 
         public void Set(Grid<Tile> tiles)

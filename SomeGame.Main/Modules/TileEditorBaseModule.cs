@@ -62,7 +62,7 @@ namespace SomeGame.Main.Modules
 
             if (_lastMouseTile != mouseTile)
             {
-                MouseTileChanged(mouseTile);
+                OnMouseTileChanged(mouseTile);
                 _lastMouseTile = mouseTile;
             }
         }
@@ -71,7 +71,7 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        protected virtual void MouseTileChanged(Point mouseTile) { }
+        protected virtual void OnMouseTileChanged(Point mouseTile) { }
 
     }
 }
