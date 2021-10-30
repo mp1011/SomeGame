@@ -241,6 +241,18 @@
 /processorParam:TextureFormat=Color
 /build:Images/generic_platformer_tiles.png
 
+#begin Images/gizmos.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/gizmos.png
+
 #begin Images/gnu-120x100.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -876,6 +888,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Tilesets/font.png
+
+#begin Tilesets/Gizmos.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Tilesets/Gizmos.png
 
 #begin Tilesets/hero.png
 /importer:TextureImporter

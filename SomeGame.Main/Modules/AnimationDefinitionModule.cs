@@ -86,6 +86,9 @@ namespace SomeGame.Main.Modules
             SaveAnimations(ActorId.Apple, AnimationKey.Idle, new Animation(SpriteFrameIndex: 2, Duration: 5));
             SaveAnimations(ActorId.Meat, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
             SaveAnimations(ActorId.Key, AnimationKey.Idle, new Animation(SpriteFrameIndex: 4, Duration: 5));
+
+            SaveAnimations(ActorId.MovingPlatform, AnimationKey.Moving, new Animation(SpriteFrameIndex: 0, Duration: 5));
+
         }
 
         private void SaveAnimations(ActorId actorId, AnimationKey key, Animation animation)

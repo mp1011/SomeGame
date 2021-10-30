@@ -36,7 +36,8 @@ namespace SomeGame.Main.Modules
                     new TilesetWithPalette(TilesetContentKey.Bullet, PaletteIndex.P2),
                     new TilesetWithPalette(TilesetContentKey.Hud, PaletteIndex.P2),
                     new TilesetWithPalette(TilesetContentKey.Font, PaletteIndex.P2),
-                    new TilesetWithPalette(TilesetContentKey.Items, PaletteIndex.P1)
+                    new TilesetWithPalette(TilesetContentKey.Items, PaletteIndex.P1),
+                    new TilesetWithPalette(TilesetContentKey.Gizmos, PaletteIndex.P2)
                 },
                 Sounds: new SoundInfo[]
                 {
@@ -47,7 +48,8 @@ namespace SomeGame.Main.Modules
                 {
                     new ActorStart(ActorId.Player, new PixelPoint(50,100)),
                     new ActorStart(ActorId.Skeleton, new PixelPoint(150,120)),
-                    new ActorStart(ActorId.Skeleton, new PixelPoint(500,100))
+                    new ActorStart(ActorId.Skeleton, new PixelPoint(500,100)),
+                    new ActorStart(ActorId.MovingPlatform, new PixelPoint(200,100))
                 },
                 CollectiblePlacements: new CollectiblePlacement[]
                 {

@@ -22,7 +22,7 @@ namespace SomeGame.Main.Services
         {
             return _actors
                 .Select(a=>a.Actor)
-                .Where(a => a != null && a.Enabled && a.ActorType == actorType);
+                .Where(a => a != null && a.Enabled && (a.ActorType & actorType) > 0);
         }
 
         public void UnloadAll()

@@ -66,6 +66,7 @@ namespace SomeGame.Main.Services
                 case ActorId.Key: return CreateKey();
                 case ActorId.Skull: return CreateSkull();
                 case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone();
+                case ActorId.MovingPlatform: return CreateMovingPlatform(position);
                 default: throw new Exception($"Unknown ActorId {id}");
             }
         }
@@ -200,6 +201,24 @@ namespace SomeGame.Main.Services
 
             debris.CurrentAnimation = AnimationKey.Moving;
             return debris;
+        }
+
+        public Actor CreateMovingPlatform(PixelPoint position)
+        {
+            var bullet = CreateActor(
+               actorId: ActorId.MovingPlatform,
+               actorType: ActorType.Gizmo,
+               tileset: TilesetContentKey.Gizmos,
+               paletteIndex: PaletteIndex.P4,
+               behavior: new MovingPlatformBehavior(),
+               destroyedBehavior: new EmptyDestroyedBehavior(),
+               collisionDetector: new MovingBlockCollisionDetector(_actorManager),
+               hitBox: new Rectangle(0, 0, 16, 16),
+               position: position
+            );
+
+            bullet.CurrentAnimation = AnimationKey.Moving;
+            return bullet;
         }
 
         private SpriteAnimator CreateAnimator(ActorId actorId, TilesetContentKey tileset)

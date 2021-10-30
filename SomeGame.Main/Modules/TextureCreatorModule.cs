@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Services;
@@ -22,9 +23,9 @@ namespace SomeGame.Main.Modules
         private readonly DataSerializer _dataSerializer = new DataSerializer();
 
         public TextureCreatorModule(ImageContentKey src, TilesetContentKey dest, 
-            ResourceLoader resourceLoader, GraphicsDevice graphicsDevice)
+            ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
-            _resourceLoader = resourceLoader;
+            _resourceLoader = new ResourceLoader(contentManager);
             _graphicsDevice = graphicsDevice;
             _src = src;
             _dest = dest;

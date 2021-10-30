@@ -146,7 +146,8 @@ namespace SomeGame.Main.Models
         Character=4,
         Bullet=8,
         Item=16,
-        Decoration=32
+        Decoration=32,
+        Gizmo=64
     }
 
     public enum AnimationState
@@ -168,7 +169,8 @@ namespace SomeGame.Main.Models
         Meat,
         Skull,
         DeadSkeletonBone,
-        Key
+        Key,
+        MovingPlatform
     }
 
     public enum CollectibleId : byte

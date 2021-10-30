@@ -20,7 +20,8 @@
         Palette2,
         Palette3,
         Palette1Inverse,
-        Items
+        Items,
+        Gizmos
     }
 
     public enum TilesetContentKey : byte
@@ -32,7 +33,8 @@
         Skeleton,
         Bullet,
         Hud,
-        Items
+        Items,
+        Gizmos
     }
 
     public enum LevelContentKey : byte

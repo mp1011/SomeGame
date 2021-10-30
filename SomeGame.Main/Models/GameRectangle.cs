@@ -92,8 +92,6 @@ namespace SomeGame.Main.Models
             get => YPixel;
             set => YPixel = value;
         }
-
-
     }
 
     class BoundedGameRectangle : GameRectangle
