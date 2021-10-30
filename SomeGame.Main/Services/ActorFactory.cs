@@ -4,7 +4,6 @@ using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SomeGame.Main.Services
 {
@@ -44,15 +43,10 @@ namespace SomeGame.Main.Services
             PixelPoint position,
             Rectangle hitBox,
             ICollisionDetector collisionDetector,
-            IDestroyedBehavior destroyedBehavior=null,
-            bool enabledAtStart=true)
+            IDestroyedBehavior destroyedBehavior=null)
         {
             var actor = new Actor(actorType, tileset, paletteIndex, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
             actor.WorldPosition = new GameRectangleWithSubpixels(position.X,position.Y, hitBox.Width,hitBox.Height);
-
-            if (enabledAtStart)            
-                actor.Create();
-            
             _actorManager.AddActor(actor);                
             return actor;
         }
@@ -66,6 +60,10 @@ namespace SomeGame.Main.Services
                 case ActorId.Skeleton: return CreateSkeleton(position);
                 case ActorId.SkeletonBone: return CreateSkeletonBone();
                 case ActorId.Coin: return CreateCoin();
+                case ActorId.Apple: return CreateApple();
+                case ActorId.Gem: return CreateGem();
+                case ActorId.Meat: return CreateMeat();
+                case ActorId.Key: return CreateKey();
                 case ActorId.Skull: return CreateSkull();
                 case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone();
                 default: throw new Exception($"Unknown ActorId {id}");
@@ -81,21 +79,25 @@ namespace SomeGame.Main.Services
             return new ActorPool(actors);
         }
 
-        public Actor CreateCoin()
+        public Actor CreateCoin() => CreateCollectible(ActorId.Coin, size: 8, behavior: new CoinBehavior(_audioService, _playerStateManager));
+        public Actor CreateGem() => CreateCollectible(ActorId.Gem, size: 16, behavior: new GemBehavior(_audioService, _playerStateManager));
+        public Actor CreateApple() => CreateCollectible(ActorId.Apple, size: 16, behavior: new AppleBehavior(_audioService, _playerStateManager));
+        public Actor CreateMeat() => CreateCollectible(ActorId.Meat, size: 16, behavior: new MeatBehavior(_audioService, _playerStateManager));
+        public Actor CreateKey() => CreateCollectible(ActorId.Key, size: 16, behavior: new KeyBehavior(_audioService, _playerStateManager));
+
+        private Actor CreateCollectible(ActorId id, int size, CollectibleBehavior behavior)
         {
-            var coin = CreateActor(
-               actorId: ActorId.Coin,
+            return CreateActor(
+               actorId: id,
                actorType: ActorType.Item,
                tileset: TilesetContentKey.Items,
                paletteIndex: PaletteIndex.P1,
-               behavior: new CollectibleBehavior(_audioService, _playerStateManager),
+               behavior: behavior,
                collisionDetector: new EmptyCollisionDetector(),
-               hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0,0),
-               enabledAtStart:false);
-
-            return coin;
+               hitBox: new Rectangle(0, 0, size, size),
+               position: new PixelPoint(-100, -100));
         }
+
 
         public Actor CreatePlayer(PixelPoint position, TransitionInfo transitionInfo)
         {
@@ -134,8 +136,7 @@ namespace SomeGame.Main.Services
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0,0),
-               enabledAtStart:false
+               position: new PixelPoint(-100, -100)
             ); 
 
             bullet.CurrentAnimation = AnimationKey.Moving;
@@ -172,8 +173,7 @@ namespace SomeGame.Main.Services
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0, 0),
-               enabledAtStart: false);
+               position: new PixelPoint(-100, -100));
 
             enemyProjectile.CurrentAnimation = AnimationKey.Moving;
             return enemyProjectile;
@@ -196,8 +196,7 @@ namespace SomeGame.Main.Services
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new EmptyCollisionDetector(),
                hitBox: new Rectangle(0, 0, 8, 8),
-               position: new PixelPoint(0, 0),
-               enabledAtStart: false);
+               position: new PixelPoint(-100, -100));
 
             debris.CurrentAnimation = AnimationKey.Moving;
             return debris;

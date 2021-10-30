@@ -23,12 +23,13 @@ namespace SomeGame.Main.Models
 
         public Flip Flip { get; set; } 
 
-        public bool Enabled { get; set; }
+        public bool Enabled { get; private set; }
 
         public AnimationKey CurrentAnimation { get; set; }
 
         public bool IsAnimationFinished { get; set; }
 
+        public bool HasBeenActivated { get; private set; }
         public bool Destroying { get; private set; }
 
         //todo, assumes left/right
@@ -66,19 +67,24 @@ namespace SomeGame.Main.Models
 
         public void Destroy()
         {
+            Enabled = false;
+
             if (DestroyedBehavior == null)
-            {
-                Enabled = false;
-            }
-            else
-            {
-                Destroying = true;
-                DestroyedBehavior.OnDestroyed(this);
-            }
+                return;
+                           
+            Destroying = true;
+            DestroyedBehavior.OnDestroyed(this);            
+        }
+
+        public void OnBeingDestroyed()
+        {
+            if (DestroyedBehavior.Update(this) == DestroyedState.Destroyed)
+                Destroying = false;
         }
 
         public void Create()
         {
+            HasBeenActivated = true;
             Destroying = false;
             Behavior.OnCreated(this);
             Enabled = true;

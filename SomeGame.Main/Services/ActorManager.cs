@@ -65,6 +65,9 @@ namespace SomeGame.Main.Services
 
             foreach (var actorWithSprite in _actors)
             {
+                if (ShouldActivate(actorWithSprite.Actor))
+                    actorWithSprite.Actor.Create();
+
                 if (actorWithSprite.SpriteIndex == SpriteIndex.Sprite8)
                     actorWithSprite.NeedsSprite = true;
 
@@ -76,7 +79,7 @@ namespace SomeGame.Main.Services
                 if (actorWithSprite.NeedsSprite)
                 {
                     var actor = actorWithSprite.Actor;
-                    if (actor.Enabled)                    
+                    if (actor.Enabled || actor.Destroying)                    
                         UpdateActor(actor, spriteIndex, currentScene, actorWithSprite.NeedsSprite);                    
                     else
                         actorWithSprite.NeedsSprite = true;
@@ -99,6 +102,17 @@ namespace SomeGame.Main.Services
             }
         }
 
+        private bool ShouldActivate(Actor a)
+        {
+            if (a.HasBeenActivated)
+                return false;
+
+            //todo, Y axis
+            int padding = _gameSystem.Screen.Width / 4;
+            return (a.WorldPosition.Right > _scroller.Camera.Left - padding)
+                && (a.WorldPosition.Left < _scroller.Camera.Right + padding);
+        }
+
         private void UpdateActor(Actor actor, SpriteIndex spriteIndex, Scene scene, bool needsSprite)
         {
             var sprite = _gameSystem.GetSprite(spriteIndex);
@@ -117,12 +131,7 @@ namespace SomeGame.Main.Services
             var collisionInfo = actor.CollisionDetector.DetectCollisions(actor, frameStartPosition);
 
             if(actor.Destroying)
-            {
-                if (actor.DestroyedBehavior.Update(actor) == DestroyedState.Destroyed)
-                {
-                    actor.Enabled = false;
-                }
-            }
+                actor.OnBeingDestroyed();
             else 
                 actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
 

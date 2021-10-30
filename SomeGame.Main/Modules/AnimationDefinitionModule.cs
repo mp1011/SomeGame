@@ -17,95 +17,105 @@ namespace SomeGame.Main.Modules
 
         public void Initialize()
         {
-            var playerAnimations = new Dictionary<AnimationKey, Animation>();          
-            playerAnimations.Add(AnimationKey.Idle,
-                new Animation(
-                    new AnimationFrame(SpriteFrameIndex: 0, Duration: 50),
-                    new AnimationFrame(SpriteFrameIndex: 1, Duration: 50),
-                    new AnimationFrame(SpriteFrameIndex: 2, Duration: 50),
-                    new AnimationFrame(SpriteFrameIndex: 1, Duration: 50)));
-
-            playerAnimations.Add(AnimationKey.Jumping,
-               new Animation(
-                   new AnimationFrame(SpriteFrameIndex: 4, Duration: 50),
-                   new AnimationFrame(SpriteFrameIndex: 3, Duration: 50)));
-
-            playerAnimations.Add(AnimationKey.Attacking,
-                 new Animation(
-                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
-                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 5)));
-
-            playerAnimations.Add(AnimationKey.Moving,
+            SaveAnimations(ActorId.Player, 
+                idle:
+                    new Animation(
+                        new AnimationFrame(SpriteFrameIndex: 0, Duration: 50),
+                        new AnimationFrame(SpriteFrameIndex: 1, Duration: 50),
+                        new AnimationFrame(SpriteFrameIndex: 2, Duration: 50),
+                        new AnimationFrame(SpriteFrameIndex: 1, Duration: 50)),
+                jumping:
+                    new Animation(
+                        new AnimationFrame(SpriteFrameIndex: 4, Duration: 50),
+                        new AnimationFrame(SpriteFrameIndex: 3, Duration: 50)),
+                attacking:
+                    new Animation(
+                        new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
+                        new AnimationFrame(SpriteFrameIndex: 6, Duration: 5)),
+                moving:
                   new Animation(
                       new AnimationFrame(SpriteFrameIndex: 7, Duration: 10),
                       new AnimationFrame(SpriteFrameIndex: 8, Duration: 10),
                       new AnimationFrame(SpriteFrameIndex: 9, Duration: 10),
                       new AnimationFrame(SpriteFrameIndex: 10, Duration: 10),
-                      new AnimationFrame(SpriteFrameIndex: 11, Duration: 10)));
+                      new AnimationFrame(SpriteFrameIndex: 11, Duration: 10)),
+                hurt:  new Animation(SpriteFrameIndex:12,Duration:10));
 
-            playerAnimations.Add(AnimationKey.Hurt,
-                 new Animation(
-                   new AnimationFrame(SpriteFrameIndex:12,Duration:10)));
+            SaveAnimations(ActorId.Skeleton,
+                idle: new Animation(SpriteFrameIndex: 0, Duration: 10),
+                moving:
+                    new Animation(
+                        new AnimationFrame(SpriteFrameIndex: 1, Duration: 20),
+                        new AnimationFrame(SpriteFrameIndex: 2, Duration: 20)),
+                attacking: new Animation(SpriteFrameIndex: 3, Duration: 50));
 
-            var skeletonAnimations = new Dictionary<AnimationKey, Animation>();
-            skeletonAnimations.Add(AnimationKey.Idle,
-                new Animation(
-                     new AnimationFrame(SpriteFrameIndex: 0, Duration: 10)));
-
-            skeletonAnimations.Add(AnimationKey.Moving,
-                new Animation(
-                    new AnimationFrame(SpriteFrameIndex: 1, Duration: 20),
-                    new AnimationFrame(SpriteFrameIndex: 2, Duration: 20)));
-
-            skeletonAnimations.Add(AnimationKey.Attacking,
-                new Animation(
-                    new AnimationFrame(SpriteFrameIndex: 3, Duration: 50)));
-
-            var skeletonBoneAnimations = new Dictionary<AnimationKey, Animation>();
-            skeletonBoneAnimations.Add(AnimationKey.Moving,
+            SaveAnimations(ActorId.SkeletonBone, AnimationKey.Moving,
                 new Animation(
                     new AnimationFrame(SpriteFrameIndex: 4, Duration: 10),
                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 10),
                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 10),
                     new AnimationFrame(SpriteFrameIndex: 7, Duration: 10)));
 
-            var skullAnimations = new Dictionary<AnimationKey, Animation>();
-            skullAnimations.Add(AnimationKey.Moving,
-                new Animation(
-                    new AnimationFrame(SpriteFrameIndex: 9, Duration: 10)));
+            SaveAnimations(ActorId.Skull, AnimationKey.Moving,
+                new Animation(SpriteFrameIndex: 9, Duration: 10));
 
-            var deadSkeletonBoneAnimations = new Dictionary<AnimationKey, Animation>();
-            deadSkeletonBoneAnimations.Add(AnimationKey.Moving,
+            SaveAnimations(ActorId.DeadSkeletonBone, AnimationKey.Moving,
                 new Animation(
                     new AnimationFrame(SpriteFrameIndex: 4, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 7, Duration: 5)));
 
-
-            var playerBulletAnimations = new Dictionary<AnimationKey, Animation>();
-            playerBulletAnimations.Add(AnimationKey.Moving,
+            SaveAnimations(ActorId.PlayerBullet, AnimationKey.Moving,
                 new Animation(
                     new AnimationFrame(SpriteFrameIndex: 0, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 1, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 2, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 1, Duration: 5)));
 
-
-            var coinAnimations = new Dictionary<AnimationKey, Animation>();
-            coinAnimations.Add(AnimationKey.Idle,
+            SaveAnimations(ActorId.Coin, AnimationKey.Idle,
                 new Animation(
                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 5)));
 
-            _dataSerializer.SaveAnimations(ActorId.Player, playerAnimations);
-            _dataSerializer.SaveAnimations(ActorId.PlayerBullet, playerBulletAnimations);
-            _dataSerializer.SaveAnimations(ActorId.Skeleton, skeletonAnimations);
-            _dataSerializer.SaveAnimations(ActorId.SkeletonBone, skeletonBoneAnimations);
-            _dataSerializer.SaveAnimations(ActorId.Coin, coinAnimations);
-            _dataSerializer.SaveAnimations(ActorId.Skull, skullAnimations);
-            _dataSerializer.SaveAnimations(ActorId.DeadSkeletonBone, deadSkeletonBoneAnimations);
+            SaveAnimations(ActorId.Gem, AnimationKey.Idle, 
+                new Animation(
+                    new AnimationFrame(SpriteFrameIndex: 0, Duration: 5),
+                    new AnimationFrame(SpriteFrameIndex: 1, Duration: 5)));
 
+            SaveAnimations(ActorId.Apple, AnimationKey.Idle, new Animation(SpriteFrameIndex: 2, Duration: 5));
+            SaveAnimations(ActorId.Meat, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
+            SaveAnimations(ActorId.Key, AnimationKey.Idle, new Animation(SpriteFrameIndex: 4, Duration: 5));
+        }
+
+        private void SaveAnimations(ActorId actorId, AnimationKey key, Animation animation)
+        {
+            var d = new Dictionary<AnimationKey, Animation>();
+            d.Add(key, animation);
+            SaveAnimations(actorId, d);
+        }
+
+        private void SaveAnimations(ActorId actorId, Animation idle = null, Animation attacking = null, 
+            Animation hurt = null, Animation jumping = null, Animation moving=null)
+        {
+            var d = new Dictionary<AnimationKey, Animation>();
+            if(idle != null)
+                d.Add(AnimationKey.Idle, idle);
+            if (attacking != null)
+                d.Add(AnimationKey.Attacking, attacking);
+            if (hurt != null)
+                d.Add(AnimationKey.Hurt, hurt);
+            if (jumping != null)
+                d.Add(AnimationKey.Jumping, jumping);
+            if (moving != null)
+                d.Add(AnimationKey.Moving, moving);
+
+            SaveAnimations(actorId, d);
+        }
+
+        private void SaveAnimations(ActorId actorId, Dictionary<AnimationKey,Animation> animations)
+        {
+            _dataSerializer.SaveAnimations(actorId, animations);
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

@@ -54,7 +54,7 @@ namespace SomeGame.Main.Behaviors
                     var tileBounds = fg.GetTileLayerPosition(x, y);
                     tileBounds = _scroller.LayerPositionToWorldPosition(tileBounds, LayerIndex.FG);
                     if (tileBounds.Intersects(actor.WorldPosition))
-                        collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y);
+                        collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y, fg);
                 }
             });
 

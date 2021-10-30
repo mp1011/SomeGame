@@ -167,7 +167,8 @@ namespace SomeGame.Main.Models
         Apple,
         Meat,
         Skull,
-        DeadSkeletonBone
+        DeadSkeletonBone,
+        Key
     }
 
     public enum CollectibleId : byte
@@ -176,6 +177,7 @@ namespace SomeGame.Main.Models
         Gem = ActorId.Gem,
         Apple = ActorId.Apple,
         Meat = ActorId.Meat,
+        Key = ActorId.Key
     }
 
     public enum DestroyedState

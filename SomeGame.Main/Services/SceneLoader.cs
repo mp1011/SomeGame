@@ -65,11 +65,9 @@ namespace SomeGame.Main.Services
             _scroller.SetTileMaps(bg, fg);
 
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
-            PlaceCollectibles(sceneInfo);
             InitializeActors(sceneInfo, sceneTransition);
+            PlaceCollectibles(sceneInfo);
             InitializeSounds(sceneInfo);
-
-            
         }
 
         private void InitializeInterfaceLayer(InterfaceType interfaceType)
@@ -121,6 +119,7 @@ namespace SomeGame.Main.Services
             _playerStateManager.ResetPlayerState();
             _audioService.UnloadSounds();
             _actorManager.UnloadAll();
+            _collectiblesService.Reset();
         }
     }
 }
