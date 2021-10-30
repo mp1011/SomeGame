@@ -50,15 +50,16 @@ namespace SomeGame.Main.Behaviors
 
         public override void HandleCollision(Actor actor, Actor other)
         {
-            if (!IsInvulnerable)
+            if (IsInvulnerable || other == null || (other.ActorType & ActorType.Enemy) == 0)
+                return;
+
+            if (_hurtTimer == 0)
             {
                 _playerStateManager.CurrentState.Health -= 5;
                 if (_playerStateManager.CurrentState.Health == 0)
                     actor.Destroy();
-            }
-
-            if (_hurtTimer == 0 && (other.ActorType & ActorType.Enemy) > 0)
                 _hurtTimer = 1;
+            }
         }
     }
 }

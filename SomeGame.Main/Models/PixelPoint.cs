@@ -1,6 +1,6 @@
 ﻿namespace SomeGame.Main.Models
 {
-    record PixelPoint(PixelValue X, PixelValue Y)
+    public record PixelPoint(PixelValue X, PixelValue Y)
     {
         public PixelPoint(int x, int y) : this(new PixelValue(x, 0), new PixelValue(y, 0)) { }
         public PixelPoint(PixelValue x, int y) : this(x, new PixelValue(y, 0)) { }
@@ -25,7 +25,7 @@
         }
     }
 
-    record PixelValue(int Pixel, int SubPixel)
+    public record PixelValue(int Pixel, int SubPixel)
     {
         public static PixelValue operator +(PixelValue pv, int i)
         {

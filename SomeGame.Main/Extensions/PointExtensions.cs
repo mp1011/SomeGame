@@ -18,7 +18,46 @@ namespace SomeGame.Main.Extensions
                 relativeY *= -1;
 
             return p.Offset(relativeX, relativeY);
+        }
 
+        public static Direction ToDirection(this Point p)
+        {
+            if (p.X < 0 && p.Y < 0)
+                return Direction.UpLeft;
+            else if (p.X < 0 && p.Y == 0)
+                return Direction.Left;
+            else if (p.X < 0 && p.Y > 0)
+                return Direction.DownLeft;
+            else if (p.X == 0 && p.Y > 0)
+                return Direction.Down;
+            else if (p.X > 0 && p.Y > 0)
+                return Direction.DownRight;
+            else if (p.X > 0 && p.Y == 0)
+                return Direction.Right;
+            else if (p.X > 0 && p.Y < 0)
+                return Direction.UpRight;
+            else
+                return Direction.None;
+        }
+
+        public static Direction ToDirection(this PixelPoint p)
+        {
+            if (p.X < 0 && p.Y < 0)
+                return Direction.UpLeft;
+            else if (p.X < 0 && p.Y == 0)
+                return Direction.Left;
+            else if (p.X < 0 && p.Y > 0)
+                return Direction.DownLeft;
+            else if (p.X == 0 && p.Y > 0)
+                return Direction.Down;
+            else if (p.X > 0 && p.Y > 0)
+                return Direction.DownRight;
+            else if (p.X > 0 && p.Y == 0)
+                return Direction.Right;
+            else if (p.X > 0 && p.Y < 0)
+                return Direction.UpRight;
+            else
+                return Direction.None;
         }
     }
 }

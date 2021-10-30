@@ -8,10 +8,14 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly GameSystem _gameSystem;
         private readonly CollectiblesService _collectiblesService;
+        private readonly ActorManager _actorManager;
         private readonly Scroller _scroller;
-        public BgCollisionDetector(GameSystem gameSystem, Scroller scroller, CollectiblesService collectiblesService=null)
+        public BgCollisionDetector(GameSystem gameSystem, Scroller scroller, 
+            ActorManager actorManager,
+            CollectiblesService collectiblesService=null)
         {
             _scroller = scroller;
+            _actorManager = actorManager;
             _gameSystem = gameSystem;
             _collectiblesService = collectiblesService;
         }
@@ -55,6 +59,24 @@ namespace SomeGame.Main.Behaviors
                         collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y, fg);
                 }
             });
+
+            return collisionInfo += HandleMovingBlockCollisions(actor, frameStartPosition);
+        }
+
+        private CollisionInfo HandleMovingBlockCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition)
+        {
+            CollisionInfo collisionInfo = new CollisionInfo();
+
+            foreach(var block in _actorManager.GetActors(ActorType.Gizmo))
+            {
+                if (actor.WorldPosition.IntersectsWith(block.WorldPosition))
+                    collisionInfo += HandleCollision(actor, block.WorldPosition, frameStartPosition);
+
+                collisionInfo += CheckTouchingGround(actor, block.WorldPosition);
+
+                if (collisionInfo.IsOnGround)
+                    collisionInfo += CheckOnLedge(actor, block.WorldPosition, false, false);
+            }
 
             return collisionInfo;
         }
