@@ -39,9 +39,9 @@ namespace SomeGame.Main.Models
             return new Point(tileX, tileY);
         }
 
-        public Rectangle GetTileLayerPosition(int tileX, int tileY)
+        public GameRectangleWithSubpixels GetTileLayerPosition(int tileX, int tileY)
         {
-            return new Rectangle(tileX * _tileSize, tileY * _tileSize, _tileSize, _tileSize);
+            return new GameRectangleWithSubpixels(tileX * _tileSize, tileY * _tileSize, _tileSize, _tileSize);
         }
     }
 }

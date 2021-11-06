@@ -40,11 +40,11 @@ namespace SomeGame.Main.Models
             return layerPos;
         }
 
-        public Rectangle LayerPositionToWorldPosition(Rectangle layerPosition)
+        public GameRectangleWithSubpixels LayerPositionToWorldPosition(GameRectangleWithSubpixels layerPosition)
         {
-            return new Rectangle(
-                layerPosition.X + _scrollBounds.X,
-                layerPosition.Y + _scrollBounds.Y,
+            return new GameRectangleWithSubpixels(
+                layerPosition.XPixel + _scrollBounds.X,
+                layerPosition.YPixel + _scrollBounds.Y,
                 layerPosition.Width,
                 layerPosition.Height);
         }

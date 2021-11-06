@@ -30,7 +30,7 @@ namespace SomeGame.Main.Services
             }
         }
 
-        public Rectangle LayerPositionToWorldPosition(Rectangle layerPosition, LayerIndex layerIndex)
+        public GameRectangleWithSubpixels LayerPositionToWorldPosition(GameRectangleWithSubpixels layerPosition, LayerIndex layerIndex)
         {
             switch (layerIndex)
             {

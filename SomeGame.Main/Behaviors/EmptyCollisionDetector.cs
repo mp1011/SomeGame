@@ -4,7 +4,7 @@ namespace SomeGame.Main.Behaviors
 {
     class EmptyCollisionDetector : ICollisionDetector
     {
-        public CollisionInfo DetectCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition)
+        public CollisionInfo DetectCollisions(Actor actor)
         {
             return new CollisionInfo();
         }

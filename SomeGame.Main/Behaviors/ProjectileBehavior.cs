@@ -22,7 +22,7 @@ namespace SomeGame.Main.Behaviors
             actor.CurrentAnimation = AnimationKey.Moving;           
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if(_destroyTimer == 0)
             {

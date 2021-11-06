@@ -25,13 +25,13 @@ namespace SomeGame.Main.Behaviors
             _timer = 100;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
-            _gravity.Update(actor, frameStartPosition, collisionInfo);
-            _enemyMotionBehavior.Update(actor, frameStartPosition, collisionInfo);
+            _gravity.Update(actor, collisionInfo);
+            _enemyMotionBehavior.Update(actor, collisionInfo);
 
             if(_enemyMotionBehavior.CurrentState == StandardEnemyState.Moving && 
-                (collisionInfo.IsFacingLedge || collisionInfo.XCorrection.Pixel != 0 || collisionInfo.XCorrection.SubPixel != 0))
+                (collisionInfo.IsFacingLedge || collisionInfo.XCorrection != 0))
             {
                 if (actor.FacingDirection == Direction.Right)
                     _enemyMotionBehavior.SetMoving(actor, Direction.Left);

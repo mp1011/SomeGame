@@ -14,7 +14,7 @@ namespace SomeGame.Main.Behaviors
             _inputManger = inputManger;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             actor.MotionVector = GetVectorFromInput(_inputManger.Input);
 

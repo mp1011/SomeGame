@@ -12,7 +12,7 @@ namespace SomeGame.Main.Behaviors
         private readonly PlatformerPlayerMotionBehavior _motionBehavior;
         private readonly PlayerHurtBehavior _playerHurtBehavior;
         private readonly CameraBehavior _cameraBehavior;
-        private readonly AcceleratedMotion _gravity;
+        private readonly Gravity _gravity;
         private readonly InputManager _inputManager;
         private readonly ActorPool _bullets;
         private readonly AudioService _audioService;
@@ -24,7 +24,7 @@ namespace SomeGame.Main.Behaviors
         private bool _queueAttack;
 
         public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, 
-            CameraBehavior cameraBehavior, AcceleratedMotion gravity, InputManager inputManager, ActorPool bullets,  
+            CameraBehavior cameraBehavior, Gravity gravity, InputManager inputManager, ActorPool bullets,  
             DestroyOnFall destroyOnFall, SceneManager sceneManager, AudioService audioService, TransitionInfo incomingTransition)
         {
             _destroyOnFall = destroyOnFall;
@@ -73,7 +73,7 @@ namespace SomeGame.Main.Behaviors
             actor.WorldPosition.Center = relativeEnterPosition;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if (actor.CurrentAnimation == AnimationKey.Attacking && actor.IsAnimationFinished)
             {
@@ -90,10 +90,10 @@ namespace SomeGame.Main.Behaviors
 
 
             _destroyOnFall.Update(actor);
-            _playerHurtBehavior.Update(actor, frameStartPosition, collisionInfo);
-            _motionBehavior.Update(actor, frameStartPosition, collisionInfo);
-            _gravity.Update(actor, frameStartPosition, collisionInfo);
-            _cameraBehavior.Update(actor, frameStartPosition, collisionInfo);
+            _playerHurtBehavior.Update(actor, collisionInfo);
+            _motionBehavior.Update(actor, collisionInfo);
+            _gravity.Update(actor, collisionInfo);
+            _cameraBehavior.Update(actor, collisionInfo);
 
 
             if(_attackCooldown == 0 && (_queueAttack || _inputManager.Input.B.IsPressed()))

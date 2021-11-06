@@ -14,14 +14,14 @@ namespace SomeGame.Main.Behaviors
             _collidesWith = collidesWith;
         }
 
-        public CollisionInfo DetectCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition)
+        public CollisionInfo DetectCollisions(Actor actor)
         {
             foreach(var otherActor in _actorManager.GetActors(_collidesWith))
             {
                 if (otherActor.WorldPosition.IntersectsWith(actor.WorldPosition))
                 {
                     otherActor.Behavior.HandleCollision(otherActor, actor);
-                    return new CollisionInfo(otherActor);
+                    return new CollisionInfo(Actor:otherActor);
                 }
             }
 

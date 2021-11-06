@@ -44,7 +44,7 @@ namespace SomeGame.Main.Models
 
                 collected.WorldPosition.X = tileX * _gameSystem.TileSize;
                 collected.WorldPosition.Y = tileY * _gameSystem.TileSize;
-                return new CollisionInfo(collected);
+                return new CollisionInfo(Actor:collected);
             }
 
             return null;

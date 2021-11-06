@@ -16,7 +16,7 @@ namespace SomeGame.Main.Behaviors
             _gameSystem = gameSystem;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             _scroller.Camera.X = actor.WorldPosition.X - _gameSystem.Screen.Width / 2;
             _scroller.Camera.Y = actor.WorldPosition.Y - _gameSystem.Screen.Height / 2;

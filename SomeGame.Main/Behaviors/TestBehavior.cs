@@ -7,7 +7,7 @@ namespace SomeGame.Main.Behaviors
     {
         private int _counter = 0;
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if(_counter==0)
                 actor.MotionVector = new PixelPoint(2, 1);

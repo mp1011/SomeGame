@@ -19,7 +19,7 @@ namespace SomeGame.Main.Behaviors
             _playerStateManager = playerStateManager;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if (IsRecoiling)
             {

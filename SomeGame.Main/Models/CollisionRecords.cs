@@ -1,16 +1,7 @@
 ﻿namespace SomeGame.Main.Models
 {
-    record CollisionInfo(PixelValue XCorrection, PixelValue YCorrection, bool IsOnGround = false, bool IsFacingLedge=false, Actor Actor=null)
+    record CollisionInfo(int XCorrection=0, int YCorrection=0, bool IsOnGround = false, bool IsFacingLedge=false, Actor Actor=null)
     {
-        public CollisionInfo(bool IsOnGround=false, bool IsFacingLedge=false) : 
-            this(new PixelValue(0,0), new PixelValue(0, 0), IsOnGround, IsFacingLedge)
-        {
-        }
-
-        public CollisionInfo(Actor actor) : this(new PixelValue(0, 0), new PixelValue(0, 0), IsOnGround:false, Actor:actor )
-        {
-        }
-
         public static CollisionInfo operator +(CollisionInfo c1, CollisionInfo c2)
         {
             return new CollisionInfo(XCorrection: c1.XCorrection + c2.XCorrection, 

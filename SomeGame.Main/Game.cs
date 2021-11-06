@@ -19,6 +19,8 @@ namespace SomeGame.Main
         public GameEngine(Func<ContentManager,GraphicsDevice,IGameModule> createModule)
         {
             _createModule = createModule;
+            IsFixedTimeStep = true;
+            TargetElapsedTime = TimeSpan.FromMilliseconds(15);
             new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;

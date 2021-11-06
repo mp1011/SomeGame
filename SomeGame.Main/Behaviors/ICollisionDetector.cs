@@ -5,6 +5,6 @@ namespace SomeGame.Main.Behaviors
 {
     interface ICollisionDetector
     {
-        CollisionInfo DetectCollisions(Actor actor, GameRectangleWithSubpixels frameStartPosition);
+        CollisionInfo DetectCollisions(Actor actor);
     }
 }

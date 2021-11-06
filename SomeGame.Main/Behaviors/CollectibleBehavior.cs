@@ -28,7 +28,7 @@ namespace SomeGame.Main.Behaviors
             _timer = 0;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             _timer++;
             if (_timer >= 5)

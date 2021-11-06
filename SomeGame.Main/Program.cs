@@ -18,7 +18,7 @@ namespace SomeGame.Main
         private static IGameModule CreateModule(ContentManager cm, GraphicsDevice gd)
         {
         //   return new SceneDefinitionModule();
-          //  return new LevelEditorModule(LevelContentKey.TestLevel, cm, gd);
+         // return new LevelEditorModule(LevelContentKey.TestLevel2, cm, gd);
           // return new SpriteEditorModule(TilesetContentKey.Gizmos, cm, gd);
         //  return new AnimationDefinitionModule();
            return new SceneModule(SceneContentKey.Test1, cm, gd);

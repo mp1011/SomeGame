@@ -2,11 +2,16 @@
 
 namespace SomeGame.Main.Behaviors
 {
-    class Gravity : AcceleratedMotion
+    class Gravity : Behavior
     {
-        public Gravity() : base(Orientation.Vertical)
+        private byte _acceleration = 30;
+
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
-            SubPixelAcceleration = 30;
+            if (collisionInfo.IsOnGround)
+                return;
+
+            actor.MotionVector = actor.MotionVector.Offset(Orientation.Vertical, 0, _acceleration);
         }
     }
 }

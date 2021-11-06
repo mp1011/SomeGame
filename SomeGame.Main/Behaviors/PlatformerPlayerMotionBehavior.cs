@@ -16,7 +16,7 @@ namespace SomeGame.Main.Behaviors
             _inputManger = inputManger;
         }
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo backgroundCollisionInfo)
+        public override void Update(Actor actor, CollisionInfo backgroundCollisionInfo)
         {
             if (actor.CurrentAnimation == AnimationKey.Attacking && !actor.IsAnimationFinished)
             {

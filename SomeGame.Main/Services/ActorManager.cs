@@ -22,7 +22,7 @@ namespace SomeGame.Main.Services
         {
             return _actors
                 .Select(a=>a.Actor)
-                .Where(a => a != null && a.Enabled && (a.ActorType & actorType) > 0);
+                .Where(a => a != null && a.Enabled && (a.ActorType & actorType) == actorType);
         }
 
         public void UnloadAll()
@@ -120,20 +120,19 @@ namespace SomeGame.Main.Services
             if(!needsSprite)
                 sprite.Palette = actor.Palette;
 
-            var frameStartPosition = actor.WorldPosition.Copy();   
-
             actor.WorldPosition.XPixel += actor.MotionVector.X;
             actor.WorldPosition.YPixel += actor.MotionVector.Y;
 
             var animationState = actor.Animator.Update(spriteIndex, actor.CurrentAnimation, needsSprite);
             actor.IsAnimationFinished = animationState == AnimationState.Finished;
 
-            var collisionInfo = actor.CollisionDetector.DetectCollisions(actor, frameStartPosition);
+            var collisionInfo = actor.CollisionDetector.DetectCollisions(actor);
+            DebugService.ShowPosition(actor);
 
             if(actor.Destroying)
                 actor.OnBeingDestroyed();
             else 
-                actor.Behavior.Update(actor, frameStartPosition, collisionInfo);
+                actor.Behavior.Update(actor, collisionInfo);
 
             if(!needsSprite)
                 _scroller.ScrollActor(actor, sprite);

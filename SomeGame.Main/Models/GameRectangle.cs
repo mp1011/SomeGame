@@ -81,6 +81,12 @@ namespace SomeGame.Main.Models
         public PixelValue YPixel { get; set; } = new PixelValue(0, 0);
 
 
+        public PixelValue LeftPixel => XPixel;
+        public PixelValue TopPixel => YPixel;
+        public PixelValue RightPixel => LeftPixel + Width;
+        public PixelValue BottomPixel => TopPixel + Height;
+
+
         public override int X
         {
             get => XPixel;
@@ -92,6 +98,26 @@ namespace SomeGame.Main.Models
             get => YPixel;
             set => YPixel = value;
         }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is GameRectangleWithSubpixels other)
+            {
+                return Width == other.Width
+                    && Height == other.Height
+                    && XPixel == other.XPixel
+                    && YPixel == other.YPixel;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString() => $"X:{XPixel} Y:{YPixel} Width:{Width} Height:{Height}";
     }
 
     class BoundedGameRectangle : GameRectangle

@@ -10,7 +10,7 @@ namespace SomeGame.Main.Behaviors
 
         private readonly PixelValue _walkSpeed = new PixelValue(0, 100);
 
-        public override void Update(Actor actor, Rectangle frameStartPosition, CollisionInfo collisionInfo)
+        public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if (collisionInfo.XCorrection != 0)
                 actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
