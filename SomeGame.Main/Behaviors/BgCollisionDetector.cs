@@ -182,22 +182,94 @@ namespace SomeGame.Main.Behaviors
         {
             CollisionInfo collisionInfo = new CollisionInfo();
 
-            //foreach(var block in _actorManager.GetActors(ActorType.Gizmo))
-            //{
-            //    if (actor.WorldPosition.IntersectsWith(block.WorldPosition))
-            //        collisionInfo += HandleXCollision(actor, block.WorldPosition);
-            //}
+            PixelValue xCorrection = new PixelValue(0, 0);
+            PixelValue yCorrection = new PixelValue(0, 0);
 
             //foreach (var block in _actorManager.GetActors(ActorType.Gizmo))
             //{
-            //    if (actor.WorldPosition.IntersectsWith(block.WorldPosition))
-            //        collisionInfo += HandleYCollision(actor, block.WorldPosition);
+            //    if (!actor.WorldPosition.IntersectsWith(block.WorldPosition))
+            //        continue;
 
-            //    collisionInfo += CheckTouchingGround(actor, block.WorldPosition);
+            //    var relativeXMotion = actor.MotionVector.X - block.MotionVector.X;
 
-            //    if (collisionInfo.IsOnGround)
-            //        collisionInfo += CheckOnLedge(actor, block.WorldPosition, false, false);
+            //    var xTemp = new PixelValue(0, 0);
+         
+            //    if (relativeXMotion > 0)
+            //    {
+            //        var minXCorrection = -actor.MotionVector.X.NearestPixel(1);
+
+            //        xTemp = block.WorldPosition.LeftPixel - actor.WorldPosition.RightPixel;
+            //        if (xTemp > 0)
+            //            xTemp = 0;
+            //        if (xTemp < minXCorrection)
+            //            xTemp = minXCorrection;
+            //        if (xTemp < xCorrection)
+            //            xCorrection = xTemp;
+            //    }
+            //    else if (relativeXMotion < 0)
+            //    {
+            //        var maxXCorrection = -actor.MotionVector.X.NearestPixel(-1);
+            //        xTemp = block.WorldPosition.RightPixel - actor.WorldPosition.LeftPixel;
+            //        if (xTemp < 0)
+            //            xTemp = 0;
+            //        if (xTemp > maxXCorrection)
+            //            xTemp = maxXCorrection;
+            //        if (xTemp > xCorrection)
+            //            xCorrection = xTemp;
+            //    }
             //}
+
+            //if (xCorrection != 0)
+            //{
+            //    actor.WorldPosition.XPixel += xCorrection;
+            //    collisionInfo += new CollisionInfo(XCorrection: xCorrection);
+            //}
+
+            foreach (var block in _actorManager.GetActors(ActorType.Gizmo))
+            {
+                if (actor.WorldPosition.IntersectsWith(block.WorldPosition))
+                {
+                    var yTemp = new PixelValue(0, 0);
+                    var relativeYMotion = actor.MotionVector.Y - block.MotionVector.Y;
+                   
+                    if (relativeYMotion > 0)
+                    {
+                        yTemp = block.WorldPosition.TopPixel - actor.WorldPosition.BottomPixel;
+
+                        if (yTemp > 0)
+                            yTemp = 0;
+                        if (yTemp < yCorrection)
+                        {
+                            yCorrection = yTemp;
+                            collisionInfo += CheckTouchingGround(actor, block.WorldPosition, yCorrection);
+                        }
+                    }
+                    //else if (relativeYMotion < 0)
+                    //{
+                    //    yTemp = block.WorldPosition.BottomPixel - actor.WorldPosition.TopPixel;
+                    //    if (yTemp < 0)
+                    //        yTemp = 0;
+                    //    if (yTemp > yCorrection)
+                    //        yCorrection = yTemp;
+                    //}                    
+                }
+                collisionInfo += CheckTouchingGround(actor, block.WorldPosition, yCorrection);
+
+                if(collisionInfo.IsOnGround)
+                {
+                    actor.WorldPosition.XPixel += block.MotionVector.X;
+                    actor.WorldPosition.YPixel += block.MotionVector.Y;
+                }
+
+                if (collisionInfo.IsOnGround)
+                    collisionInfo += CheckOnLedge(actor, block.WorldPosition, false, false);
+            }
+
+            if (yCorrection != 0)
+            {
+                actor.WorldPosition.YPixel += yCorrection;
+                collisionInfo += new CollisionInfo(YCorrection: yCorrection);
+            }
 
             return collisionInfo;
         }
