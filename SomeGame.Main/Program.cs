@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
+using SomeGame.Main.Models;
 using SomeGame.Main.Modules;
 using System;
+using System.Collections.Generic;
 
 namespace SomeGame.Main
 {
@@ -17,16 +19,18 @@ namespace SomeGame.Main
 
         private static IGameModule CreateModule(ContentManager cm, GraphicsDevice gd)
         {
-        //   return new SceneDefinitionModule();
-         // return new LevelEditorModule(LevelContentKey.TestLevel2, cm, gd);
-          // return new SpriteEditorModule(TilesetContentKey.Gizmos, cm, gd);
-        //  return new AnimationDefinitionModule();
-           return new SceneModule(SceneContentKey.Test1, cm, gd);
-          // return new TextureCreatorModule(ImageContentKey.Gizmos, TilesetContentKey.Gizmos, cm, gd);
+          // return new SceneDefinitionModule();
+           //return new LevelEditorModule(SceneContentKey.Test3, LayerIndex.BG, cm, gd);
+
+            // return new SpriteEditorModule(TilesetContentKey.Gizmos, cm, gd);
+            //  return new AnimationDefinitionModule();
+              return new SceneModule(SceneContentKey.Test3, cm, gd);
+           // return new TextureCreatorModule(cm, gd, ImageContentKey.Mountains);
+            // ImageContentKey.Bullet3, ImageContentKey.Clouds, ImageContentKey.Ghost, ImageContentKey.Mountains);
+           // return new ThemeDefinerModule(ImageContentKey.Mountains, TilesetContentKey.Mountains, cm, gd);
 
 
-            //    var module = new PaletteCreatorModule();
-            // var module = new ThemeDefinerModule(ImageContentKey.Sheet, TilesetContentKey.Tiles);
+           //   return new PaletteCreatorModule(cm,gd);
             // var module = new GameSystemTestModule();
             //var module = new FontTestModule();
             //   var module = new LevelEditorModule(LevelContentKey.TestLevelBG);

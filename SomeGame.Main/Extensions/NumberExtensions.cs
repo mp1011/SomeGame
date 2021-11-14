@@ -1,7 +1,11 @@
-﻿namespace SomeGame.Main.Extensions
+﻿using SomeGame.Main.Models;
+
+namespace SomeGame.Main.Extensions
 {
     public static class NumberExtensions
     {
+
+        internal static RotatingInt AsRotatingInt(this int value, int max) => new RotatingInt(value, max);
         public static int Clamp(this int value, int max) => value.Clamp(0, max);
 
         public static int Clamp(this int value, int min, int max)

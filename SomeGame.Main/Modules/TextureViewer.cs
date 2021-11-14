@@ -18,6 +18,8 @@ namespace SomeGame.Main.Modules
             _imageKey = imageKey;
         }
 
+        public Color BackgroundColor => Color.Black;
+
         public Rectangle Screen => new Rectangle(0,0,320,240);
 
         public void Draw(SpriteBatch spriteBatch)

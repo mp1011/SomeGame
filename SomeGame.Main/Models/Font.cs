@@ -32,7 +32,7 @@ namespace SomeGame.Main.Models
             if (index < 0)
                 return new Tile(-1, TileFlags.None);
             else
-                return new Tile((_tileOffset-layerTileOffset) + index, TileFlags.None);
+                return new Tile((_tileOffset- layerTileOffset) + index, TileFlags.None);
         }
     }
 }

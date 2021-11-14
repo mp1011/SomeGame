@@ -17,20 +17,20 @@ namespace SomeGame.Main.Modules
         private readonly ResourceLoader _resourceLoader;
         private readonly GraphicsDevice _graphicsDevice;
 
-        private readonly ImageContentKey _src;
-        private readonly TilesetContentKey _dest;
+        private readonly ImageContentKey[] _src;
         private readonly TileSetService _tileSetService = new TileSetService();
         private readonly DataSerializer _dataSerializer = new DataSerializer();
 
-        public TextureCreatorModule(ImageContentKey src, TilesetContentKey dest, 
-            ContentManager contentManager, GraphicsDevice graphicsDevice)
+        public TextureCreatorModule(ContentManager contentManager, GraphicsDevice graphicsDevice,
+            params ImageContentKey[] src)
         {
             _resourceLoader = new ResourceLoader(contentManager);
             _graphicsDevice = graphicsDevice;
             _src = src;
-            _dest = dest;
         }
 
+
+        public Color BackgroundColor => Color.Black;
         public Rectangle Screen => new Rectangle(0, 0, 100, 100);
 
         public void Draw(SpriteBatch spriteBatch)
@@ -39,13 +39,16 @@ namespace SomeGame.Main.Modules
 
         public void Initialize()
         {
-            var img = _resourceLoader.LoadTexture(_src)
-                                    .ToIndexedImage();
+            foreach (var srcKey in _src)
+            {
+                var img = _resourceLoader.LoadTexture(srcKey)
+                                        .ToIndexedImage();
 
-            var tileset = _tileSetService.CreateTilesetFromImage(img)
-                                         .ToTexture2D(_graphicsDevice);
+                var tileset = _tileSetService.CreateTilesetFromImage(img)
+                                             .ToTexture2D(_graphicsDevice);
 
-            _dataSerializer.SaveTilesetImage(_dest, tileset);
+                _dataSerializer.SaveTilesetImage($"{srcKey}_tiled", tileset);
+            }
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

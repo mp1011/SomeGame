@@ -42,11 +42,6 @@ namespace SomeGame.Main.Modules
 
             _editorTileset = _dataSerializer.LoadEditorTileset(_tileSetKey) ?? CreateNewTileset();
 
-
-           // var t = _editorTileset.GetOrAddTile(new Tile(-2, TileFlags.None));
-           // t.Themes.Add("TREE");
-          //  t.Themes.Add("VINE");
-
             _themeSelector = new UIMultiSelect<string>(GameSystem.GetLayer(LayerIndex.Interface), 
                 _font, _editorTileset.Themes, new Point(0, 0));
 
@@ -59,8 +54,7 @@ namespace SomeGame.Main.Modules
             switch(_tileSetKey)
             {
                 case TilesetContentKey.Tiles:
-
-                    var ets = new EditorTileSet();
+                    var ets = new EditorTileSet(TilesetContentKey.Tiles);
                     var tile = ets.GetOrAddTile(new Tile(-1, TileFlags.None));
                     tile.Themes.Add("ROCK");
                     tile.Themes.Add("BUSH");
@@ -68,8 +62,20 @@ namespace SomeGame.Main.Modules
                     tile.Themes.Add("DECOR");
                     tile.Themes.Add("TREE");
                     tile.Themes.Add("VINE");
-
                     return ets;
+                case TilesetContentKey.Tiles1:
+                    ets = new EditorTileSet(TilesetContentKey.Tiles1);
+                    tile = ets.GetOrAddTile(new Tile(-1, TileFlags.None));
+                    tile.Themes.Add("BROWNROCK");
+                    tile.Themes.Add("GRAYROCK");
+                    tile.Themes.Add("DECOR");
+                    return ets;
+                case TilesetContentKey.Mountains:
+                    ets = new EditorTileSet(TilesetContentKey.Mountains);
+                    tile = ets.GetOrAddTile(new Tile(-1, TileFlags.None));
+                    tile.Themes.Add("MOUNTAIN");
+                    tile.Themes.Add("CLOUDS");
+                    return ets;               
                 default:
                     throw new Exception("no default set for " + _tileSetKey);
             }
@@ -88,6 +94,8 @@ namespace SomeGame.Main.Modules
             }
         }
 
+        protected override PaletteKeys PaletteKeys => new PaletteKeys(_imageKey, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);
+
         protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
             _image = resourceLoader.LoadTexture(_imageKey)
@@ -95,7 +103,7 @@ namespace SomeGame.Main.Modules
 
             return new IndexedTilesetImage[] 
             { 
-                resourceLoader.LoadTexture(_tileSetKey).ToIndexedTilesetImage(),
+                resourceLoader.LoadTexture(_tileSetKey).ToIndexedTilesetImage(_image.Palette),
                 resourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage()
             };
         }

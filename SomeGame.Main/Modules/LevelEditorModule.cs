@@ -18,37 +18,71 @@ namespace SomeGame.Main.Modules
     {
         private readonly Scroller _scroller;
         private readonly LevelContentKey _levelKey;
+        private readonly TilesetWithPalette[] _tilesets;
         private readonly TileSetService _tileSetService;
         private readonly UIBlockSelect _blockSelect;
+        private readonly PaletteIndex _tilePalette;
+
         private TileMap _tileMap;
         private UIMultiSelect<string> _themeSelector;
         private EnumMultiSelect<LevelEditorMode> _modeSelector;
         private Font _font;
-        private EditorTileSet _editorTileset;
+        private EditorTileSet[] _editorTilesets;
         private bool _nextClickPlacesTile;
+         
+        protected override PaletteKeys PaletteKeys { get; }
 
-        public LevelEditorModule(LevelContentKey level, ContentManager contentManager, GraphicsDevice graphicsDevice) 
+        private EditorTileSet SelectedEditorTileset => 
+            _editorTilesets.FirstOrDefault(p => p.Themes.Contains(_themeSelector.SelectedItem));
+
+        public LevelEditorModule(SceneContentKey scene, LayerIndex editLayer, ContentManager contentManager, GraphicsDevice graphicsDevice) 
             : base(contentManager, graphicsDevice)
         {
-            _levelKey = level;
             _tileSetService = new TileSetService();
             _blockSelect = new UIBlockSelect(HandleBlockAction, HandleBlockMouseMove);
             _scroller = new Scroller(GameSystem);
+
+            var sceneInfo = DataSerializer.Load(scene);
+            PaletteKeys = sceneInfo.PaletteKeys;
+            GameSystem.BackgroundColorIndex = sceneInfo.BackgroundColor;
+            _tilesets = sceneInfo.VramImages;
+
+            if (editLayer == LayerIndex.BG)
+            {
+                _levelKey = sceneInfo.BgMap.Key;
+                _tilePalette = sceneInfo.BgMap.Palette;
+            }
+            else if (editLayer == LayerIndex.FG)
+            {
+                _levelKey = sceneInfo.FgMap.Key;
+                _tilePalette = sceneInfo.FgMap.Palette;
+            }
+            else
+                throw new ArgumentException("Invalid layer index");
+
+            _editorTilesets = LoadEditorTileset();
+        }
+
+        private EditorTileSet[] LoadEditorTileset()
+        {
+            var editorTilesets = _tilesets
+                .Select(t => DataSerializer.LoadEditorTileset(t.TileSet))
+                .Where(p => p != null)
+                .ToArray();
+
+            return editorTilesets;
+            //_editorTileset.Tiles.RemoveAll(t => t.Tile.Index >= GameSystem.GetTileOffset(TilesetContentKey.Font));
         }
 
         protected override void AfterInitialize()
         {
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
-            _editorTileset = DataSerializer.LoadEditorTileset(TilesetContentKey.Tiles);
-
-            _editorTileset.Tiles.RemoveAll(t => t.Tile.Index >= GameSystem.GetTileOffset(TilesetContentKey.Font));
-
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
-            _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
+            var themes = _editorTilesets.SelectMany(e => e.Themes);
+            _themeSelector = new UIMultiSelect<string>(layer, _font, themes, new Point(0, 0));
             _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
-
-            ShowTilesInTheme();
+            OnThemeChanged();
         }
 
         protected override void Update()
@@ -76,7 +110,7 @@ namespace SomeGame.Main.Modules
 
             if (_themeSelector.Update(ui, Input))
             {
-                ShowTilesInTheme();
+                OnThemeChanged();
                 return;
             }
 
@@ -170,17 +204,18 @@ namespace SomeGame.Main.Modules
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
-        {           
-            if(index == LayerIndex.BG)
+        {
+            if (index == LayerIndex.BG)
             {
-                _tileMap = DataSerializer.LoadTileMap(_levelKey) ;
+                layer.Palette = _tilePalette;
+                _tileMap = DataSerializer.LoadTileMap(_levelKey);
                 if (_tileMap.GetGrid().Width == 0)
                     _tileMap = CreateNew(_levelKey);
 
                 _scroller.SetTileMaps(_tileMap, new TileMap(LevelContentKey.None, _tileMap.TilesX, _tileMap.TilesY));
             }
-            else if(index == LayerIndex.FG)
-                layer.Palette = PaletteIndex.P3;
+            else if (index == LayerIndex.FG)
+                layer.Palette = _tilePalette;
         }
 
         private TileMap CreateNew(LevelContentKey levelContentKey)
@@ -193,6 +228,10 @@ namespace SomeGame.Main.Modules
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth*2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel2:
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth/2, GameSystem.LayerTileHeight / 2);
+                case LevelContentKey.TestLevel3:
+                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth * 2, GameSystem.LayerTileHeight / 2);
+                case LevelContentKey.TestLevel3BG:
+                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth / 2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.LongMapTest:
                     return new TileMap(levelContentKey, GameSystem.LayerTileWidth * 4, GameSystem.LayerTileHeight / 2);
                 default:
@@ -234,8 +273,8 @@ namespace SomeGame.Main.Modules
             var block = new EditorBlock(_themeSelector.SelectedItem,
                 bg.TileMap.GetGrid().Extract(start, end));
 
-            _tileSetService.AddBlock(_editorTileset, block);
-            DataSerializer.Save(_editorTileset);
+            _tileSetService.AddBlock(SelectedEditorTileset, block);            
+            DataSerializer.Save(SelectedEditorTileset);
         }
 
         private void MoveOrCopyBlockRange(Point start, Point end, bool isCopy)
@@ -301,14 +340,28 @@ namespace SomeGame.Main.Modules
             });
         }
 
-        private void ShowTilesInTheme()
+        private void OnThemeChanged()
         {
-            var layer = GameSystem.GetLayer(LayerIndex.Interface);
-            var themeTiles = _editorTileset.Tiles
+            var interfaceLayer = GameSystem.GetLayer(LayerIndex.Interface);
+            var background = GameSystem.GetLayer(LayerIndex.BG);
+            var foreground = GameSystem.GetLayer(LayerIndex.FG);
+
+            background.TileOffset = GameSystem.GetTileOffset(SelectedEditorTileset.Key);
+
+            interfaceLayer.TileOffset = background.TileOffset;
+            interfaceLayer.Palette = background.Palette;
+
+            foreground.TileOffset = background.TileOffset;
+            foreground.Palette = background.Palette == PaletteIndex.P4 ? PaletteIndex.P1 : background.Palette + 1;
+
+            _themeSelector.Refresh(interfaceLayer);
+            _modeSelector.Refresh(interfaceLayer);
+
+            var themeTiles = SelectedEditorTileset.Tiles
                                            .Where(p => p.ContainsTheme(_themeSelector.SelectedItem))
                                            .ToArray();
             int i = 0;
-            layer.TileMap.SetEach(20, 38, 0, 2, (x, y) =>
+            interfaceLayer.TileMap.SetEach(20, 38, 0, 2, (x, y) =>
             {
                 Tile tile;
                 if (i < themeTiles.Length)
@@ -359,7 +412,7 @@ namespace SomeGame.Main.Modules
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
             var tileChoices = _tileSetService
-                .GetMatchingTiles(_editorTileset, _themeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
+                .GetMatchingTiles(SelectedEditorTileset, _themeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
                 .Select(p => p.Tile)
                 .ToArray();
 
@@ -379,14 +432,9 @@ namespace SomeGame.Main.Modules
 
         protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
         {
-            using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
-
-            using var fontImage = resourceLoader.LoadTexture(TilesetContentKey.Font);
-
-            return new IndexedTilesetImage[] { 
-                image.ToIndexedTilesetImage(), 
-                fontImage.ToIndexedTilesetImage()
-            };
+            return _tilesets
+                        .Select(t =>resourceLoader.LoadTexture(t.TileSet).ToIndexedTilesetImage(GameSystem.GetPalette(t.Palette)))
+                        .ToArray();
         }
     }
 }

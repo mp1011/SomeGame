@@ -15,6 +15,8 @@ namespace SomeGame.Main.Modules
         void Draw(SpriteBatch spriteBatch);
         void OnWindowSizeChanged(Viewport viewport);
         Rectangle Screen { get; }
+
+        Color BackgroundColor { get; }
     }
 
     abstract class GameModuleBase : IGameModule
@@ -26,7 +28,8 @@ namespace SomeGame.Main.Modules
         protected RenderService RenderService { get; }
         protected InputManager InputManager { get; } 
         protected InputModel Input => InputManager.Input;
-        
+
+        public Color BackgroundColor => GameSystem.BackgroundColor;
 
         public Rectangle Screen => GameSystem.Screen;
 

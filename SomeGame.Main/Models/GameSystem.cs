@@ -26,7 +26,11 @@ namespace SomeGame.Main.Models
         public readonly int LayerTileWidth = 80;
         public readonly int LayerTileHeight = 60;
 
-        public readonly int ColorsPerPalette = 24;
+        public readonly int ColorsPerPalette = 32;
+
+        public byte BackgroundColorIndex { get; set; }
+
+        public Color BackgroundColor => _palettes[0].GetItemAtRotatingIndex((int)BackgroundColorIndex);
 
         public IUserInputSource Input { get; }
 

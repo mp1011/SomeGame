@@ -10,6 +10,8 @@ namespace SomeGame.Main.Behaviors
         private int _hurtTimer;
         private const int _recoilTime = 20;
         private const int _invulnerableTime = 200;
+        private PaletteIndex _normalPalette;
+        private PaletteIndex _flashPalette;
          
         public bool IsRecoiling => _hurtTimer > 0 && _hurtTimer < _recoilTime;
         public bool IsInvulnerable => _hurtTimer > 0 && _hurtTimer < _invulnerableTime;
@@ -17,6 +19,12 @@ namespace SomeGame.Main.Behaviors
         public PlayerHurtBehavior(PlayerStateManager playerStateManager)
         {
             _playerStateManager = playerStateManager;
+        }
+
+        public override void OnCreated(Actor actor)
+        {
+            _normalPalette = actor.Palette;
+            _flashPalette = PaletteIndex.P4;
         }
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)
@@ -33,12 +41,12 @@ namespace SomeGame.Main.Behaviors
                     actor.CurrentAnimation = AnimationKey.Idle;
 
                 if ((_hurtTimer % 2) == 0)
-                    actor.Palette = PaletteIndex.P1;
+                    actor.Palette = _flashPalette;
                 else
-                    actor.Palette = PaletteIndex.P2;
+                    actor.Palette = _normalPalette;
             }
             else
-                actor.Palette = PaletteIndex.P2;
+                actor.Palette = _normalPalette;
 
             if (_hurtTimer > 0)
                 _hurtTimer++;

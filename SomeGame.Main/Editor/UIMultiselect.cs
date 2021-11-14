@@ -35,6 +35,11 @@ namespace SomeGame.Main.Editor
         }
 
         public T SelectedItem => _items[_selectedIndex]; 
+        
+        public void Refresh(Layer interfaceLayer)
+        {
+            _text = RefreshText(interfaceLayer);
+        }
 
         private UIButton RefreshText(Layer interfaceLayer)
         {
@@ -46,12 +51,24 @@ namespace SomeGame.Main.Editor
                 _location, interfaceLayer, _font);
         }
 
+        public void Increment(Layer interfaceLayer)
+        {
+            _selectedIndex++;
+            RefreshText(interfaceLayer);
+        }
+
+        public void Decrement(Layer interfaceLayer)
+        {
+            _selectedIndex--;
+            RefreshText(interfaceLayer);
+        }
+
         public bool Update(Layer interfaceLayer, InputModel input)
         {
             if (_text.Update(interfaceLayer, input) == UIButtonState.Pressed)
             {
                 _selectedIndex++;
-                RefreshText(interfaceLayer);
+                _text = RefreshText(interfaceLayer);
                 return true;
             }
 

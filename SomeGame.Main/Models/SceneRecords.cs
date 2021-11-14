@@ -7,7 +7,7 @@ namespace SomeGame.Main.Models
     record TilesetWithPalette(TilesetContentKey TileSet, PaletteIndex Palette);
     record ActorStart(ActorId ActorId, PixelPoint Position);
     record CollectiblePlacement(CollectibleId Id, Point Position, Point? Position2=null);
-    record LayerInfo(LevelContentKey Key, byte ScrollFactor);
+    record LayerInfo(LevelContentKey Key, PaletteIndex Palette, byte ScrollFactor);
     record SoundInfo(SoundContentKey Key, byte MaxOccurences);
     record SceneTransitions(
         SceneContentKey Left = SceneContentKey.None, 
@@ -29,6 +29,7 @@ namespace SomeGame.Main.Models
         InterfaceType InterfaceType,
         Rectangle Bounds,
         PaletteKeys PaletteKeys, 
+        byte BackgroundColor,
         TilesetWithPalette[] VramImages,
         SoundInfo[] Sounds,
         ActorStart[] Actors,

@@ -50,9 +50,9 @@ namespace SomeGame.Main.Services
             return new Tile(_reader.ReadInt32(), (TileFlags)_reader.ReadByte());
         }
 
-        public EditorTileSet ReadEditorTileset()
+        public EditorTileSet ReadEditorTileset(TilesetContentKey key)
         {
-            var tileset = new EditorTileSet();
+            var tileset = new EditorTileSet(key);
 
             var editorTiles = ReadEnumerable<EditorTile>()
                 .ToArray();
@@ -134,6 +134,7 @@ namespace SomeGame.Main.Services
                 InterfaceType: ReadEnum<InterfaceType>(),
                 Bounds: ReadRectangle(),
                 PaletteKeys: ReadPaletteKeys(),
+                BackgroundColor: _reader.ReadByte(),
                 VramImages: ReadEnumerable<TilesetWithPalette>(),
                 Sounds: ReadEnumerable<SoundInfo>(),
                 Actors: ReadEnumerable<ActorStart>(),
@@ -149,7 +150,7 @@ namespace SomeGame.Main.Services
             ReadEnum<SceneContentKey>(),
             ReadEnum<SceneContentKey>());
 
-        public LayerInfo ReadLayerInfo() => new LayerInfo(ReadEnum<LevelContentKey>(), _reader.ReadByte());
+        public LayerInfo ReadLayerInfo() => new LayerInfo(ReadEnum<LevelContentKey>(), ReadEnum<PaletteIndex>(), _reader.ReadByte());
 
         public Rectangle ReadRectangle() => new Rectangle(
             _reader.ReadInt32(), 

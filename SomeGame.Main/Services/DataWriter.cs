@@ -109,6 +109,7 @@ namespace SomeGame.Main.Services
             _writer.Write((byte)scene.InterfaceType);
             Write(scene.Bounds);
             Write(scene.PaletteKeys);
+            _writer.Write(scene.BackgroundColor);
             WriteEnumerable(scene.VramImages);
             WriteEnumerable(scene.Sounds);
             WriteEnumerable(scene.Actors);
@@ -174,6 +175,7 @@ namespace SomeGame.Main.Services
         public void Write(LayerInfo layerInfo)
         {
             _writer.Write((byte)layerInfo.Key);
+            _writer.Write((byte)layerInfo.Palette);
             _writer.Write((byte)layerInfo.ScrollFactor);
         }
 

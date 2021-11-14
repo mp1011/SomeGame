@@ -41,6 +41,8 @@ namespace SomeGame.Main.Behaviors
 
         public override void OnCreated(Actor actor)
         {
+            _playerHurtBehavior.OnCreated(actor);
+
             if (_incomingTransition.ExitSide.Width == 0)
                 return;
 

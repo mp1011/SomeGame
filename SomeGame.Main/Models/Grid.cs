@@ -38,8 +38,8 @@ namespace SomeGame.Main.Models
 
         public T this[int x, int y]
         {
-            get => _grid[x, y];
-            set => _grid[x, y] = value;
+            get => _grid[x.AsRotatingInt(Width), y.AsRotatingInt(Height)];
+            set => _grid[x.AsRotatingInt(Width), y.AsRotatingInt(Height)] = value;
         }
 
         public T this[int i]
@@ -48,7 +48,7 @@ namespace SomeGame.Main.Models
             {
                 int row = i / Width;
                 int col = i % Width;
-                return _grid[col, row];
+                return _grid[col.AsRotatingInt(Width), row.AsRotatingInt(Height)];
             }
         }
 

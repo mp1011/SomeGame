@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,14 @@ namespace SomeGame.Main.Models
     {
         public List<EditorTile> Tiles { get; } = new List<EditorTile>();
 
+        public TilesetContentKey Key { get; }
+
         public string[] Themes => Tiles.SelectMany(p => p.Themes)
                                      .Distinct()
                                      .ToArray();
-        public EditorTileSet()
+        public EditorTileSet(TilesetContentKey key)
         {
+            Key = key;
         }
 
         public EditorTile GetOrAddTile(Tile t)

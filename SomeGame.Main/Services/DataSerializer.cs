@@ -61,6 +61,15 @@ namespace SomeGame.Main.Services
         {
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}_SpriteFrames.bin";
         }
+        public void SaveTilesetImage(string name, Texture2D image)
+        {
+            var path = $"{_contentFolder.FullName}\\Tilesets\\{name}.png";
+            if (File.Exists(path))
+                File.Delete(path);
+
+            using var stream = File.OpenWrite(path);
+            image.SaveAsPng(stream, image.Width, image.Height);
+        }
 
         public void SaveTilesetImage(TilesetContentKey tilesetContentKey, Texture2D image)
         {
@@ -129,7 +138,7 @@ namespace SomeGame.Main.Services
 
         public void Save(EditorTileSet editorTileSet)
         {
-            Save(editorTileSet, GetPath(TilesetContentKey.Tiles));
+            Save(editorTileSet, GetPath(editorTileSet.Key));
         }
 
         private void Save(EditorTileSet editorTileSet, string path)
@@ -180,7 +189,7 @@ namespace SomeGame.Main.Services
 
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);
-            return reader.ReadEditorTileset();
+            return reader.ReadEditorTileset(tilesetContentKey);
         }
 
         public SpriteFrame[] LoadSpriteFrames(TilesetContentKey tilesetContentKey)

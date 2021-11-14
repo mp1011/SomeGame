@@ -59,7 +59,7 @@ namespace SomeGame.Main
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.SetRenderTarget(_renderTarget);
-            GraphicsDevice.Clear(Color.Black); //todo, configurable
+            GraphicsDevice.Clear(_currentModule.BackgroundColor); 
 
             _spriteBatch.Begin();
             _currentModule.Draw(_spriteBatch);

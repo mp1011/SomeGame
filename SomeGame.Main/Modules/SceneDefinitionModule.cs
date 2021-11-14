@@ -20,14 +20,55 @@ namespace SomeGame.Main.Modules
             _gameSystem = new GameSystem();
         }
 
+
+        public Color BackgroundColor => Color.Black;
+
+        private SceneInfo CreateTest3()
+        {
+            return new SceneInfo(
+               BgMap: new LayerInfo(LevelContentKey.TestLevel3BG, PaletteIndex.P1, ScrollFactor: 70),
+               FgMap: new LayerInfo(LevelContentKey.TestLevel3, PaletteIndex.P2, ScrollFactor: 100),
+               InterfaceType.PlayerStatus,
+               Bounds: new Rectangle(0, 0, _gameSystem.LayerPixelWidth * 2, _gameSystem.Screen.Height),
+               PaletteKeys: new PaletteKeys(ImageContentKey.Palette5, ImageContentKey.Palette6, ImageContentKey.Palette2, ImageContentKey.Palette3),
+               BackgroundColor:14,
+               VramImages: new TilesetWithPalette[]
+               {
+                    new TilesetWithPalette(TilesetContentKey.Mountains, PaletteIndex.P1),
+                    new TilesetWithPalette(TilesetContentKey.Tiles1, PaletteIndex.P2),
+                    new TilesetWithPalette(TilesetContentKey.Items, PaletteIndex.P2),
+                    new TilesetWithPalette(TilesetContentKey.Hero, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Skeleton, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Bat, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Bullet, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Hud, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Font, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Gizmos, PaletteIndex.P3)
+               },
+               Sounds: new SoundInfo[]
+               {
+                    new SoundInfo(SoundContentKey.GetCoin,3),
+                    new SoundInfo(SoundContentKey.Swish, 2)
+               },
+               Actors: new ActorStart[]
+               {
+                    new ActorStart(ActorId.Player, new PixelPoint(50,100))
+               },
+               CollectiblePlacements: new CollectiblePlacement[]
+               {                   
+               },
+               Transitions: new SceneTransitions(Right: SceneContentKey.Test2));
+        }
+
         private SceneInfo CreateTest1()
         {
             return new SceneInfo(
-                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, ScrollFactor: 70),
-                FgMap: new LayerInfo(LevelContentKey.TestLevel, ScrollFactor: 100),
+                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, PaletteIndex.P1, ScrollFactor: 70),
+                FgMap: new LayerInfo(LevelContentKey.TestLevel, PaletteIndex.P1, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
                 Bounds: new Rectangle(0, 0, _gameSystem.LayerPixelWidth*2, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
+                BackgroundColor: 0,
                 VramImages: new TilesetWithPalette[]
                 {
                     new TilesetWithPalette(TilesetContentKey.Tiles, PaletteIndex.P1),
@@ -65,11 +106,12 @@ namespace SomeGame.Main.Modules
         private SceneInfo CreateTest2()
         {
             return new SceneInfo(
-                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, ScrollFactor: 70),
-                FgMap: new LayerInfo(LevelContentKey.TestLevel2, ScrollFactor: 100),
+                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, PaletteIndex.P1, ScrollFactor: 70),
+                FgMap: new LayerInfo(LevelContentKey.TestLevel2, PaletteIndex.P1, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
                 Bounds: new Rectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
+                BackgroundColor: 0,
                 VramImages: new TilesetWithPalette[]
                 {
                     new TilesetWithPalette(TilesetContentKey.Tiles, PaletteIndex.P1),
@@ -96,11 +138,12 @@ namespace SomeGame.Main.Modules
         private SceneInfo CreateLongMapTest()
         {
             return new SceneInfo(
-                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, ScrollFactor: 70),
-                FgMap: new LayerInfo(LevelContentKey.LongMapTest, ScrollFactor: 100),
+                BgMap: new LayerInfo(LevelContentKey.TestLevelBG, PaletteIndex.P1, ScrollFactor: 70),
+                FgMap: new LayerInfo(LevelContentKey.LongMapTest, PaletteIndex.P1, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
                 Bounds: new Rectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
+                BackgroundColor: 0,
                 VramImages: new TilesetWithPalette[]
                 {
                     new TilesetWithPalette(TilesetContentKey.Tiles, PaletteIndex.P1),
@@ -133,9 +176,8 @@ namespace SomeGame.Main.Modules
         {
             _dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
             _dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
+            _dataSerializer.Save(SceneContentKey.Test3, CreateTest3());
             _dataSerializer.Save(SceneContentKey.LongMapTest, CreateLongMapTest());
-
-
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

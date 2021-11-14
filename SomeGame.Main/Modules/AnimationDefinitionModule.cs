@@ -14,6 +14,7 @@ namespace SomeGame.Main.Modules
         public void Draw(SpriteBatch spriteBatch)
         {
         }
+        public Color BackgroundColor => Color.Black;
 
         public void Initialize()
         {

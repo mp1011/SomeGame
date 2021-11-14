@@ -47,7 +47,6 @@ namespace SomeGame.Main.Models
 
         public Actor(ActorType actorType,
                      TilesetContentKey tilesetKey, 
-                     PaletteIndex palette,
                      Behavior behavior,
                      IDestroyedBehavior destroyedBehavior,
                      ICollisionDetector collisionDetector,
@@ -59,7 +58,6 @@ namespace SomeGame.Main.Models
             Behavior = behavior;
             DestroyedBehavior = destroyedBehavior;
             CollisionDetector = collisionDetector;
-            Palette = palette;
             Tileset = tilesetKey;
             LocalHitbox = localHitbox;
             Animator = animator;

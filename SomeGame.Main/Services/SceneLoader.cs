@@ -2,6 +2,7 @@
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Scenes;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SomeGame.Main.Services
@@ -52,20 +53,23 @@ namespace SomeGame.Main.Services
                _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P3).ToIndexedTilesetImage().Palette,
                _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P4).ToIndexedTilesetImage().Palette);
 
+            _gameSystem.BackgroundColorIndex = sceneInfo.BackgroundColor;
+
             var vramImages = sceneInfo.VramImages
                 .Select(p => _resourceLoader.LoadTexture(p.TileSet)
                                            .ToIndexedTilesetImage(_gameSystem.GetPalette(p.Palette)))
                 .ToArray();
 
+            var tilesetToPalette = sceneInfo.VramImages.ToDictionary(k => k.TileSet, v => v.Palette);
 
             _gameSystem.SetVram(_graphicsDevice, vramImages);
 
-            var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG);
-            var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG);
+            var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG, vramImages[0].Key);
+            var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG, vramImages[1].Key);
             _scroller.SetTileMaps(bg, fg);
 
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
-            InitializeActors(sceneInfo, sceneTransition);
+            InitializeActors(sceneInfo, sceneTransition, tilesetToPalette);
             PlaceCollectibles(sceneInfo);
             InitializeSounds(sceneInfo);
         }
@@ -80,19 +84,26 @@ namespace SomeGame.Main.Services
             }
         }
 
-        private TileMap InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex)
+        private TileMap InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex, TilesetContentKey tilesetKey)
         {
             var tileMap = _dataSerializer.LoadTileMap(layerInfo.Key);
             var layer = _gameSystem.GetLayer(layerIndex);
+            layer.Palette = layerInfo.Palette;
+            layer.TileOffset = _gameSystem.GetTileOffset(tilesetKey);
             layer.TileMap.SetEach((x, y) => tileMap.GetTile(x, y));
             layer.ScrollFactor = layerInfo.ScrollFactor;
+
             return tileMap;
         }
 
-        private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)
+        private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo, 
+            Dictionary<TilesetContentKey, PaletteIndex> palettes)
         {
             foreach (var actorStart in sceneInfo.Actors)
-                _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
+            {
+                var actor = _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
+                actor.Palette = palettes[actor.Tileset];
+            }
 
             _collectiblesService.CreateCollectedItemActors(_actorFactory);
         }
