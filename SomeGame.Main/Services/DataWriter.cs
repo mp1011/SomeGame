@@ -48,7 +48,7 @@ namespace SomeGame.Main.Services
 
         public void Write(EditorTileSet tileSet)
         {
-            WriteEnumerable(tileSet.Tiles);
+            WriteEnumerable(tileSet.Blocks);
         }
 
         public void WriteEnumerable<T>(IEnumerable<T> list)
@@ -76,22 +76,10 @@ namespace SomeGame.Main.Services
             _writer.Write(animationFrame.Duration);
         }
 
-        public void Write(EditorTile editorTile)
+        public void Write(EditorBlock editorBlock)
         {
-            WriteEnumerable(editorTile.Themes);
-            Write(editorTile.Tile);
-
-            foreach (Direction direction in Enum.GetValues<Direction>())
-            {
-                if (direction == Direction.None)
-                    continue;
-
-                var matches = editorTile.Matches[direction]
-                                        .Select(p => p.Tile)
-                                        .ToArray();
-
-                WriteEnumerable(matches);
-            }
+            _writer.Write(editorBlock.Theme);
+            Write(editorBlock.Grid);
         }
 
         public void Write(SpriteFrame spriteFrame)

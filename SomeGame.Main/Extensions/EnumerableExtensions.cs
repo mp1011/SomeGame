@@ -49,13 +49,13 @@ namespace SomeGame.Main.Extensions
             return list.ElementAt(rotatingIndex.AsRotatingInt(list.Count()));
         }
 
-        internal static RotatingInt GetRotatingIndex<T>(this IEnumerable<T> list, T findItem)
+        internal static RotatingInt GetIndexAfter<T>(this IEnumerable<T> list, T findItem)
         {
             int index = 0;
             foreach(var item in list)
             {
                 if (item.Equals(findItem))
-                    return new RotatingInt(index, list.Count());
+                    return new RotatingInt(index+1, list.Count());
                 index++;
             }
 

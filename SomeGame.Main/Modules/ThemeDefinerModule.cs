@@ -55,26 +55,23 @@ namespace SomeGame.Main.Modules
             {
                 case TilesetContentKey.Tiles:
                     var ets = new EditorTileSet(TilesetContentKey.Tiles);
-                    var tile = ets.GetOrAddTile(new Tile(-1, TileFlags.None));
-                    tile.Themes.Add("ROCK");
-                    tile.Themes.Add("BUSH");
-                    tile.Themes.Add("FENCE");
-                    tile.Themes.Add("DECOR");
-                    tile.Themes.Add("TREE");
-                    tile.Themes.Add("VINE");
+                    ets.Blocks.Add(new EditorBlock("ROCK"));
+                    ets.Blocks.Add(new EditorBlock("BUSH"));
+                    ets.Blocks.Add(new EditorBlock("FENCE"));
+                    ets.Blocks.Add(new EditorBlock("DECOR"));
+                    ets.Blocks.Add(new EditorBlock("TREE"));
+                    ets.Blocks.Add(new EditorBlock("VINE"));
                     return ets;
                 case TilesetContentKey.Tiles1:
                     ets = new EditorTileSet(TilesetContentKey.Tiles1);
-                    tile = ets.GetOrAddTile(new Tile(-1, TileFlags.None));
-                    tile.Themes.Add("BROWNROCK");
-                    tile.Themes.Add("GRAYROCK");
-                    tile.Themes.Add("DECOR");
+                    ets.Blocks.Add(new EditorBlock("BROWNROCK"));
+                    ets.Blocks.Add(new EditorBlock("GRAYROCK"));
+                    ets.Blocks.Add(new EditorBlock("DECOR"));
                     return ets;
                 case TilesetContentKey.Mountains:
                     ets = new EditorTileSet(TilesetContentKey.Mountains);
-                    tile = ets.GetOrAddTile(new Tile(-1, TileFlags.None));
-                    tile.Themes.Add("MOUNTAIN");
-                    tile.Themes.Add("CLOUDS");
+                    ets.Blocks.Add(new EditorBlock("MOUNTAIN"));
+                    ets.Blocks.Add(new EditorBlock("CLOUDS"));
                     return ets;               
                 default:
                     throw new Exception("no default set for " + _tileSetKey);
@@ -144,7 +141,7 @@ namespace SomeGame.Main.Modules
             var block = new EditorBlock(_themeSelector.SelectedItem,
                 bg.TileMap.GetGrid().Extract(start, end));
 
-            _tileSetService.AddBlock(_editorTileset, block);
+            _editorTileset.Blocks.Add(block);
         }
 
       

@@ -52,70 +52,66 @@ namespace SomeGame.Main.Services
             });
         }
 
-        public void AddBlock(EditorTileSet tileSet, EditorBlock block)
-        {
-            FillEditorTiles(tileSet, block.Grid, block.Theme);
-        }
-
-        public EditorTile[] GetMatchingTiles(EditorTileSet editorTileSet, string theme, TileMap tileMap, 
+        public Tile[] GetMatchingTiles(EditorTileSet editorTileSet, string theme, TileMap tileMap, 
                                              Point tileLocation, TileChoiceMode tileChoiceMode)
         {
-            return editorTileSet.Tiles
-                .Where(p => p.ContainsTheme(theme)
-                            && CanTileBePlacedAtLocation(p, editorTileSet, tileMap, tileLocation, tileChoiceMode))
-                .ToArray();
+            var blocks = editorTileSet.GetBlocks(theme);
+            var neighbors = new Dictionary<Direction, Tile>();
+            neighbors[Direction.Up] = tileMap.GetTile(tileLocation.GetNeighbor(Direction.Up));
+            neighbors[Direction.Down] = tileMap.GetTile(tileLocation.GetNeighbor(Direction.Down));
+            neighbors[Direction.Left] = tileMap.GetTile(tileLocation.GetNeighbor(Direction.Left));
+            neighbors[Direction.Right] = tileMap.GetTile(tileLocation.GetNeighbor(Direction.Right));
+
+            return blocks
+                .SelectMany(b => GetPossibleTilesForLocation(b, neighbors))
+                .Distinct()
+                .ToArray();     
         }
 
-        public void AddTileRelationsFromTileMap(EditorTileSet editorTileSet, TileMap tileMap)
+        private IEnumerable<Tile> GetPossibleTilesForLocation(EditorBlock tileRelations, Dictionary<Direction, Tile> neighbors)
         {
-            FillEditorTiles(editorTileSet, tileMap.GetGrid(), null);
-        }
+            List<Tile> possibleTiles = new List<Tile>();
 
-        private bool CanTileBePlacedAtLocation(EditorTile proposedTile, EditorTileSet editorTileSet, TileMap tileMap, Point tileLocation, TileChoiceMode tileChoiceMode)
-        {
-            if (tileChoiceMode == TileChoiceMode.Free)
-                return true;
-
-            foreach (Direction direction in Enum.GetValues<Direction>())
+            tileRelations.Grid.ForEach((x, y, tile) =>
             {
-                if (direction == Direction.None)
-                    continue;
-
-                var neighbor = tileMap.GetGrid().GetNeighborOrDefault(tileLocation.X, tileLocation.Y, direction);
-                if (neighbor == null)
-                    continue;
-
-                var neighborEditorTile = editorTileSet.GetOrAddTile(neighbor);
-                if (neighborEditorTile.Tile.Index < 0 && tileChoiceMode == TileChoiceMode.SemiStrict)
-                    continue;
-
-                if (!neighborEditorTile.Matches[direction.Opposite()].Contains(proposedTile))
-                    return false;
-            }
-
-            return true;
-        }
-
-        private void FillEditorTiles(EditorTileSet tileSet, Grid<Tile> grid, string theme)
-        {
-            grid.ForEach((x, y, t) =>
-            {
-                var editorTile = tileSet.GetOrAddTile(t);
-                if(theme != null)
-                    editorTile.AddTheme(theme);
-
-                foreach (Direction direction in Enum.GetValues<Direction>())
+                bool comparedAny = false;
+                if(x > 0 && neighbors[Direction.Left].Index >= 0)
                 {
-                    if (direction == Direction.None)
-                        continue;
-
-                    var neighbor = grid.GetNeighborOrDefault(x, y, direction);
-                    if (neighbor == null)
-                        continue;
-
-                    editorTile.AddMatch(direction, tileSet.GetOrAddTile(neighbor));
+                    comparedAny = true;
+                    var left = tileRelations.Grid[x - 1, y];
+                    if (left != neighbors[Direction.Left])
+                        return;
                 }
+
+                if (y > 0 && neighbors[Direction.Up].Index >= 0)
+                {
+                    comparedAny = true;
+                    var above = tileRelations.Grid[x, y-1];
+                    if (above != neighbors[Direction.Up])
+                        return;
+                }
+
+                if (x < tileRelations.Grid.Width-1 && neighbors[Direction.Right].Index >= 0)
+                {
+                    comparedAny = true;
+                    var right = tileRelations.Grid[x+1, y];
+                    if (right != neighbors[Direction.Right])
+                        return;
+                }
+
+                if (y < tileRelations.Grid.Height - 1 && neighbors[Direction.Down].Index >= 0)
+                {
+                    comparedAny = true;
+                    var below = tileRelations.Grid[x, y+1];
+                    if (below != neighbors[Direction.Down])
+                        return;
+                }
+
+                if(comparedAny)
+                    possibleTiles.Add(tile);
             });
+
+            return possibleTiles;
         }
     }
 

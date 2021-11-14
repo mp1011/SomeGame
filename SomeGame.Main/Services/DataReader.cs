@@ -53,55 +53,13 @@ namespace SomeGame.Main.Services
         public EditorTileSet ReadEditorTileset(TilesetContentKey key)
         {
             var tileset = new EditorTileSet(key);
-
-            var editorTiles = ReadEnumerable<EditorTile>()
-                .ToArray();
-
-            foreach(var inputTile in editorTiles)
-            {
-                var editorTile = tileset.GetOrAddTile(inputTile.Tile);
-                foreach (var theme in inputTile.Themes)
-                    editorTile.AddTheme(theme);
-
-                foreach (Direction direction in Enum.GetValues<Direction>())
-                {
-                    if (direction == Direction.None)
-                        continue;
-
-                    var inputMatches = inputTile.Matches[direction]
-                        .Select(t => tileset.GetOrAddTile(t.Tile))
-                        .ToArray();
-
-                    editorTile.Matches[direction].AddRange(inputMatches);
-                }
-
-            }
-
+            tileset.Blocks.AddRange(ReadEnumerable<EditorBlock>());
             return tileset;
         }
 
-        public EditorTile ReadEditorTile()
+        public EditorBlock ReadEditorTile()
         {
-            string[] themes = ReadEnumerable<string>();
-            var tile = ReadTile();
-
-            var editorTile = new EditorTile(tile);
-            foreach (var theme in themes)
-                editorTile.AddTheme(theme);
-
-            foreach (Direction direction in Enum.GetValues<Direction>())
-            {
-                if (direction == Direction.None)
-                    continue;
-
-                var matches = ReadEnumerable<Tile>()
-                                .Select(t => new EditorTile(t))
-                                .ToArray();
-
-                editorTile.Matches[direction].AddRange(matches);
-            }
-
-            return editorTile;
+            return new EditorBlock(_reader.ReadString(),ReadGrid<Tile>());
         }
 
         public SpriteFrame ReadSpriteFrame()

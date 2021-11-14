@@ -5,10 +5,8 @@ using SomeGame.Main.Content;
 using SomeGame.Main.Editor;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
-using SomeGame.Main.Scenes;
 using SomeGame.Main.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SomeGame.Main.Modules
@@ -27,13 +25,10 @@ namespace SomeGame.Main.Modules
         private UIMultiSelect<string> _themeSelector;
         private EnumMultiSelect<LevelEditorMode> _modeSelector;
         private Font _font;
-        private EditorTileSet[] _editorTilesets;
+        private EditorTileSet _editorTileset;
         private bool _nextClickPlacesTile;
          
         protected override PaletteKeys PaletteKeys { get; }
-
-        private EditorTileSet SelectedEditorTileset => 
-            _editorTilesets.FirstOrDefault(p => p.Themes.Contains(_themeSelector.SelectedItem));
 
         public LevelEditorModule(SceneContentKey scene, LayerIndex editLayer, ContentManager contentManager, GraphicsDevice graphicsDevice) 
             : base(contentManager, graphicsDevice)
@@ -51,27 +46,16 @@ namespace SomeGame.Main.Modules
             {
                 _levelKey = sceneInfo.BgMap.Key;
                 _tilePalette = sceneInfo.BgMap.Palette;
+                _editorTileset = DataSerializer.LoadEditorTileset(_tilesets[0].TileSet);
             }
             else if (editLayer == LayerIndex.FG)
             {
                 _levelKey = sceneInfo.FgMap.Key;
                 _tilePalette = sceneInfo.FgMap.Palette;
+                _editorTileset = DataSerializer.LoadEditorTileset(_tilesets[1].TileSet);
             }
             else
                 throw new ArgumentException("Invalid layer index");
-
-            _editorTilesets = LoadEditorTileset();
-        }
-
-        private EditorTileSet[] LoadEditorTileset()
-        {
-            var editorTilesets = _tilesets
-                .Select(t => DataSerializer.LoadEditorTileset(t.TileSet))
-                .Where(p => p != null)
-                .ToArray();
-
-            return editorTilesets;
-            //_editorTileset.Tiles.RemoveAll(t => t.Tile.Index >= GameSystem.GetTileOffset(TilesetContentKey.Font));
         }
 
         protected override void AfterInitialize()
@@ -79,8 +63,7 @@ namespace SomeGame.Main.Modules
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
-            var themes = _editorTilesets.SelectMany(e => e.Themes);
-            _themeSelector = new UIMultiSelect<string>(layer, _font, themes, new Point(0, 0));
+            _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
             _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
             OnThemeChanged();
         }
@@ -273,8 +256,8 @@ namespace SomeGame.Main.Modules
             var block = new EditorBlock(_themeSelector.SelectedItem,
                 bg.TileMap.GetGrid().Extract(start, end));
 
-            _tileSetService.AddBlock(SelectedEditorTileset, block);            
-            DataSerializer.Save(SelectedEditorTileset);
+            _editorTileset.Blocks.Add(block);
+            DataSerializer.Save(_editorTileset);
         }
 
         private void MoveOrCopyBlockRange(Point start, Point end, bool isCopy)
@@ -346,7 +329,7 @@ namespace SomeGame.Main.Modules
             var background = GameSystem.GetLayer(LayerIndex.BG);
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
 
-            background.TileOffset = GameSystem.GetTileOffset(SelectedEditorTileset.Key);
+            background.TileOffset = GameSystem.GetTileOffset(_editorTileset.Key);
 
             interfaceLayer.TileOffset = background.TileOffset;
             interfaceLayer.Palette = background.Palette;
@@ -357,15 +340,14 @@ namespace SomeGame.Main.Modules
             _themeSelector.Refresh(interfaceLayer);
             _modeSelector.Refresh(interfaceLayer);
 
-            var themeTiles = SelectedEditorTileset.Tiles
-                                           .Where(p => p.ContainsTheme(_themeSelector.SelectedItem))
-                                           .ToArray();
+            var themeTiles = _editorTileset.GetTilesInTheme(_themeSelector.SelectedItem);
+
             int i = 0;
             interfaceLayer.TileMap.SetEach(20, 38, 0, 2, (x, y) =>
             {
                 Tile tile;
                 if (i < themeTiles.Length)
-                    tile = themeTiles[i].Tile;
+                    tile = themeTiles[i];
                 else
                     tile = new Tile(-1, TileFlags.None);
 
@@ -411,21 +393,18 @@ namespace SomeGame.Main.Modules
         {
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
+
+
             var tileChoices = _tileSetService
-                .GetMatchingTiles(SelectedEditorTileset, _themeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
-                .Select(p => p.Tile)
+                .GetMatchingTiles(_editorTileset, _themeSelector.SelectedItem, bg.TileMap, mouseTile, TileChoiceMode.SemiStrict)
                 .ToArray();
 
             if (tileChoices.Length == 0)
                 return;
 
             var currentTile = bg.TileMap.GetTile(mouseTile);
-
-            var currentIndex = tileChoices.GetRotatingIndex(currentTile);
-            currentIndex = currentIndex + 1;
-
-            bg.TileMap.SetTile(mouseTile.X, mouseTile.Y, tileChoices[currentIndex]);
-            System.Diagnostics.Debug.WriteLine($"Autoplaced Tile: {tileChoices[currentIndex]}");
+            var index = tileChoices.GetIndexAfter(currentTile);          
+            bg.TileMap.SetTile(mouseTile.X, mouseTile.Y, tileChoices[index]);
             AfterTilePlaced(mouseTile);
         }
 

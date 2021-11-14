@@ -5,6 +5,21 @@ namespace SomeGame.Main.Extensions
 {
     public static class PointExtensions
     {
+        public static Point GetNeighbor(this Point p, Direction d)
+        {
+            switch(d)
+            {
+                case Direction.Up: return p.Offset(0, -1);
+                case Direction.UpLeft: return p.Offset(-1, -1);
+                case Direction.Left: return p.Offset(-1, 0);
+                case Direction.DownLeft: return p.Offset(-1, 1);
+                case Direction.Down: return p.Offset(0, 1);
+                case Direction.DownRight: return p.Offset(1, 1);
+                case Direction.Right: return p.Offset(1, 0);
+                case Direction.UpRight: return p.Offset(-1, 1);
+                default: return p;
+            }
+        }
         public static Point Offset(this Point p, int offX, int offY) => new Point(p.X + offX, p.Y + offY);
         public static Point Offset(this Point p, Point p2) => new Point(p.X + p2.X, p.Y + p2.Y);
 

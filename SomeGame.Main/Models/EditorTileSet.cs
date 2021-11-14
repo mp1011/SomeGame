@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using SomeGame.Main.Content;
-using SomeGame.Main.Extensions;
-using System;
+﻿using SomeGame.Main.Content;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,28 +6,32 @@ namespace SomeGame.Main.Models
 {
     class EditorTileSet
     {
-        public List<EditorTile> Tiles { get; } = new List<EditorTile>();
+        public List<EditorBlock> Blocks { get; } = new List<EditorBlock>();
 
         public TilesetContentKey Key { get; }
 
-        public string[] Themes => Tiles.SelectMany(p => p.Themes)
+        public string[] Themes => Blocks.Select(p => p.Theme)
                                      .Distinct()
                                      .ToArray();
+
+        public EditorBlock[] GetBlocks(string theme)
+        {
+            return Blocks.Where(b => b.Theme == theme)
+                         .ToArray();
+        }
+
+        public Tile[] GetTilesInTheme(string theme)
+        {
+            return Blocks.Where(p => p.Theme == theme)
+                         .SelectMany(b => b.Grid.ToArray())
+                         .Distinct()
+                         .OrderBy(p => p.Index)
+                         .ToArray();
+        }
+
         public EditorTileSet(TilesetContentKey key)
         {
             Key = key;
-        }
-
-        public EditorTile GetOrAddTile(Tile t)
-        {
-            var tile = Tiles.FirstOrDefault(p => p.Tile == t);
-            if (tile == null)
-            {
-                tile = new EditorTile(t);
-                Tiles.Add(tile);
-            }
-
-            return tile;
         }
     }
 
@@ -44,49 +45,11 @@ namespace SomeGame.Main.Models
             Theme = theme;
             Grid = grid;
         }
-    }
 
-    class EditorTile
-    {
-        public List<string> Themes { get; } = new List<string>();
-        public Tile Tile { get; }
-
-        public bool ContainsTheme(string theme) => Themes.Contains(theme);
-        public Dictionary<Direction, List<EditorTile>> Matches { get; } = new Dictionary<Direction, List<EditorTile>>();
-
-        public override string ToString() 
+        public EditorBlock(string theme)
         {
-            return $"#{Tile.Index} {string.Join("+", Themes.ToArray())}";
-        }
-
-        public EditorTile(Tile tile)
-        {
-            Tile = tile;
-
-            foreach (Direction direction in Enum.GetValues<Direction>())
-            {
-                if (direction == Direction.None)
-                    continue;
-
-                Matches[direction] = new List<EditorTile>();
-            }
-        }
-
-        public void AddTheme(string str)
-        {
-            if (!Themes.Contains(str))
-                Themes.Add(str);
-        }
-
-        public void AddMatch(Direction direction, EditorTile other)
-        {
-            var list = Matches[direction];
-            if (!list.Contains(other))
-                list.Add(other);
-
-            var otherList = other.Matches[direction.Opposite()];
-            if (!otherList.Contains(this))
-                otherList.Add(this);
+            Theme = theme;
+            Grid = new Grid<Tile>(1, 1, (x, y) => new Tile(-1, TileFlags.None));
         }
     }
 }
