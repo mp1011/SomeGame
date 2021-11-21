@@ -7,6 +7,7 @@ using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SomeGame.Main.Modules
@@ -15,6 +16,7 @@ namespace SomeGame.Main.Modules
     class LevelEditorModule : TileEditorBaseModule
     {
         private readonly Scroller _scroller;
+        private readonly SceneContentKey _scene;
         private readonly LevelContentKey _levelKey;
         private readonly TilesetWithPalette[] _tilesets;
         private readonly TileSetService _tileSetService;
@@ -23,11 +25,15 @@ namespace SomeGame.Main.Modules
 
         private TileMap _tileMap;
         private UIMultiSelect<string> _themeSelector;
+        private UIMultiSelect<ActorId> _objectSelector;
         private EnumMultiSelect<LevelEditorMode> _modeSelector;
         private Font _font;
         private EditorTileSet _editorTileset;
         private bool _nextClickPlacesTile;
-         
+       
+        private SpriteFrame _selectedSprite = new SpriteFrame(new Tile(), new Tile(), new Tile(), new Tile());
+        private List<ActorStart> _actorStarts = new List<ActorStart>();
+
         protected override PaletteKeys PaletteKeys { get; }
 
         public LevelEditorModule(SceneContentKey scene, LayerIndex editLayer, ContentManager contentManager, GraphicsDevice graphicsDevice) 
@@ -36,11 +42,12 @@ namespace SomeGame.Main.Modules
             _tileSetService = new TileSetService();
             _blockSelect = new UIBlockSelect(HandleBlockAction, HandleBlockMouseMove);
             _scroller = new Scroller(GameSystem);
-
+            _scene = scene;
             var sceneInfo = DataSerializer.Load(scene);
             PaletteKeys = sceneInfo.PaletteKeys;
             GameSystem.BackgroundColorIndex = sceneInfo.BackgroundColor;
             _tilesets = sceneInfo.VramImages;
+            
 
             if (editLayer == LayerIndex.BG)
             {
@@ -53,6 +60,7 @@ namespace SomeGame.Main.Modules
                 _levelKey = sceneInfo.FgMap.Key;
                 _tilePalette = sceneInfo.FgMap.Palette;
                 _editorTileset = DataSerializer.LoadEditorTileset(_tilesets[1].TileSet);
+                _actorStarts = sceneInfo.Actors.ToList();
             }
             else
                 throw new ArgumentException("Invalid layer index");
@@ -63,9 +71,27 @@ namespace SomeGame.Main.Modules
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
+            _objectSelector = new EnumMultiSelect<ActorId>(layer, _font, new Point(0, 0));
             _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
             _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
+
             OnThemeChanged();
+        }
+
+        private void UpdateSelectedActor()
+        {
+            try
+            {
+                var tileset = ActorFactory.GetTileset(_objectSelector.SelectedItem);
+                var offset = GameSystem.GetTileOffset(tileset);
+
+                _selectedSprite = DataSerializer.LoadSpriteFrames(tileset)[0];
+                GameSystem.GetLayer(LayerIndex.FG).TileOffset = offset;
+            }
+            catch
+            {
+                _selectedSprite = new SpriteFrame(new Tile(), new Tile(), new Tile(), new Tile());
+            }
         }
 
         protected override void Update()
@@ -87,14 +113,33 @@ namespace SomeGame.Main.Modules
 
             if (_modeSelector.Update(ui, Input))
             {
+                if (_modeSelector.SelectedItem == LevelEditorMode.Objects)
+                {
+                    _objectSelector.Refresh(ui);
+                    UpdateSelectedActor();
+                }
+                else
+                {
+                    _themeSelector.Refresh(ui);
+                    foreground.TileOffset = GameSystem.GetTileOffset(_editorTileset.Key);
+                }
+
                 _blockSelect.ClearSelection(foreground);
                 return;
             }
 
-            if (_themeSelector.Update(ui, Input))
+            if (_modeSelector.SelectedItem == LevelEditorMode.Objects)
             {
-                OnThemeChanged();
-                return;
+                if (_objectSelector.Update(ui, Input))
+                    UpdateSelectedActor();
+            }
+            else
+            {
+                if (_themeSelector.Update(ui, Input))
+                {
+                    OnThemeChanged();
+                    return;
+                }
             }
 
             switch(_modeSelector.SelectedItem)
@@ -141,6 +186,9 @@ namespace SomeGame.Main.Modules
                 case LevelEditorMode.SetSolid:
                     HandleSetSolid(background, foreground);
                     break;
+                case LevelEditorMode.Objects:
+                    HandlePlaceObjects(background, foreground);
+                    break;
             }
 
             if (Input.Start.IsPressed())
@@ -152,6 +200,81 @@ namespace SomeGame.Main.Modules
             var bgTile = GameSystem.GetLayer(LayerIndex.BG).TileMap.GetTile(location);
             var topLeftTile = _scroller.GetTopLeftTile(LayerIndex.BG);
             _tileMap.SetTile(location.X + topLeftTile.X, location.Y+topLeftTile.Y, bgTile);
+        }
+
+
+        private void HandlePlaceObjects(Layer background, Layer foreground)
+        {
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
+            if (mouseTile.Y < 2)
+                return;
+
+            var worldTile = mouseTile.Offset(_scroller.GetTopLeftTile(LayerIndex.FG));
+
+            foreground.TileMap.SetEach((x, y) =>
+            {
+                if (x == mouseTile.X && y == mouseTile.Y)
+                    return _selectedSprite.TopLeft;
+                if (x == mouseTile.X+1 && y == mouseTile.Y)
+                    return _selectedSprite.TopRight;
+                if (x == mouseTile.X && y == mouseTile.Y+1)
+                    return _selectedSprite.BottomLeft;
+                if (x == mouseTile.X + 1 && y == mouseTile.Y + 1)
+                    return _selectedSprite.BottomRight;
+                else
+                    return new Tile();
+            });
+
+            var topLeftScrolledTile = _scroller.GetTopLeftTile(LayerIndex.FG);
+
+            foreach(var actorStart in _actorStarts.Where(p=>p.ActorId == _objectSelector.SelectedItem))
+            {
+                int worldTileX = actorStart.Position.X / GameSystem.TileSize;
+                int worldTileY = actorStart.Position.Y / GameSystem.TileSize;
+
+                if (worldTileX < topLeftScrolledTile.X 
+                    || worldTileY < topLeftScrolledTile.Y
+                    || worldTileX >= topLeftScrolledTile.X + GameSystem.LayerTileWidth
+                    || worldTileY >= topLeftScrolledTile.Y + GameSystem.LayerTileHeight)
+                    continue;
+
+                var layerTileX = worldTileX - topLeftScrolledTile.X;
+                var layerTileY = worldTileY - topLeftScrolledTile.Y;
+
+                foreground.TileMap.SetEach(layerTileX, layerTileX + 2, layerTileY, layerTileY + 2, (x, y) =>
+                {
+                    if (x == layerTileX && y == layerTileY)
+                        return _selectedSprite.TopLeft;
+                    if (x == layerTileX + 1 && y == layerTileY)
+                        return _selectedSprite.TopRight;
+                    if (x == layerTileX && y == layerTileY + 1)
+                        return _selectedSprite.BottomLeft;
+                    if (x == layerTileX + 1 && y == layerTileY + 1)
+                        return _selectedSprite.BottomRight;
+                    else
+                        return new Tile();
+                });
+            }
+
+
+
+            if(Input.A.IsPressed())
+            {
+                _actorStarts.Add(new ActorStart(_objectSelector.SelectedItem, new PixelPoint(worldTile.X * GameSystem.TileSize, worldTile.Y * GameSystem.TileSize)));
+            }
+            else if(Input.B.IsPressed())
+            {
+                _actorStarts.RemoveAll(a =>
+                {
+                    if (a.ActorId != _objectSelector.SelectedItem)
+                        return false;
+
+                    int tileX = a.Position.X / GameSystem.TileSize;
+                    int tileY = a.Position.Y / GameSystem.TileSize;
+                    return worldTile.X >= tileX && worldTile.X <= tileX + 1
+                           && worldTile.Y >= tileY && worldTile.Y <= tileY + 1;
+                });
+            }
         }
 
         private void HandleSetSolid(Layer background, Layer foreground)
@@ -184,6 +307,12 @@ namespace SomeGame.Main.Modules
         private void SaveMap()
         {
             DataSerializer.Save(_tileMap);
+
+            var sceneInfo = DataSerializer
+                                .Load(_scene)
+                                .SetActors(_actorStarts);
+
+            DataSerializer.Save(_scene, sceneInfo);
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)

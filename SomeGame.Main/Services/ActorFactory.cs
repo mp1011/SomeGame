@@ -37,14 +37,15 @@ namespace SomeGame.Main.Services
         public Actor CreateActor(
             ActorId actorId,
             ActorType actorType,
-            TilesetContentKey tileset,
             Behavior behavior,
             PixelPoint position,
             Rectangle hitBox,
             ICollisionDetector collisionDetector,
             IDestroyedBehavior destroyedBehavior=null)
         {
+            var tileset = GetTileset(actorId);
             var actor = new Actor(actorType, tileset, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
+            actor.Palette = _gameSystem.GetTilesetPalette(actor.Tileset);
             actor.WorldPosition = new GameRectangleWithSubpixels(position.X,position.Y, hitBox.Width,hitBox.Height);
             _actorManager.AddActor(actor);                
             return actor;
@@ -90,7 +91,6 @@ namespace SomeGame.Main.Services
             return CreateActor(
                actorId: id,
                actorType: ActorType.Item,
-               tileset: TilesetContentKey.Items,
                behavior: behavior,
                collisionDetector: new EmptyCollisionDetector(),
                hitBox: new Rectangle(0, 0, size, size),
@@ -105,7 +105,6 @@ namespace SomeGame.Main.Services
             return CreateActor(
                 actorId: ActorId.Player,
                 actorType: ActorType.Player | ActorType.Character,
-                tileset: TilesetContentKey.Hero,
                 behavior: new PlayerBehavior(
                                 new PlatformerPlayerMotionBehavior(_inputManager),
                                 new PlayerHurtBehavior(_playerStateManager),
@@ -128,7 +127,6 @@ namespace SomeGame.Main.Services
             var bullet = CreateActor(
                actorId: ActorId.PlayerBullet,
                actorType: ActorType.Player | ActorType.Bullet,
-               tileset: TilesetContentKey.Bullet,
                behavior: new ProjectileBehavior(new PixelValue(2, 150), duration:20),               
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
@@ -150,7 +148,6 @@ namespace SomeGame.Main.Services
             return CreateActor(
                  actorId: ActorId.Skeleton,
                  actorType: ActorType.Enemy | ActorType.Character,
-                 tileset: TilesetContentKey.Skeleton,
                  behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), bone),
                  destroyedBehavior: new SkeletonDestroyedBehavior(score: 100, _playerStateManager, skull,bones),
                  collisionDetector: new BgCollisionDetector(_gameSystem, _scroller, _actorManager),
@@ -163,7 +160,6 @@ namespace SomeGame.Main.Services
             var enemyProjectile = CreateActor(
                actorId: ActorId.SkeletonBone,
                actorType: ActorType.Enemy | ActorType.Bullet,
-               tileset: TilesetContentKey.Skeleton,
                behavior: new ProjectileBehavior(new PixelValue(1, 0), duration:100),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
@@ -185,7 +181,6 @@ namespace SomeGame.Main.Services
             var debris = CreateActor(
                actorId: id,
                actorType: ActorType.Decoration,
-               tileset: tileSet,
                behavior: new DebrisBehavior(new Gravity(), _scroller),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new EmptyCollisionDetector(),
@@ -201,7 +196,6 @@ namespace SomeGame.Main.Services
             var bullet = CreateActor(
                actorId: ActorId.MovingPlatform,
                actorType: ActorType.Gizmo,
-               tileset: TilesetContentKey.Gizmos,
                behavior: new MovingPlatformBehavior(),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new EmptyCollisionDetector(),
@@ -218,6 +212,26 @@ namespace SomeGame.Main.Services
             return new SpriteAnimator(_gameSystem,
                 _dataSerializer.LoadSpriteFrames(tileset),
                 _dataSerializer.LoadAnimations(actorId));
+        }
+
+        public static TilesetContentKey GetTileset(ActorId actorId)
+        {
+            switch (actorId)
+            {
+                case ActorId.Apple: return TilesetContentKey.Items;
+                case ActorId.Coin: return TilesetContentKey.Items;
+                case ActorId.DeadSkeletonBone: return TilesetContentKey.Skeleton;
+                case ActorId.Gem: return TilesetContentKey.Items;
+                case ActorId.Key: return TilesetContentKey.Items;
+                case ActorId.Meat: return TilesetContentKey.Items;
+                case ActorId.MovingPlatform: return TilesetContentKey.Gizmos;
+                case ActorId.Player: return TilesetContentKey.Hero;
+                case ActorId.PlayerBullet: return TilesetContentKey.Bullet;
+                case ActorId.Skeleton: return TilesetContentKey.Skeleton;
+                case ActorId.SkeletonBone: return TilesetContentKey.Skeleton;
+                case ActorId.Skull: return TilesetContentKey.Skeleton;
+                default: throw new Exception("No tileset set for " + actorId);
+            }
         }
     }
 }

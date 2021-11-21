@@ -174,10 +174,11 @@ namespace SomeGame.Main.Modules
 
         public void Initialize()
         {
-            _dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
-            _dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
-            _dataSerializer.Save(SceneContentKey.Test3, CreateTest3());
-            _dataSerializer.Save(SceneContentKey.LongMapTest, CreateLongMapTest());
+            throw new System.NotImplementedException("rework so info done in level editor isn't lost");
+            //_dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
+            //_dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
+            //_dataSerializer.Save(SceneContentKey.Test3, CreateTest3());
+            //_dataSerializer.Save(SceneContentKey.LongMapTest, CreateLongMapTest());
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

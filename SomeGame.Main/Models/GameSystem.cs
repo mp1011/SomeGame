@@ -18,6 +18,7 @@ namespace SomeGame.Main.Models
         private Layer[] _layers;
         private TileSet[] _tileSets;
         private Sprite[] _sprites;
+        private Dictionary<TilesetContentKey, PaletteIndex> _tilesetPalettes;
 
         public readonly Rectangle Screen = new Rectangle(0, 0, 320, 240);
         public readonly int TileSize = 8;
@@ -76,6 +77,8 @@ namespace SomeGame.Main.Models
 
         public Palette GetPalette(PaletteIndex paletteIndex) => _palettes[(int)paletteIndex];
 
+        public PaletteIndex GetTilesetPalette(TilesetContentKey key) => _tilesetPalettes[key]; 
+
         public int GetTileOffset(TilesetContentKey tilesetContentKey)
         {
             return _tileSetData.Offsets[tilesetContentKey];
@@ -89,6 +92,11 @@ namespace SomeGame.Main.Models
                 palette3,
                 palette4
             };
+        }
+
+        public void SetTilesetPalettes(TilesetWithPalette[] data)
+        {
+            _tilesetPalettes = data.ToDictionary(k => k.TileSet, v => v.Palette);
         }
 
         public void SetVram(GraphicsDevice graphicsDevice, IndexedTilesetImage[] data)

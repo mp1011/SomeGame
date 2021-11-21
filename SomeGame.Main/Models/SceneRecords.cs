@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Content;
 using SomeGame.Main.Scenes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SomeGame.Main.Models
 {
@@ -34,5 +36,13 @@ namespace SomeGame.Main.Models
         SoundInfo[] Sounds,
         ActorStart[] Actors,
         CollectiblePlacement[] CollectiblePlacements,
-        SceneTransitions Transitions);
+        SceneTransitions Transitions)
+    {
+
+        public SceneInfo SetActors(IEnumerable<ActorStart> actors)
+        {
+            return new SceneInfo(BgMap, FgMap, InterfaceType, Bounds, PaletteKeys, BackgroundColor, VramImages, Sounds, actors.ToArray(),
+                CollectiblePlacements, Transitions);
+        }
+    }
 }

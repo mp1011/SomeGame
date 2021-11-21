@@ -63,52 +63,99 @@ namespace SomeGame.Main.Services
             neighbors[Direction.Right] = tileMap.GetTile(tileLocation.GetNeighbor(Direction.Right));
 
             return blocks
+                .OrderByDescending(RankBlock)
                 .SelectMany(b => GetPossibleTilesForLocation(b, neighbors))
+                .OrderByDescending(p=>p.Item2)
+                .Select(p=>p.Item1)
                 .Distinct()
                 .ToArray();     
         }
 
-        private IEnumerable<Tile> GetPossibleTilesForLocation(EditorBlock tileRelations, Dictionary<Direction, Tile> neighbors)
+        private int RankBlock(EditorBlock editorBlock)
         {
-            List<Tile> possibleTiles = new List<Tile>();
+            bool canRepeatX = true;
+            bool canRepeatY = true;
+
+            editorBlock.Grid.ForEach(0, editorBlock.Grid.Width / 2, 0, editorBlock.Grid.Height / 2,
+                (x, y, t) =>
+                {
+                    int x2 = x + editorBlock.Grid.Width / 2;
+                    if (editorBlock.Grid.Height == 1 || x2 >= editorBlock.Grid.Width || editorBlock.Grid[x2, y] != t)
+                        canRepeatX = false;
+
+                    int y2 = y + editorBlock.Grid.Width / 2;
+                    if (editorBlock.Grid.Width == 1 || y2 >= editorBlock.Grid.Height || editorBlock.Grid[x, y2] != t)
+                        canRepeatY = false;
+                });
+
+            int rank = 0;
+            if (canRepeatX)
+                rank++;
+            if (canRepeatY)
+                rank++;
+
+            return rank;
+        }
+
+        private IEnumerable<(Tile,int)> GetPossibleTilesForLocation(EditorBlock tileRelations, Dictionary<Direction, Tile> neighbors)
+        {
+            List<(Tile,int)> possibleTiles = new List<(Tile, int)>();
 
             tileRelations.Grid.ForEach((x, y, tile) =>
             {
-                bool comparedAny = false;
-                if(x > 0 && neighbors[Direction.Left].Index >= 0)
+                bool? leftMatch=null, topMatch = null, bottomMatch = null, rightMatch = null;
+
+                if(x > 0)
                 {
-                    comparedAny = true;
                     var left = tileRelations.Grid[x - 1, y];
-                    if (left != neighbors[Direction.Left])
-                        return;
+                    if (left == neighbors[Direction.Left])
+                        leftMatch = true;
+                    else if (neighbors[Direction.Left].Index >= 0)
+                        leftMatch = false;
                 }
 
-                if (y > 0 && neighbors[Direction.Up].Index >= 0)
+                if (y > 0)
                 {
-                    comparedAny = true;
                     var above = tileRelations.Grid[x, y-1];
-                    if (above != neighbors[Direction.Up])
-                        return;
+                    if (above == neighbors[Direction.Up])
+                        topMatch = true;
+                    else if (neighbors[Direction.Up].Index >= 0)
+                        topMatch = false;
+
                 }
 
-                if (x < tileRelations.Grid.Width-1 && neighbors[Direction.Right].Index >= 0)
+                if (x < tileRelations.Grid.Width-1)
                 {
-                    comparedAny = true;
                     var right = tileRelations.Grid[x+1, y];
-                    if (right != neighbors[Direction.Right])
-                        return;
+                    if (right == neighbors[Direction.Right])
+                        rightMatch = true;
+                    else if (neighbors[Direction.Right].Index >= 0)
+                        rightMatch = false;
                 }
 
-                if (y < tileRelations.Grid.Height - 1 && neighbors[Direction.Down].Index >= 0)
+                if (y < tileRelations.Grid.Height - 1)
                 {
-                    comparedAny = true;
                     var below = tileRelations.Grid[x, y+1];
-                    if (below != neighbors[Direction.Down])
-                        return;
+                    if (below == neighbors[Direction.Down])
+                        bottomMatch = true;
+                    else if (neighbors[Direction.Down].Index >= 0)
+                        bottomMatch = false;
                 }
 
-                if(comparedAny)
-                    possibleTiles.Add(tile);
+                if (leftMatch.GetValueOrDefault() && rightMatch.GetValueOrDefault()
+                    && topMatch.GetValueOrDefault() && bottomMatch.GetValueOrDefault())
+                {
+                    possibleTiles.Add(new(tile, 1));
+                }
+                else if (
+                    (leftMatch.GetValueOrDefault() || rightMatch.GetValueOrDefault() || topMatch.GetValueOrDefault() || bottomMatch.GetValueOrDefault())
+                    && (leftMatch == null || leftMatch.Value)
+                    && (rightMatch == null || rightMatch.Value)
+                    && (topMatch == null || topMatch.Value)
+                    && (bottomMatch == null || bottomMatch.Value))
+                {
+                    possibleTiles.Add(new(tile, 0));
+                }
             });
 
             return possibleTiles;

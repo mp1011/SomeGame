@@ -8,6 +8,8 @@ namespace SomeGame.Main.Models
     public record IndexedImage(Grid<byte> Image, Palette Palette);
     public record Tile(int Index, TileFlags Flags)
     {
+        public Tile() : this(-1, TileFlags.None) { }
+
         public bool IsSolid => (Flags & TileFlags.Solid) != 0;
         public bool IsCollectible => (Flags & TileFlags.Collectible) != 0;
 

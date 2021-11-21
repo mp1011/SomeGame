@@ -128,7 +128,8 @@ namespace SomeGame.Main.Models
         Copy,
         Move,
         Relate,
-        SetSolid
+        SetSolid,
+        Objects,        
     }
 
     public enum StandardEnemyState

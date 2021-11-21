@@ -60,16 +60,15 @@ namespace SomeGame.Main.Services
                                            .ToIndexedTilesetImage(_gameSystem.GetPalette(p.Palette)))
                 .ToArray();
 
-            var tilesetToPalette = sceneInfo.VramImages.ToDictionary(k => k.TileSet, v => v.Palette);
-
             _gameSystem.SetVram(_graphicsDevice, vramImages);
+            _gameSystem.SetTilesetPalettes(sceneInfo.VramImages);
 
             var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG, vramImages[0].Key);
             var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG, vramImages[1].Key);
             _scroller.SetTileMaps(bg, fg);
 
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
-            InitializeActors(sceneInfo, sceneTransition, tilesetToPalette);
+            InitializeActors(sceneInfo, sceneTransition);
             PlaceCollectibles(sceneInfo);
             InitializeSounds(sceneInfo);
         }
@@ -96,15 +95,11 @@ namespace SomeGame.Main.Services
             return tileMap;
         }
 
-        private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo, 
-            Dictionary<TilesetContentKey, PaletteIndex> palettes)
+        private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)
         {
-            foreach (var actorStart in sceneInfo.Actors)
-            {
-                var actor = _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
-                actor.Palette = palettes[actor.Tileset];
-            }
-
+            foreach (var actorStart in sceneInfo.Actors)            
+                _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
+            
             _collectiblesService.CreateCollectedItemActors(_actorFactory);
         }
 
