@@ -22,13 +22,6 @@ namespace SomeGame.Main.Models
             ScrollY = scrollY;
         }
 
-        public Point TilePointFromLayerPixelPoint(Point pixelPoint)
-        {
-            var tileX = (pixelPoint.X / _tileSize).Clamp(0, TileMap.TilesX - 1);
-            var tileY = (pixelPoint.Y / _tileSize).Clamp(0, TileMap.TilesY - 1);
-            return new Point(tileX, tileY);
-        }
-        
         public Point TilePointFromScreenPixelPoint(int x, int y)
         {
             var sx = x - ScrollX;

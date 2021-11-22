@@ -10,12 +10,12 @@ namespace SomeGame.Main.Behaviors
         private readonly GameSystem _gameSystem;
         private readonly CollectiblesService _collectiblesService;
         private readonly ActorManager _actorManager;
-        private readonly Scroller _scroller;
-        public BgCollisionDetector(GameSystem gameSystem, Scroller scroller, 
+        private readonly TileMap _tileMap;
+        public BgCollisionDetector(GameSystem gameSystem, TileMap tileMap, 
             ActorManager actorManager,
             CollectiblesService collectiblesService=null)
         {
-            _scroller = scroller;
+            _tileMap = tileMap;
             _actorManager = actorManager;
             _gameSystem = gameSystem;
             _collectiblesService = collectiblesService;
@@ -24,23 +24,25 @@ namespace SomeGame.Main.Behaviors
         public CollisionInfo DetectCollisions(Actor actor)
         {
             var collisionInfo = new CollisionInfo();
-            var fg = _gameSystem.GetLayer(LayerIndex.FG);
 
-            var layerPosition = _scroller.WorldPositionToLayerPosition(actor.WorldPosition, LayerIndex.FG);
+            var topLeftTile = actor.WorldPosition.TopLeft
+                                        .Divide(_gameSystem.TileSize)
+                                        .Offset(-2, -2);
 
-            var topLeftTile = fg.TilePointFromLayerPixelPoint(layerPosition.TopLeft).Offset(-2, -2);
-            var bottomRightTile = fg.TilePointFromLayerPixelPoint(layerPosition.BottomRight).Offset(2, 2);
+            var bottomRightTile = actor.WorldPosition.BottomRight
+                                        .Divide(_gameSystem.TileSize)
+                                        .Offset(2, 2);
 
             var xCorrection = new PixelValue(0, 0);
-            fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x,y,t) =>
+            _tileMap.ForEach(topLeftTile, bottomRightTile, (x,y,t) =>
             {
-                if(t.IsSolid)
-                {                   
-                    var tileBounds = fg.GetTileLayerPosition(x, y);
-                    tileBounds = _scroller.LayerPositionToWorldPosition(tileBounds, LayerIndex.FG);
+                if (t.IsSolid)
+                {
+                    var tileBounds = new GameRectangleWithSubpixels(x * _gameSystem.TileSize, y * _gameSystem.TileSize,
+                        _gameSystem.TileSize, _gameSystem.TileSize);
 
-                    var tileLeft = fg.TileMap.GetTile(x - 1, y);
-                    var tileRight = fg.TileMap.GetTile(x + 1, y);
+                    var tileLeft = _tileMap.GetTile(x - 1, y);
+                    var tileRight = _tileMap.GetTile(x + 1, y);
 
                     var xTemp = new PixelValue(0, 0);
                     if (tileBounds.IntersectsWith(actor.WorldPosition))
@@ -79,18 +81,18 @@ namespace SomeGame.Main.Behaviors
             }
 
             var yCorrection = new PixelValue(0, 0);
-            fg.TileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
+            _tileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
                 if (t.IsSolid)
                 {
-                    var tileAbove = fg.TileMap.GetTile(x, y - 1);
-                    var tileBelow = fg.TileMap.GetTile(x, y + 1);
-                    var tileLeft = fg.TileMap.GetTile(x - 1, y);
-                    var tileRight = fg.TileMap.GetTile(x + 1, y);
+                    var tileAbove = _tileMap.GetTile(x, y - 1);
+                    var tileBelow = _tileMap.GetTile(x, y + 1);
+                    var tileLeft = _tileMap.GetTile(x - 1, y);
+                    var tileRight = _tileMap.GetTile(x + 1, y);
 
-                    var tileBounds = fg.GetTileLayerPosition(x, y);
-                    tileBounds = _scroller.LayerPositionToWorldPosition(tileBounds, LayerIndex.FG);
-
+                    var tileBounds = new GameRectangleWithSubpixels(x * _gameSystem.TileSize, y * _gameSystem.TileSize,
+                        _gameSystem.TileSize, _gameSystem.TileSize);
+        
                     var yTemp = new PixelValue(0, 0);
 
                     if (tileBounds.IntersectsWith(actor.WorldPosition))
@@ -125,10 +127,10 @@ namespace SomeGame.Main.Behaviors
                 }
                 else if (_collectiblesService != null && t.IsCollectible)
                 {
-                    var tileBounds = fg.GetTileLayerPosition(x, y);
-                    tileBounds = _scroller.LayerPositionToWorldPosition(tileBounds, LayerIndex.FG);
+                    var tileBounds = new GameRectangleWithSubpixels(x * _gameSystem.TileSize, y * _gameSystem.TileSize,
+                         _gameSystem.TileSize, _gameSystem.TileSize);
                     if (tileBounds.IntersectsWith(actor.WorldPosition))
-                        collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y, fg);
+                        collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y, _gameSystem.GetLayer(LayerIndex.FG));
                 }
             });
 

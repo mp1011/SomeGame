@@ -197,6 +197,10 @@ namespace SomeGame.Main.Modules
 
         protected override void AfterTilePlaced(Point location)
         {
+            var tlt = _scroller.GetTopLeftTile(LayerIndex.BG);
+            System.Diagnostics.Debug.WriteLine($"Placed tile at {location.X + tlt.X}, {location.Y + tlt.Y}");
+
+
             var bgTile = GameSystem.GetLayer(LayerIndex.BG).TileMap.GetTile(location);
             var topLeftTile = _scroller.GetTopLeftTile(LayerIndex.BG);
             _tileMap.SetTile(location.X + topLeftTile.X, location.Y+topLeftTile.Y, bgTile);

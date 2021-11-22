@@ -46,7 +46,17 @@ namespace SomeGame.Main.Services
             {
                 case LayerIndex.BG: return _bgLayer.TopLeftTile;
                 case LayerIndex.FG: return _fgLayer.TopLeftTile;
-                default: throw new Exception("Scrollong of Interface Layer not supported");
+                default: throw new Exception("Scrolling of Interface Layer not supported");
+            }
+        }
+
+        public TileMap GetTilemap(LayerIndex layerIndex)
+        {
+            switch(layerIndex)
+            {
+                case LayerIndex.BG: return _bgLayer.TileMap;
+                case LayerIndex.FG: return _fgLayer.TileMap;
+                default: throw new ArgumentException();
             }
         }
 
