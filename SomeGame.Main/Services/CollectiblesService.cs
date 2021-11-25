@@ -8,7 +8,7 @@ namespace SomeGame.Main.Services
     class CollectiblesService
     {
         private readonly GameSystem _gameSystem;
-        private readonly Layer _layer;
+        private readonly Scroller _scroller;
         private List<MapCollectible> _collectibles = new List<MapCollectible>();
         private ActorPool _coins;
         private ActorPool _gems;
@@ -16,10 +16,10 @@ namespace SomeGame.Main.Services
         private ActorPool _meat;
         private ActorPool _keys;
 
-        public CollectiblesService(GameSystem gameSystem, Layer collectiblesLayer)
+        public CollectiblesService(GameSystem gameSystem, Scroller scroller)
         {
+            _scroller = scroller;
             _gameSystem = gameSystem;
-            _layer = collectiblesLayer;
         }
 
         public void Reset()
@@ -36,42 +36,51 @@ namespace SomeGame.Main.Services
             _keys = actorFactory.CreatePool(ActorId.Key, 2);
         }
 
-        public void AddCollectible(CollectibleId collectibleId, Point position, Point? position2 = null)
+        public void AddCollectible(CollectibleId collectibleId, Point position, TileMap collectiblesLayer)
         {
-            _collectibles.Add(CreateCollectible(collectibleId, position, position2));
+            _collectibles.Add(CreateCollectible(collectibleId, position, collectiblesLayer));
         }
 
-        private MapCollectible CreateCollectible(CollectibleId collectibleId, Point position, Point? position2=null)
+        private MapCollectible CreateCollectible(CollectibleId collectibleId, Point position, TileMap collectiblesLayer)
         {
             switch(collectibleId)
             {
                 case CollectibleId.Coin:
-                    return new MapCoin(position, position2 ?? position, _gameSystem, _coins)
-                        .StampOntoMap(_layer);
+                    return new MapCoin(position, _gameSystem, _coins, collectiblesLayer)
+                        .StampOntoMap();
                 case CollectibleId.Gem:
-                    return new MapGem(position, _gameSystem, _gems)
-                        .StampOntoMap(_layer);
+                    return new MapGem(position, _gameSystem, _gems, collectiblesLayer)
+                        .StampOntoMap();
                 case CollectibleId.Apple:
-                    return new MapApple(position, _gameSystem, _apples)
-                        .StampOntoMap(_layer);
+                    return new MapApple(position, _gameSystem, _apples, collectiblesLayer)
+                        .StampOntoMap();
                 case CollectibleId.Meat:
-                    return new MapMeat(position, _gameSystem, _meat)
-                        .StampOntoMap(_layer);
+                    return new MapMeat(position, _gameSystem, _meat, collectiblesLayer)
+                        .StampOntoMap();
                 case CollectibleId.Key:
-                    return new MapKey(position, _gameSystem, _keys)
-                        .StampOntoMap(_layer);
+                    return new MapKey(position, _gameSystem, _keys, collectiblesLayer)
+                        .StampOntoMap();
                 default:
                     throw new System.Exception("Invalid collectible type");
             }
         }
 
-        public CollisionInfo HandleCollectibleCollision(int tileX, int tileY, Layer layer)
+        public CollisionInfo HandleCollectibleCollision(GameRectangleWithSubpixels actorPosition)
         {
+            var layer = _gameSystem.GetLayer(LayerIndex.FG);
+
             foreach(var collectible in _collectibles)
             {
-                var collisionInfo = collectible.CheckCollision(tileX, tileY,layer);
-                if (collisionInfo != null)
-                    return collisionInfo;
+                if (collectible.Collected)
+                    continue;
+
+                if (!actorPosition.IntersectsWith(collectible.Position))
+                    continue;
+
+                collectible.EraseFromMap(_scroller.GetTopLeftTile(LayerIndex.FG), layer);
+                var actor = collectible.CreateActiveObject();
+                if (actor != null)
+                    return new CollisionInfo(Actor: actor);
             }
 
             return null;

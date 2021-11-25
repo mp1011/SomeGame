@@ -4,6 +4,11 @@
     {
         public static CollisionInfo operator +(CollisionInfo c1, CollisionInfo c2)
         {
+            if (c2 == null)
+                return c1;
+            else if (c1 == null)
+                return c2;
+
             return new CollisionInfo(XCorrection: c1.XCorrection + c2.XCorrection, 
                                      YCorrection: c1.YCorrection + c2.YCorrection, 
                                      IsOnGround: c1.IsOnGround || c2.IsOnGround,

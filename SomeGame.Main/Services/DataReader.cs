@@ -142,17 +142,7 @@ namespace SomeGame.Main.Services
             int x = _reader.ReadInt32();
             int y = _reader.ReadInt32();
 
-            var n = _reader.ReadByte();
-            if(n==2)
-            {
-                int x2 = _reader.ReadInt32();
-                int y2 = _reader.ReadInt32();
-                return new CollectiblePlacement(id, new Point(x, y), new Point(x2, y2));
-            }
-            else
-            {
-                return new CollectiblePlacement(id, new Point(x, y));
-            }
+            return new CollectiblePlacement(id, new Point(x, y));            
         }
 
         public T ReadEnum<T>() where T:Enum

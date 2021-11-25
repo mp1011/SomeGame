@@ -29,6 +29,10 @@ namespace SomeGame.Main.Models
                 height: gameSystem.LayerPixelHeight,
                 maxX: (tileMap.TilesX * gameSystem.TileSize) - gameSystem.Screen.Width,
                 maxY: (tileMap.TilesY * gameSystem.TileSize) - gameSystem.Screen.Height);
+        }
+
+        public void Initialize()
+        {
             SetTopLeftTile(0, 0);
         }
 

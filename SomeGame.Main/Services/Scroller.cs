@@ -74,6 +74,12 @@ namespace SomeGame.Main.Services
             _fgLayer = new ScrollingLayer(_gameSystem, fg, _gameSystem.GetLayer(LayerIndex.FG));
         }
 
+        public void Initialize()
+        {
+            _bgLayer.Initialize();
+            _fgLayer.Initialize();
+        }
+
         public void Update()
         {
             _bgLayer.ScrollLayer(Camera);

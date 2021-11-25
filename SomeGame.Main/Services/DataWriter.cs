@@ -124,20 +124,8 @@ namespace SomeGame.Main.Services
         public void Write(CollectiblePlacement collectiblePlacement)
         {
             _writer.Write((byte)collectiblePlacement.Id);
-
             _writer.Write(collectiblePlacement.Position.X);
             _writer.Write(collectiblePlacement.Position.Y);
-
-            if (collectiblePlacement.Position2.HasValue)
-            {
-                _writer.Write((byte)2);
-                _writer.Write(collectiblePlacement.Position2.Value.X);
-                _writer.Write(collectiblePlacement.Position2.Value.Y);
-            }
-            else
-            {
-                _writer.Write((byte)1);
-            }
         }
 
         public void Write(PixelPoint pixelPoint)

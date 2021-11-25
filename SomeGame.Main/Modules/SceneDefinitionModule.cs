@@ -94,12 +94,6 @@ namespace SomeGame.Main.Modules
                 },
                 CollectiblePlacements: new CollectiblePlacement[]
                 {
-                    new CollectiblePlacement(CollectibleId.Coin, new Point(8,15), new Point(12,15)),
-                    new CollectiblePlacement(CollectibleId.Coin, new Point(25, 9), new Point(30, 10)),
-                    new CollectiblePlacement(CollectibleId.Gem, new Point(35, 8)),
-                    new CollectiblePlacement(CollectibleId.Apple, new Point(40, 8)),
-                    new CollectiblePlacement(CollectibleId.Meat, new Point(45, 8)),
-                    new CollectiblePlacement(CollectibleId.Key, new Point(50, 8))
                 },
                 Transitions: new SceneTransitions(Right: SceneContentKey.Test2));
         }

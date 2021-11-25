@@ -8,17 +8,14 @@ namespace SomeGame.Main.Behaviors
     class BgCollisionDetector : ICollisionDetector
     {
         private readonly GameSystem _gameSystem;
-        private readonly CollectiblesService _collectiblesService;
         private readonly ActorManager _actorManager;
         private readonly TileMap _tileMap;
-        public BgCollisionDetector(GameSystem gameSystem, TileMap tileMap, 
-            ActorManager actorManager,
-            CollectiblesService collectiblesService=null)
+
+        public BgCollisionDetector(GameSystem gameSystem, TileMap tileMap, ActorManager actorManager)
         {
             _tileMap = tileMap;
             _actorManager = actorManager;
             _gameSystem = gameSystem;
-            _collectiblesService = collectiblesService;
         }
 
         public CollisionInfo DetectCollisions(Actor actor)
@@ -125,13 +122,6 @@ namespace SomeGame.Main.Behaviors
                     if (collisionInfo.IsOnGround && (!tileLeft.IsSolid || !tileRight.IsSolid))
                         collisionInfo += CheckOnLedge(actor, tileBounds, tileLeft.IsSolid, tileRight.IsSolid);
                 }
-                else if (_collectiblesService != null && t.IsCollectible)
-                {
-                    var tileBounds = new GameRectangleWithSubpixels(x * _gameSystem.TileSize, y * _gameSystem.TileSize,
-                         _gameSystem.TileSize, _gameSystem.TileSize);
-                    if (tileBounds.IntersectsWith(actor.WorldPosition))
-                        collisionInfo += _collectiblesService.HandleCollectibleCollision(x, y, _gameSystem.GetLayer(LayerIndex.FG));
-                }
             });
 
             if (yCorrection != 0)
@@ -139,8 +129,6 @@ namespace SomeGame.Main.Behaviors
                 actor.WorldPosition.YPixel += yCorrection;
                 collisionInfo += new CollisionInfo(YCorrection: yCorrection);
             }
-
-            DebugService.CheckBadPosition(actor);
 
             return collisionInfo += HandleMovingBlockCollisions(actor);
         }

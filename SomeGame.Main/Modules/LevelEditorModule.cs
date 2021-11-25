@@ -26,6 +26,8 @@ namespace SomeGame.Main.Modules
         private TileMap _tileMap;
         private UIMultiSelect<string> _themeSelector;
         private UIMultiSelect<ActorId> _objectSelector;
+        private UIMultiSelect<CollectibleId> _collectiblesSelector;
+
         private EnumMultiSelect<LevelEditorMode> _modeSelector;
         private Font _font;
         private EditorTileSet _editorTileset;
@@ -33,6 +35,8 @@ namespace SomeGame.Main.Modules
        
         private SpriteFrame _selectedSprite = new SpriteFrame(new Tile(), new Tile(), new Tile(), new Tile());
         private List<ActorStart> _actorStarts = new List<ActorStart>();
+        private List<CollectiblePlacement> _collectiblePlacements = new List<CollectiblePlacement>();
+
 
         protected override PaletteKeys PaletteKeys { get; }
 
@@ -61,6 +65,7 @@ namespace SomeGame.Main.Modules
                 _tilePalette = sceneInfo.FgMap.Palette;
                 _editorTileset = DataSerializer.LoadEditorTileset(_tilesets[1].TileSet);
                 _actorStarts = sceneInfo.Actors.ToList();
+                _collectiblePlacements = sceneInfo.CollectiblePlacements.ToList();
             }
             else
                 throw new ArgumentException("Invalid layer index");
@@ -72,6 +77,7 @@ namespace SomeGame.Main.Modules
             _font = new Font(GameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
             _objectSelector = new EnumMultiSelect<ActorId>(layer, _font, new Point(0, 0));
+            _collectiblesSelector = new EnumMultiSelect<CollectibleId>(layer, _font, new Point(0, 0));
             _themeSelector = new UIMultiSelect<string>(layer, _font, _editorTileset.Themes, new Point(0, 0));
             _modeSelector = new EnumMultiSelect<LevelEditorMode>(layer, _font, new Point(0, 1));
 
@@ -85,8 +91,26 @@ namespace SomeGame.Main.Modules
                 var tileset = ActorFactory.GetTileset(_objectSelector.SelectedItem);
                 var offset = GameSystem.GetTileOffset(tileset);
 
-                _selectedSprite = DataSerializer.LoadSpriteFrames(tileset)[0];
+                var spriteFrames = DataSerializer.LoadSpriteFrames(tileset);
+                var animations = DataSerializer.LoadAnimations(_objectSelector.SelectedItem);
+                _selectedSprite = spriteFrames[animations.Values.First().Frames[0].SpriteFrameIndex];
+
                 GameSystem.GetLayer(LayerIndex.FG).TileOffset = offset;
+            }
+            catch
+            {
+                _selectedSprite = new SpriteFrame(new Tile(), new Tile(), new Tile(), new Tile());
+            }
+        }
+
+        private void UpdateSelectedCollectible()
+        {
+            try
+            {                
+                var spriteFrames = DataSerializer.LoadSpriteFrames(TilesetContentKey.Items);
+                var animations = DataSerializer.LoadAnimations((ActorId)_collectiblesSelector.SelectedItem);
+                _selectedSprite = spriteFrames[animations.Values.First().Frames[0].SpriteFrameIndex];
+                GameSystem.GetLayer(LayerIndex.FG).TileOffset = GameSystem.GetTileOffset(TilesetContentKey.Items);
             }
             catch
             {
@@ -118,6 +142,11 @@ namespace SomeGame.Main.Modules
                     _objectSelector.Refresh(ui);
                     UpdateSelectedActor();
                 }
+                else if (_modeSelector.SelectedItem == LevelEditorMode.Collectibles)
+                {
+                    _collectiblesSelector.Refresh(ui);
+                    UpdateSelectedCollectible();
+                }
                 else
                 {
                     _themeSelector.Refresh(ui);
@@ -132,6 +161,11 @@ namespace SomeGame.Main.Modules
             {
                 if (_objectSelector.Update(ui, Input))
                     UpdateSelectedActor();
+            }
+            else if (_modeSelector.SelectedItem == LevelEditorMode.Collectibles)
+            {
+                if (_collectiblesSelector.Update(ui, Input))
+                    UpdateSelectedCollectible();
             }
             else
             {
@@ -189,6 +223,10 @@ namespace SomeGame.Main.Modules
                 case LevelEditorMode.Objects:
                     HandlePlaceObjects(background, foreground);
                     break;
+                case LevelEditorMode.Collectibles:
+                    HandlePlaceCollectible(background, foreground);
+                    break;
+
             }
 
             if (Input.Start.IsPressed())
@@ -205,7 +243,6 @@ namespace SomeGame.Main.Modules
             var topLeftTile = _scroller.GetTopLeftTile(LayerIndex.BG);
             _tileMap.SetTile(location.X + topLeftTile.X, location.Y+topLeftTile.Y, bgTile);
         }
-
 
         private void HandlePlaceObjects(Layer background, Layer foreground)
         {
@@ -260,8 +297,6 @@ namespace SomeGame.Main.Modules
                 });
             }
 
-
-
             if(Input.A.IsPressed())
             {
                 _actorStarts.Add(new ActorStart(_objectSelector.SelectedItem, new PixelPoint(worldTile.X * GameSystem.TileSize, worldTile.Y * GameSystem.TileSize)));
@@ -275,6 +310,78 @@ namespace SomeGame.Main.Modules
 
                     int tileX = a.Position.X / GameSystem.TileSize;
                     int tileY = a.Position.Y / GameSystem.TileSize;
+                    return worldTile.X >= tileX && worldTile.X <= tileX + 1
+                           && worldTile.Y >= tileY && worldTile.Y <= tileY + 1;
+                });
+            }
+        }
+
+        private void HandlePlaceCollectible(Layer background, Layer foreground)
+        {
+            var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
+            if (mouseTile.Y < 2)
+                return;
+
+            var worldTile = mouseTile.Offset(_scroller.GetTopLeftTile(LayerIndex.FG));
+
+            foreground.TileMap.SetEach((x, y) =>
+            {
+                if (x == mouseTile.X && y == mouseTile.Y)
+                    return _selectedSprite.TopLeft;
+                if (x == mouseTile.X + 1 && y == mouseTile.Y)
+                    return _selectedSprite.TopRight;
+                if (x == mouseTile.X && y == mouseTile.Y + 1)
+                    return _selectedSprite.BottomLeft;
+                if (x == mouseTile.X + 1 && y == mouseTile.Y + 1)
+                    return _selectedSprite.BottomRight;
+                else
+                    return new Tile();
+            });
+
+            var topLeftScrolledTile = _scroller.GetTopLeftTile(LayerIndex.FG);
+
+            foreach (var collectiblePlacement in _collectiblePlacements.Where(p => p.Id == _collectiblesSelector.SelectedItem))
+            {
+                int worldTileX = collectiblePlacement.Position.X;
+                int worldTileY = collectiblePlacement.Position.Y;
+
+                if (worldTileX < topLeftScrolledTile.X
+                    || worldTileY < topLeftScrolledTile.Y
+                    || worldTileX >= topLeftScrolledTile.X + GameSystem.LayerTileWidth
+                    || worldTileY >= topLeftScrolledTile.Y + GameSystem.LayerTileHeight)
+                    continue;
+
+                var layerTileX = worldTileX - topLeftScrolledTile.X;
+                var layerTileY = worldTileY - topLeftScrolledTile.Y;
+
+                foreground.TileMap.SetEach(layerTileX, layerTileX + 2, layerTileY, layerTileY + 2, (x, y) =>
+                {
+                    if (x == layerTileX && y == layerTileY)
+                        return _selectedSprite.TopLeft;
+                    if (x == layerTileX + 1 && y == layerTileY)
+                        return _selectedSprite.TopRight;
+                    if (x == layerTileX && y == layerTileY + 1)
+                        return _selectedSprite.BottomLeft;
+                    if (x == layerTileX + 1 && y == layerTileY + 1)
+                        return _selectedSprite.BottomRight;
+                    else
+                        return new Tile();
+                });
+            }
+
+            if (Input.A.IsPressed())
+            {
+                _collectiblePlacements.Add(new CollectiblePlacement(_collectiblesSelector.SelectedItem, new Point(worldTile.X, worldTile.Y)));
+            }
+            else if (Input.B.IsPressed())
+            {
+                _collectiblePlacements.RemoveAll(a =>
+                {
+                    if (a.Id != _collectiblesSelector.SelectedItem)
+                        return false;
+
+                    int tileX = a.Position.X;
+                    int tileY = a.Position.Y;
                     return worldTile.X >= tileX && worldTile.X <= tileX + 1
                            && worldTile.Y >= tileY && worldTile.Y <= tileY + 1;
                 });
@@ -314,7 +421,7 @@ namespace SomeGame.Main.Modules
 
             var sceneInfo = DataSerializer
                                 .Load(_scene)
-                                .SetActors(_actorStarts);
+                                .SetActorsAndCollectibles(_actorStarts, _collectiblePlacements);
 
             DataSerializer.Save(_scene, sceneInfo);
         }
@@ -329,6 +436,7 @@ namespace SomeGame.Main.Modules
                     _tileMap = CreateNew(_levelKey);
 
                 _scroller.SetTileMaps(_tileMap, new TileMap(LevelContentKey.None, _tileMap.TilesX, _tileMap.TilesY));
+                _scroller.Initialize();
             }
             else if (index == LayerIndex.FG)
                 layer.Palette = _tilePalette;

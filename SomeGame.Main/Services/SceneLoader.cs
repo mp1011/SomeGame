@@ -69,8 +69,10 @@ namespace SomeGame.Main.Services
 
             InitializeInterfaceLayer(sceneInfo.InterfaceType);
             InitializeActors(sceneInfo, sceneTransition);
-            PlaceCollectibles(sceneInfo);
+            PlaceCollectibles(sceneInfo, fg);
             InitializeSounds(sceneInfo);
+
+            _scroller.Initialize();
         }
 
         private void InitializeInterfaceLayer(InterfaceType interfaceType)
@@ -103,14 +105,14 @@ namespace SomeGame.Main.Services
             _collectiblesService.CreateCollectedItemActors(_actorFactory);
         }
 
-        private void PlaceCollectibles(SceneInfo sceneInfo)
+        private void PlaceCollectibles(SceneInfo sceneInfo, TileMap tileMap)
         {
             foreach(var collectiblePlacement in sceneInfo.CollectiblePlacements)
             {
                 _collectiblesService.AddCollectible(
                     collectiblePlacement.Id,
                     collectiblePlacement.Position,
-                    collectiblePlacement.Position2);
+                    tileMap);
             }
         }
 

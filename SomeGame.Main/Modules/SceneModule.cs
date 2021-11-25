@@ -26,9 +26,9 @@ namespace SomeGame.Main.Modules
             _playerStateManager = new PlayerStateManager();
             _hudManager = new HUDManager(_playerStateManager, GameSystem);
             _audioService = new AudioService(ResourceLoader);
-            _collectiblesService = new CollectiblesService(GameSystem, GameSystem.GetLayer(LayerIndex.FG));         
-            _sceneManager = new SceneManager();
             _scroller = new Scroller(GameSystem);
+            _collectiblesService = new CollectiblesService(GameSystem,_scroller);         
+            _sceneManager = new SceneManager();            
             _actorManager = new ActorManager(GameSystem, _scroller);
             _actorFactory = new ActorFactory(_actorManager, GameSystem, DataSerializer, InputManager, 
                 _sceneManager, _scroller, _playerStateManager, _audioService, _collectiblesService);

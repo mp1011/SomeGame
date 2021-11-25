@@ -14,91 +14,80 @@ namespace SomeGame.Main.Models
         private readonly ActorPool _collectedItemPool;
         private readonly GameSystem _gameSystem;
         protected readonly int _tileOffset;
+        protected readonly TileMap _layer;
+
         public Point TileLocation { get; }
 
         protected abstract int Width { get; }
         protected abstract int Height { get; }
 
-        public MapCollectible(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool)
+        public GameRectangle Position { get; }
+
+        public bool Collected { get; private set; }
+
+        public MapCollectible(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool, TileMap layer)
         {
             TileLocation = tileLocation;
-            _tileOffset = gameSystem.GetTileOffset(TilesetContentKey.Items);
+            _tileOffset = gameSystem.GetTileOffset(TilesetContentKey.Items) - gameSystem.GetLayer(LayerIndex.FG).TileOffset;
             _gameSystem = gameSystem;
             _collectedItemPool = collectedItemPool;
+            _layer = layer;
+
+            Position = new GameRectangle(tileLocation.X * gameSystem.TileSize, tileLocation.Y * gameSystem.TileSize,
+                                         Width * _gameSystem.TileSize, Height * gameSystem.TileSize);
         }
 
-        public abstract MapCollectible StampOntoMap(Layer layer);
+        public abstract MapCollectible StampOntoMap();
 
-        public CollisionInfo CheckCollision(int tileX, int tileY, Layer layer)
+        public Actor CreateActiveObject()
         {
-            if(tileX >= TileLocation.X 
-                && tileY >= TileLocation.Y 
-                && tileX <= TileLocation.X + Width
-                && tileY <= TileLocation.Y + Height)
-            {
-                EraseFromMap(tileX, tileY, layer);
+            var collected = _collectedItemPool.ActivateNext();
+            if (collected == null)
+                return null;
 
-                var collected = _collectedItemPool.ActivateNext();
-                if (collected == null)
-                    return new CollisionInfo();
-
-                collected.WorldPosition.X = tileX * _gameSystem.TileSize;
-                collected.WorldPosition.Y = tileY * _gameSystem.TileSize;
-                return new CollisionInfo(Actor:collected);
-            }
-
-            return null;
+            collected.WorldPosition.X = Position.X;
+            collected.WorldPosition.Y = Position.Y;
+            return collected;
         }
 
-        protected virtual void EraseFromMap(int tileX, int tileY, Layer layer)
+        public void EraseFromMap(Point topLeftTile, Layer layer)
         {
-            var tile = TileLocation;
+            Collected = true;
+            EraseFromMap(_layer, Point.Zero);
+            EraseFromMap(layer.TileMap, topLeftTile);
+        }
 
-            while (tile.Y < TileLocation.Y+Height)
+        private  void EraseFromMap(TileMap layer, Point topLeftTile)
+        {
+            var layerLocation = TileLocation - topLeftTile;
+            var tile = layerLocation;
+
+            while (tile.Y < layerLocation.Y+Height)
             {
-                while (tile.X <= TileLocation.X+Width)
+                while (tile.X < layerLocation.X+Width)
                 {
-                    layer.TileMap.SetTile(tile.X, tile.Y, new Tile(-1, TileFlags.None));
+                    layer.SetTile(tile.X, tile.Y, new Tile(-1, TileFlags.None));
                     tile = tile.Offset(1, 0);
                 }
-                tile = new Point(TileLocation.X, tile.Y + 1);
+                tile = new Point(layerLocation.X, tile.Y + 1);
             }
         }
     }
 
-
-
     class MapCoin : MapCollectible
     {
-        private Point _bottomRight;
-        protected override int Width => _bottomRight.X- TileLocation.X;
-        protected override int Height => _bottomRight.Y - TileLocation.Y;
-        public MapCoin(Point topLeft, Point bottomRight, GameSystem gameSystem, ActorPool actorPool) 
-            : base(topLeft, gameSystem, actorPool)
+        protected override int Width => 1;
+        protected override int Height => 1;
+        public MapCoin(Point position, GameSystem gameSystem, ActorPool actorPool, TileMap layer) 
+            : base(position, gameSystem, actorPool,layer)
         {
-            _bottomRight = bottomRight;
         }
 
-        public override MapCollectible StampOntoMap(Layer layer)
+        public override MapCollectible StampOntoMap()
         {
             var tile = TileLocation;
-
-            while (tile.Y <= _bottomRight.Y)
-            {
-                while (tile.X <= _bottomRight.X)
-                {
-                    layer.TileMap.SetTile(tile.X, tile.Y, new Tile(_tileOffset + 2, TileFlags.Collectible));
-                    tile = tile.Offset(1, 0);
-                }
-                tile = new Point(TileLocation.X, tile.Y + 1);
-            }
-
+            _layer.SetTile(tile.X, tile.Y, new Tile(_tileOffset + 2, TileFlags.Collectible));
             return this;
-        }
-
-        protected override void EraseFromMap(int tileX, int tileY, Layer layer)
-        {
-            layer.TileMap.SetTile(tileX, tileY, new Tile(-1, TileFlags.None));
         }
     }
 
@@ -107,17 +96,17 @@ namespace SomeGame.Main.Models
         protected override int Width => 2;
         protected override int Height => 2;
 
-        public MapGem(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool) 
-            : base(tileLocation, gameSystem, collectedItemPool)
+        public MapGem(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool, TileMap layer) 
+            : base(tileLocation, gameSystem, collectedItemPool, layer)
         {
         }
 
-        public override MapCollectible StampOntoMap(Layer layer)
+        public override MapCollectible StampOntoMap()
         {
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X+1, TileLocation.Y, new Tile(_tileOffset+1, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y+1, new Tile(_tileOffset+3, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X+1, TileLocation.Y+1, new Tile(_tileOffset+4, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X+1, TileLocation.Y, new Tile(_tileOffset+1, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y+1, new Tile(_tileOffset+3, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X+1, TileLocation.Y+1, new Tile(_tileOffset+4, TileFlags.Collectible));
             return this;
         }
     }
@@ -126,17 +115,17 @@ namespace SomeGame.Main.Models
     {
         protected override int Width => 2;
         protected override int Height => 2;
-        public MapApple(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool) 
-            : base(tileLocation, gameSystem, collectedItemPool)
+        public MapApple(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool, TileMap layer) 
+            : base(tileLocation, gameSystem, collectedItemPool,layer)
         {
         }
 
-        public override MapCollectible StampOntoMap(Layer layer)
+        public override MapCollectible StampOntoMap()
         {
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset+5, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X + 1, TileLocation.Y, new Tile(_tileOffset+6, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y + 1, new Tile(_tileOffset+9, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X + 1, TileLocation.Y + 1, new Tile(_tileOffset+10, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset+5, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X + 1, TileLocation.Y, new Tile(_tileOffset+6, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y + 1, new Tile(_tileOffset+9, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X + 1, TileLocation.Y + 1, new Tile(_tileOffset+10, TileFlags.Collectible));
             return this;
         }
     }
@@ -145,17 +134,17 @@ namespace SomeGame.Main.Models
     {
         protected override int Width => 2;
         protected override int Height => 2;
-        public MapMeat(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool)
-            : base(tileLocation, gameSystem,collectedItemPool)
+        public MapMeat(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool, TileMap layer)
+            : base(tileLocation, gameSystem,collectedItemPool,layer)
         {
         }
 
-        public override MapCollectible StampOntoMap(Layer layer)
+        public override MapCollectible StampOntoMap()
         {
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset+7, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X + 1, TileLocation.Y, new Tile(_tileOffset+8, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y + 1, new Tile(_tileOffset+11, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X + 1, TileLocation.Y + 1, new Tile(_tileOffset+12, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset+7, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X + 1, TileLocation.Y, new Tile(_tileOffset+8, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y + 1, new Tile(_tileOffset+11, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X + 1, TileLocation.Y + 1, new Tile(_tileOffset+12, TileFlags.Collectible));
             return this;
         }
     }
@@ -164,15 +153,15 @@ namespace SomeGame.Main.Models
     {
         protected override int Width => 2;
         protected override int Height => 1;
-        public MapKey(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool) 
-            : base(tileLocation, gameSystem, collectedItemPool)
+        public MapKey(Point tileLocation, GameSystem gameSystem, ActorPool collectedItemPool, TileMap layer) 
+            : base(tileLocation, gameSystem, collectedItemPool, layer)
         {
         }
 
-        public override MapCollectible StampOntoMap(Layer layer)
+        public override MapCollectible StampOntoMap()
         {
-            layer.TileMap.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset+13, TileFlags.Collectible));
-            layer.TileMap.SetTile(TileLocation.X+1, TileLocation.Y, new Tile(_tileOffset+14, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X, TileLocation.Y, new Tile(_tileOffset+13, TileFlags.Collectible));
+            _layer.SetTile(TileLocation.X+1, TileLocation.Y, new Tile(_tileOffset+14, TileFlags.Collectible));
             return this;
         }
     }

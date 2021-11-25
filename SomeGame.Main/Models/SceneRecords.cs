@@ -8,7 +8,7 @@ namespace SomeGame.Main.Models
 {
     record TilesetWithPalette(TilesetContentKey TileSet, PaletteIndex Palette);
     record ActorStart(ActorId ActorId, PixelPoint Position);
-    record CollectiblePlacement(CollectibleId Id, Point Position, Point? Position2=null);
+    record CollectiblePlacement(CollectibleId Id, Point Position);
     record LayerInfo(LevelContentKey Key, PaletteIndex Palette, byte ScrollFactor);
     record SoundInfo(SoundContentKey Key, byte MaxOccurences);
     record SceneTransitions(
@@ -39,10 +39,12 @@ namespace SomeGame.Main.Models
         SceneTransitions Transitions)
     {
 
-        public SceneInfo SetActors(IEnumerable<ActorStart> actors)
+        public SceneInfo SetActorsAndCollectibles(IEnumerable<ActorStart> actors, IEnumerable<CollectiblePlacement> collectibles)
         {
-            return new SceneInfo(BgMap, FgMap, InterfaceType, Bounds, PaletteKeys, BackgroundColor, VramImages, Sounds, actors.ToArray(),
-                CollectiblePlacements, Transitions);
+            return new SceneInfo(BgMap, FgMap, InterfaceType, Bounds, PaletteKeys, BackgroundColor, VramImages, Sounds, 
+                actors.ToArray(),
+                collectibles.ToArray(), 
+                Transitions);
         }
     }
 }
