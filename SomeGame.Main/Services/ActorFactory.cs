@@ -18,6 +18,7 @@ namespace SomeGame.Main.Services
         private readonly PlayerStateManager _playerStateManager;
         private readonly AudioService _audioService;
         private readonly CollectiblesService _collectiblesService;
+        private readonly PlayerFinder _playerFinder;
 
         public ActorFactory(ActorManager actorManager, GameSystem gameSystem, DataSerializer dataSerializer, 
             InputManager inputManager, SceneManager sceneManager, Scroller scroller, PlayerStateManager playerStateManager,
@@ -32,6 +33,7 @@ namespace SomeGame.Main.Services
             _audioService = audioService;
             _collectiblesService = collectiblesService;
             _scroller = scroller;
+            _playerFinder = new PlayerFinder(actorManager);
         }
 
         public Actor CreateActor(
@@ -67,6 +69,7 @@ namespace SomeGame.Main.Services
                 case ActorId.Skull: return CreateSkull();
                 case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone();
                 case ActorId.MovingPlatform: return CreateMovingPlatform(position);
+                case ActorId.Bat: return CreateBat(position);
                 default: throw new Exception($"Unknown ActorId {id}");
             }
         }
@@ -172,6 +175,19 @@ namespace SomeGame.Main.Services
             return enemyProjectile;
         }
 
+        public Actor CreateBat(PixelPoint position)
+        {
+            return CreateActor(
+                 actorId: ActorId.Bat,
+                 actorType: ActorType.Enemy | ActorType.Character,
+                 behavior: new BatBehavior(new EnemyBaseBehavior(), _playerFinder),
+                 destroyedBehavior: new EmptyDestroyedBehavior(),
+                 collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
+                 hitBox: new Rectangle(4, 4, 8, 8),
+                 position: position);
+        }
+
+
         public Actor CreateSkull() => 
             CreateDebris(ActorId.Skull, TilesetContentKey.Skeleton);
 
@@ -232,6 +248,8 @@ namespace SomeGame.Main.Services
                 case ActorId.Skeleton: return TilesetContentKey.Skeleton;
                 case ActorId.SkeletonBone: return TilesetContentKey.Skeleton;
                 case ActorId.Skull: return TilesetContentKey.Skeleton;
+                case ActorId.Bat: return TilesetContentKey.Bat;
+
                 default: throw new Exception("No tileset set for " + actorId);
             }
         }

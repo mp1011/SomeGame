@@ -4,6 +4,7 @@ using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Scenes;
 using SomeGame.Main.Services;
+using System;
 
 namespace SomeGame.Main.Modules
 {
@@ -23,12 +24,20 @@ namespace SomeGame.Main.Modules
 
         public Color BackgroundColor => Color.Black;
 
-        private SceneInfo CreateTest3()
+        private void UpdateScene(SceneContentKey key, Func<SceneInfo,SceneInfo> createScene)
+        {
+            var current = _dataSerializer.Load(key);
+            var newScene = createScene(current);
+            _dataSerializer.Save(key, newScene);
+        }
+
+        private SceneInfo CreateTest3(SceneInfo previousSaved)
         {
             return new SceneInfo(
                BgMap: new LayerInfo(LevelContentKey.TestLevel3BG, PaletteIndex.P1, ScrollFactor: 70),
                FgMap: new LayerInfo(LevelContentKey.TestLevel3, PaletteIndex.P2, ScrollFactor: 100),
                InterfaceType.PlayerStatus,
+               MusicContentKey.Song1,
                Bounds: new Rectangle(0, 0, _gameSystem.LayerPixelWidth * 2, _gameSystem.Screen.Height),
                PaletteKeys: new PaletteKeys(ImageContentKey.Palette5, ImageContentKey.Palette6, ImageContentKey.Palette2, ImageContentKey.Palette3),
                BackgroundColor:14,
@@ -50,13 +59,8 @@ namespace SomeGame.Main.Modules
                     new SoundInfo(SoundContentKey.GetCoin,3),
                     new SoundInfo(SoundContentKey.Swish, 2)
                },
-               Actors: new ActorStart[]
-               {
-                    new ActorStart(ActorId.Player, new PixelPoint(50,100))
-               },
-               CollectiblePlacements: new CollectiblePlacement[]
-               {                   
-               },
+               Actors: previousSaved.Actors,
+               CollectiblePlacements: previousSaved.CollectiblePlacements,
                Transitions: new SceneTransitions(Right: SceneContentKey.Test2));
         }
 
@@ -66,6 +70,7 @@ namespace SomeGame.Main.Modules
                 BgMap: new LayerInfo(LevelContentKey.TestLevelBG, PaletteIndex.P1, ScrollFactor: 70),
                 FgMap: new LayerInfo(LevelContentKey.TestLevel, PaletteIndex.P1, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
+                MusicContentKey.None,
                 Bounds: new Rectangle(0, 0, _gameSystem.LayerPixelWidth*2, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
                 BackgroundColor: 0,
@@ -103,6 +108,7 @@ namespace SomeGame.Main.Modules
                 BgMap: new LayerInfo(LevelContentKey.TestLevelBG, PaletteIndex.P1, ScrollFactor: 70),
                 FgMap: new LayerInfo(LevelContentKey.TestLevel2, PaletteIndex.P1, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
+                MusicContentKey.None,
                 Bounds: new Rectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
                 BackgroundColor: 0,
@@ -135,6 +141,7 @@ namespace SomeGame.Main.Modules
                 BgMap: new LayerInfo(LevelContentKey.TestLevelBG, PaletteIndex.P1, ScrollFactor: 70),
                 FgMap: new LayerInfo(LevelContentKey.LongMapTest, PaletteIndex.P1, ScrollFactor: 100),
                 InterfaceType.PlayerStatus,
+                MusicContentKey.None,
                 Bounds: new Rectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height),
                 PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette3),
                 BackgroundColor: 0,
@@ -168,7 +175,7 @@ namespace SomeGame.Main.Modules
 
         public void Initialize()
         {
-            throw new System.NotImplementedException("rework so info done in level editor isn't lost");
+            UpdateScene(SceneContentKey.Test3, CreateTest3);
             //_dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
             //_dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
             //_dataSerializer.Save(SceneContentKey.Test3, CreateTest3());

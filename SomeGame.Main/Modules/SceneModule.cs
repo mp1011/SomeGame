@@ -49,6 +49,8 @@ namespace SomeGame.Main.Modules
            
             _actorManager.Update(_sceneManager.CurrentScene);
             _hudManager.Update();
+
+            _audioService.UpdateMusic();
         }
     }
 }

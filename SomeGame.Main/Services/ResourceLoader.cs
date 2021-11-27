@@ -52,5 +52,10 @@ namespace SomeGame.Main.Services
         {
             return _contentManager.Load<SoundEffect>($@"Sounds\{key}");
         }
+
+        public SoundEffect LoadSongStem(MusicContentKey song, string stem)
+        {
+            return _contentManager.Load<SoundEffect>($@"Music\{song}\{stem}");
+        }
     }
 }

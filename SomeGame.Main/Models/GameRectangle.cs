@@ -56,6 +56,19 @@ namespace SomeGame.Main.Models
         }
 
         public static implicit operator Rectangle(GameRectangle r) => new Rectangle(r.X,r.Y,r.Width,r.Height);
+
+        public Direction GetHorizontalDirectionTo(GameRectangle other)
+        {
+            if (other.Center.X < Center.X)
+                return Direction.Left;
+            else
+                return Direction.Right;
+        }
+
+        public int GetAbsoluteXDistance(GameRectangle other)
+        {
+            return Math.Abs(other.Center.X - Center.X);
+        }
     }
 
     class GameRectangleWithSubpixels : GameRectangle
@@ -115,6 +128,12 @@ namespace SomeGame.Main.Models
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public PixelPoint GetDirectionTo(GameRectangleWithSubpixels other)
+        {
+            return new PixelPoint(XPixel - other.XPixel, YPixel - other.YPixel)
+                                 .Normalize();
         }
 
         public override string ToString() => $"X:{XPixel} Y:{YPixel} Width:{Width} Height:{Height}";

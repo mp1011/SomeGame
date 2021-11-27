@@ -7,6 +7,12 @@
         GetCoin
     }
 
+    public enum MusicContentKey : byte
+    {
+        None,
+        Song1
+    }
+
     public enum ImageContentKey : byte
     {
         None,

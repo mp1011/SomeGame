@@ -172,7 +172,8 @@ namespace SomeGame.Main.Models
         Skull,
         DeadSkeletonBone,
         Key,
-        MovingPlatform
+        MovingPlatform,
+        Bat
     }
 
     public enum CollectibleId : byte

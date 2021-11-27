@@ -39,8 +39,14 @@ namespace SomeGame.Main.Behaviors
             actor.CurrentAnimation = AnimationKey.Moving;
 
             actor.FacingDirection = direction;
-            actor.MotionVector = new PixelPoint(_walkSpeed * direction.GetSpeedMod(), actor.MotionVector.Y);
-            
+            actor.MotionVector = new PixelPoint(_walkSpeed * direction.GetSpeedMod(), actor.MotionVector.Y);          
+        }
+
+        public void SetMoving(Actor actor, PixelPoint unitVector, PixelValue speed)
+        {
+            CurrentState = StandardEnemyState.Moving;
+            actor.CurrentAnimation = AnimationKey.Moving;
+            actor.MotionVector = unitVector * speed;
         }
     }
 }

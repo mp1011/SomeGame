@@ -90,6 +90,7 @@ namespace SomeGame.Main.Services
                 BgMap: ReadLayerInfo(),
                 FgMap: ReadLayerInfo(),
                 InterfaceType: ReadEnum<InterfaceType>(),
+                Song: ReadEnum<MusicContentKey>(),
                 Bounds: ReadRectangle(),
                 PaletteKeys: ReadPaletteKeys(),
                 BackgroundColor: _reader.ReadByte(),
@@ -158,6 +159,23 @@ namespace SomeGame.Main.Services
             for (int i = 0; i < count; i++)
                 ret[i] = Read<T>();
             return ret;
+        }
+
+        public SongData ReadSong(MusicContentKey songKey)
+        {
+            return new SongData(songKey,
+                ReadEnumerable<SongStem>(),
+                ReadEnumerable<SongSection>());
+        }
+
+        public SongStem ReadSongStem()
+        {
+            return new SongStem((char)_reader.ReadByte(), _reader.ReadByte(), _reader.ReadByte());
+        }
+
+        public SongSection ReadSongSection()
+        {
+            return new SongSection(_reader.ReadByte(), _reader.ReadByte());
         }
 
         private T Read<T>()

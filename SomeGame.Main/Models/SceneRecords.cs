@@ -29,6 +29,7 @@ namespace SomeGame.Main.Models
         LayerInfo BgMap,
         LayerInfo FgMap,
         InterfaceType InterfaceType,
+        MusicContentKey Song,
         Rectangle Bounds,
         PaletteKeys PaletteKeys, 
         byte BackgroundColor,
@@ -41,7 +42,7 @@ namespace SomeGame.Main.Models
 
         public SceneInfo SetActorsAndCollectibles(IEnumerable<ActorStart> actors, IEnumerable<CollectiblePlacement> collectibles)
         {
-            return new SceneInfo(BgMap, FgMap, InterfaceType, Bounds, PaletteKeys, BackgroundColor, VramImages, Sounds, 
+            return new SceneInfo(BgMap, FgMap,  InterfaceType, Song, Bounds, PaletteKeys, BackgroundColor, VramImages, Sounds, 
                 actors.ToArray(),
                 collectibles.ToArray(), 
                 Transitions);

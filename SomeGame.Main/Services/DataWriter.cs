@@ -33,6 +33,25 @@ namespace SomeGame.Main.Services
             _writer.Dispose();
         }
 
+        public void Write(SongData song)
+        {
+            WriteEnumerable(song.Stems);
+            WriteEnumerable(song.SongSequence);
+        }
+
+        public void Write(SongStem stem)
+        {
+            _writer.Write((byte)stem.Group);
+            _writer.Write(stem.Number);
+            _writer.Write(stem.Volume);
+        }
+
+        public void Write(SongSection section)
+        {
+            _writer.Write(section.Channel1Index);
+            _writer.Write(section.Channel2Index);
+        }
+
         public void Write<T>(Grid<T> grid)
         {
             _writer.Write(grid.Width);
@@ -95,6 +114,7 @@ namespace SomeGame.Main.Services
             Write(scene.BgMap);
             Write(scene.FgMap);
             _writer.Write((byte)scene.InterfaceType);
+            _writer.Write((byte)scene.Song);
             Write(scene.Bounds);
             Write(scene.PaletteKeys);
             _writer.Write(scene.BackgroundColor);

@@ -361,6 +361,48 @@
 /processorParam:TextureFormat=Color
 /build:Images/tiles7.png
 
+#begin Music/Song1/Song1A1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1A1.wav;Music/Song1/A1.wav
+
+#begin Music/Song1/Song1A2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1A2.wav;Music/Song1/A2.wav
+
+#begin Music/Song1/Song1A3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1A3.wav;Music/Song1/A3.wav
+
+#begin Music/Song1/Song1B1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1B1.wav;Music/Song1/B1.wav
+
+#begin Music/Song1/Song1B2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1B2.wav;Music/Song1/B2.wav
+
+#begin Music/Song1/Song1C1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1C1.wav;Music/Song1/C1.wav
+
+#begin Music/Song1/Song1C2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Song1/Song1C2.wav;Music/Song1/C2.wav
+
 #begin Sounds/GetCoin.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using SomeGame.Main.Models;
+﻿using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Behaviors

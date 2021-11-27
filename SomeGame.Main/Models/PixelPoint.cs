@@ -1,4 +1,6 @@
-﻿namespace SomeGame.Main.Models
+﻿using System;
+
+namespace SomeGame.Main.Models
 {
     public record PixelPoint(PixelValue X, PixelValue Y)
     {
@@ -22,6 +24,17 @@
                 return new PixelPoint(X + new PixelValue(pixelOffset, subPixelOffset), Y);
             else
                 return new PixelPoint(X, Y + new PixelValue(pixelOffset, subPixelOffset));
+        }
+
+        public PixelPoint Normalize()
+        {
+            int magnitude = (int)Math.Sqrt(X.Pixel * X.Pixel + Y.Pixel * Y.Pixel);
+            return new PixelPoint(X / magnitude, Y / magnitude);
+        }
+
+        public static PixelPoint operator *(PixelPoint pt, PixelValue mod)
+        {
+            return new PixelPoint(pt.X * mod, pt.Y * mod);
         }
     }
 
@@ -95,6 +108,15 @@
         public static PixelValue operator *(PixelValue p, int multiple)
         {
             return new PixelValue(p.Pixel * multiple, p.SubPixel * multiple);
+        }
+
+
+        public static PixelValue operator /(PixelValue p, int divisor)
+        {
+            if (divisor == 0)
+                return p;
+
+            return new PixelValue(p.Pixel / divisor, p.SubPixel / divisor);
         }
 
         public static implicit operator int(PixelValue pv) => pv.Pixel;

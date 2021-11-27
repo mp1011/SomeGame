@@ -73,6 +73,15 @@ namespace SomeGame.Main.Services
             InitializeSounds(sceneInfo);
 
             _scroller.Initialize();
+
+            if (sceneInfo.Song == MusicContentKey.None)
+                _audioService.StopMusic();
+            else
+            {
+                var song = _dataSerializer.LoadSong(sceneInfo.Song);
+                _audioService.LoadSong(song);
+                _audioService.StartMusic();
+            }
         }
 
         private void InitializeInterfaceLayer(InterfaceType interfaceType)

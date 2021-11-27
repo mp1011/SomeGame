@@ -25,6 +25,13 @@ namespace SomeGame.Main.Services
                 .Where(a => a != null && a.Enabled && (a.ActorType & actorType) == actorType);
         }
 
+        public IEnumerable<Actor> GetActors()
+        {
+            return _actors
+                .Select(a => a.Actor)
+                .Where(a => a != null && a.Enabled);
+        }
+
         public void UnloadAll()
         {
             foreach (var actor in _actors)
