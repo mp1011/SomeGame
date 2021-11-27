@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SomeGame.Main.Extensions;
+using System;
 
 namespace SomeGame.Main.Models
 {
@@ -28,8 +29,17 @@ namespace SomeGame.Main.Models
 
         public PixelPoint Normalize()
         {
-            int magnitude = (int)Math.Sqrt(X.Pixel * X.Pixel + Y.Pixel * Y.Pixel);
-            return new PixelPoint(X / magnitude, Y / magnitude);
+            var magnitude = Math.Sqrt(X.Pixel * X.Pixel + Y.Pixel * Y.Pixel);
+            var xFrac = X / magnitude;
+            var yFrac = Y / magnitude;
+
+            int xWhole = xFrac.RoundToZero();
+            int yWhole = yFrac.RoundToZero();
+
+            int xSubPixel = (int)(255 * (xFrac - xWhole));
+            int ySubPixel = (int)(255 * (yFrac - yWhole));
+
+            return new PixelPoint(new PixelValue(xWhole, xSubPixel), new PixelValue(yWhole, ySubPixel));
         }
 
         public static PixelPoint operator *(PixelPoint pt, PixelValue mod)

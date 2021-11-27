@@ -26,6 +26,13 @@ namespace SomeGame.Main.Behaviors
             actor.CurrentAnimation = AnimationKey.Idle;
         }
 
+        public void SetIdleNoGravity(Actor actor)
+        {
+            CurrentState = StandardEnemyState.Idle;
+            actor.MotionVector = new PixelPoint(0, 0);
+            actor.CurrentAnimation = AnimationKey.Idle;
+        }
+
         public void SetAttacking(Actor actor)
         {
             CurrentState = StandardEnemyState.Attacking;

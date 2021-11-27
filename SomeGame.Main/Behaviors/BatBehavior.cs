@@ -9,7 +9,7 @@ namespace SomeGame.Main.Behaviors
         private readonly PlayerFinder _playerFinder;
         private int _timer;
         private const int _minDistance = 120;
-        private PixelValue _speed = new PixelValue(2, 0);
+        private PixelValue _speed = new PixelValue(1, 0);
 
         public BatBehavior(EnemyBaseBehavior baseBehavior, PlayerFinder playerFinder)
         {
@@ -44,7 +44,7 @@ namespace SomeGame.Main.Behaviors
             {
                 if (--_timer <= 0)
                 {
-                    _baseBehavior.SetIdle(actor);
+                    _baseBehavior.SetIdleNoGravity(actor);
                     ResetTimer();
                 }
             }

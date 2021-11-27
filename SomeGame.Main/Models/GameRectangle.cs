@@ -132,7 +132,7 @@ namespace SomeGame.Main.Models
 
         public PixelPoint GetDirectionTo(GameRectangleWithSubpixels other)
         {
-            return new PixelPoint(XPixel - other.XPixel, YPixel - other.YPixel)
+            return new PixelPoint(other.XPixel - XPixel, other.YPixel - YPixel)
                                  .Normalize();
         }
 

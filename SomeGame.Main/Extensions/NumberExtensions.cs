@@ -1,10 +1,19 @@
 ﻿using SomeGame.Main.Models;
+using System;
 
 namespace SomeGame.Main.Extensions
 {
     public static class NumberExtensions
     {
-
+        public static int RoundToZero(this double d)
+        {
+            if (d > 0)
+                return (int)Math.Floor(d);
+            else if (d < 0)
+                return (int)Math.Ceiling(d);
+            else
+                return 0;
+        }
         internal static RotatingInt AsRotatingInt(this int value, int max) => new RotatingInt(value, max);
         public static int Clamp(this int value, int max) => value.Clamp(0, max);
 
