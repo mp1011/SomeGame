@@ -5,5 +5,6 @@
     public record Animation(params AnimationFrame[] Frames)
     {
         public Animation(byte SpriteFrameIndex, byte Duration) : this(new AnimationFrame(SpriteFrameIndex, Duration)) { }
+
     }
 }

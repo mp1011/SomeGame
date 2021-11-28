@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Extensions;
+﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Extensions;
 using System;
 
 namespace SomeGame.Main.Models
@@ -8,6 +9,7 @@ namespace SomeGame.Main.Models
         public PixelPoint(int x, int y) : this(new PixelValue(x, 0), new PixelValue(y, 0)) { }
         public PixelPoint(PixelValue x, int y) : this(x, new PixelValue(y, 0)) { }
         public PixelPoint(int x, PixelValue y) : this(new PixelValue(x, 0), y) { }
+        public PixelPoint(Vector2 v) : this(new PixelValue(v.X), new PixelValue(v.Y)) { }
 
         public PixelPoint Offset(int offX, int offY) => new PixelPoint(X + offX, Y + offY);
 
@@ -42,6 +44,8 @@ namespace SomeGame.Main.Models
             return new PixelPoint(new PixelValue(xWhole, xSubPixel), new PixelValue(yWhole, ySubPixel));
         }
 
+        public Vector2 ToVector() => new Vector2(X, Y);
+
         public static PixelPoint operator *(PixelPoint pt, PixelValue mod)
         {
             return new PixelPoint(pt.X * mod, pt.Y * mod);
@@ -50,6 +54,12 @@ namespace SomeGame.Main.Models
 
     public record PixelValue(int Pixel, int SubPixel)
     {
+        public PixelValue(float f) :this(0,0)
+        {
+            Pixel = f.RoundToZero();
+            SubPixel = (int)((f - Pixel) * 255);
+        }
+
         public PixelValue NearestPixel(int direction)
         {
             if (direction > 0)
@@ -131,6 +141,7 @@ namespace SomeGame.Main.Models
 
         public static implicit operator int(PixelValue pv) => pv.Pixel;
         public static implicit operator PixelValue(int v) => new PixelValue(v,0);
+        public static implicit operator float(PixelValue pv) => pv.Pixel + (pv.SubPixel/255.0f);
 
         public static bool operator >(PixelValue p, int i)
         {

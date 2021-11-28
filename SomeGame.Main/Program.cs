@@ -19,13 +19,13 @@ namespace SomeGame.Main
 
         private static IGameModule CreateModule(ContentManager cm, GraphicsDevice gd)
         {
-           //  return new SceneDefinitionModule();
-            // return new LevelEditorModule(SceneContentKey.Test3, LayerIndex.FG, cm, gd);
+         //    return new SceneDefinitionModule();
+         // return new LevelEditorModule(SceneContentKey.Test3, LayerIndex.FG, cm, gd);
 
            // return new MusicEditorModule(cm, gd);
 
-           //  return new SpriteEditorModule(TilesetContentKey.Bat, cm, gd);
-            //  return new AnimationDefinitionModule();
+          //  return new SpriteEditorModule(TilesetContentKey.Bullet2, cm, gd);
+          //   return new AnimationDefinitionModule();
             return new SceneModule(SceneContentKey.Test3, cm, gd);
            // return new TextureCreatorModule(cm, gd, ImageContentKey.Mountains);
             // ImageContentKey.Bullet3, ImageContentKey.Clouds, ImageContentKey.Ghost, ImageContentKey.Mountains);

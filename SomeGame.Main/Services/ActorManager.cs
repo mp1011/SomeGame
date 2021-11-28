@@ -96,9 +96,9 @@ namespace SomeGame.Main.Services
                     var actor = actorWithSprite.Actor;
 
                     var sprite = _gameSystem.GetSprite(spriteIndex);
-                    sprite.Enabled = actor.Enabled;
+                    sprite.Enabled = actor.Enabled || actor.Destroying;
 
-                    if (actor.Enabled)
+                    if (actor.Enabled || actor.Destroying)
                     {
                         UpdateActor(actor, spriteIndex, currentScene, actorWithSprite.NeedsSprite);
                         sprite.Flip = actor.Flip;

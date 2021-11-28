@@ -22,6 +22,14 @@ namespace SomeGame.Main.Models
         UpLeft
     }
 
+    public enum Angle : byte
+    {
+        Right=0,
+        Up=64,
+        Left=128,
+        Down=192
+    }
+
     public enum InputButton
     {
         None,
@@ -173,7 +181,9 @@ namespace SomeGame.Main.Models
         DeadSkeletonBone,
         Key,
         MovingPlatform,
-        Bat
+        Bat,
+        Ghost,
+        GhostBullet
     }
 
     public enum CollectibleId : byte

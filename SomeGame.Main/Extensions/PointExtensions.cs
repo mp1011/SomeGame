@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Models;
+using SomeGame.Main.Services;
+using System;
 
 namespace SomeGame.Main.Extensions
 {
@@ -25,6 +27,23 @@ namespace SomeGame.Main.Extensions
 
         public static Point Scale(this Point p, int scale) => new Point(p.X * scale, p.Y * scale);
         public static Point Divide(this Point p, int div) => new Point(p.X / div, p.Y / div);
+
+        public static Point Offset(this Point p, Angle angle, int distance)
+        {
+            var vector = angle.ToPoint(distance);
+            return new Point(p.X + vector.X, p.Y + vector.Y);
+        }
+
+        public static Angle GetAngleTo(this Point p1, Point p2)
+        {
+            int xDiff = p2.X - p1.X;
+            int yDiff = p2.Y - p1.Y;
+
+            var radians = new Vector2(xDiff, yDiff).GetRadians();
+
+            var a = (byte)(255 * (radians / (2 * Math.PI)));
+            return (Angle)a;
+        }
 
         public static Point GetRelativePosition(this Point p, int relativeX, int relativeY, Flip flip)
         {
@@ -74,6 +93,14 @@ namespace SomeGame.Main.Extensions
                 return Direction.UpRight;
             else
                 return Direction.None;
+        }
+
+        public static Angle ToAngle(this PixelPoint p)
+        {
+            var radians = p.ToVector().GetRadians();
+
+            var a = (byte)(255 * (radians / (2 * Math.PI)));
+            return (Angle)a;
         }
     }
 }

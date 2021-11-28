@@ -8,8 +8,8 @@ namespace SomeGame.Main.Behaviors
     {
         public StandardEnemyState CurrentState { get; private set; }
 
-        private readonly PixelValue _walkSpeed = new PixelValue(0, 100);
-
+        public PixelValue WalkSpeed { get; set; } = new PixelValue(0, 100);
+        
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if (collisionInfo.XCorrection != 0)
@@ -19,18 +19,13 @@ namespace SomeGame.Main.Behaviors
                 actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
         }
 
-        public void SetIdle(Actor actor)
+        public void SetIdle(Actor actor, bool stopMotion=true)
         {
             CurrentState = StandardEnemyState.Idle;
-            actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
             actor.CurrentAnimation = AnimationKey.Idle;
-        }
 
-        public void SetIdleNoGravity(Actor actor)
-        {
-            CurrentState = StandardEnemyState.Idle;
-            actor.MotionVector = new PixelPoint(0, 0);
-            actor.CurrentAnimation = AnimationKey.Idle;
+            if(stopMotion)
+                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
         }
 
         public void SetAttacking(Actor actor)
@@ -46,7 +41,7 @@ namespace SomeGame.Main.Behaviors
             actor.CurrentAnimation = AnimationKey.Moving;
 
             actor.FacingDirection = direction;
-            actor.MotionVector = new PixelPoint(_walkSpeed * direction.GetSpeedMod(), actor.MotionVector.Y);          
+            actor.MotionVector = new PixelPoint(WalkSpeed * direction.GetSpeedMod(), actor.MotionVector.Y);          
         }
 
         public void SetMoving(Actor actor, PixelPoint unitVector, PixelValue speed)

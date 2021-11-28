@@ -74,6 +74,13 @@ namespace SomeGame.Main.Modules
                     new AnimationFrame(SpriteFrameIndex: 2, Duration: 5),
                     new AnimationFrame(SpriteFrameIndex: 1, Duration: 5)));
 
+            SaveAnimations(ActorId.GhostBullet, AnimationKey.Moving,
+               new Animation(
+                   new AnimationFrame(SpriteFrameIndex: 0, Duration: 5),
+                   new AnimationFrame(SpriteFrameIndex: 1, Duration: 5),
+                   new AnimationFrame(SpriteFrameIndex: 2, Duration: 5),
+                   new AnimationFrame(SpriteFrameIndex: 1, Duration: 5)));
+
             SaveAnimations(ActorId.Coin, AnimationKey.Idle,
                 new Animation(
                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
@@ -98,6 +105,13 @@ namespace SomeGame.Main.Modules
                     new Animation(
                         new AnimationFrame(SpriteFrameIndex: 0, Duration: 5),
                         new AnimationFrame(SpriteFrameIndex: 1, Duration: 5)));
+
+            SaveAnimations(ActorId.Ghost,
+               moving: new Animation(SpriteFrameIndex: 0, Duration: 30),
+               attacking: new Animation(
+                       new AnimationFrame(SpriteFrameIndex: 1, Duration: 10),
+                       new AnimationFrame(SpriteFrameIndex: 2, Duration: 10),
+                       new AnimationFrame(SpriteFrameIndex: 3, Duration: 10)));
         }
 
         private void SaveAnimations(ActorId actorId, AnimationKey key, Animation animation)

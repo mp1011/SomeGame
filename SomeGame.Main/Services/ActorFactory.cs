@@ -61,6 +61,7 @@ namespace SomeGame.Main.Services
                 case ActorId.PlayerBullet: return CreatePlayerBullet();
                 case ActorId.Skeleton: return CreateSkeleton(position);
                 case ActorId.SkeletonBone: return CreateSkeletonBone();
+                case ActorId.GhostBullet: return CreateGhostBullet();
                 case ActorId.Coin: return CreateCoin();
                 case ActorId.Apple: return CreateApple();
                 case ActorId.Gem: return CreateGem();
@@ -70,6 +71,8 @@ namespace SomeGame.Main.Services
                 case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone();
                 case ActorId.MovingPlatform: return CreateMovingPlatform(position);
                 case ActorId.Bat: return CreateBat(position);
+                case ActorId.Ghost: return CreateGhost(position);
+
                 default: throw new Exception($"Unknown ActorId {id}");
             }
         }
@@ -175,6 +178,21 @@ namespace SomeGame.Main.Services
             return enemyProjectile;
         }
 
+        public Actor CreateGhostBullet()
+        {
+            var enemyProjectile = CreateActor(
+               actorId: ActorId.GhostBullet,
+               actorType: ActorType.Enemy | ActorType.Bullet,
+               behavior: new GhostBulletBehavior(),
+               destroyedBehavior: new EmptyDestroyedBehavior(),
+               collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
+               hitBox: new Rectangle(0, 0, 8, 8),
+               position: new PixelPoint(-100, -100));
+
+            enemyProjectile.CurrentAnimation = AnimationKey.Moving;
+            return enemyProjectile;
+        }
+
         public Actor CreateBat(PixelPoint position)
         {
             return CreateActor(
@@ -186,7 +204,19 @@ namespace SomeGame.Main.Services
                  hitBox: new Rectangle(4, 4, 8, 8),
                  position: position);
         }
+        public Actor CreateGhost(PixelPoint position)
+        {
+            var bullet = CreateGhostBullet();
 
+            return CreateActor(
+                 actorId: ActorId.Ghost,
+                 actorType: ActorType.Enemy | ActorType.Character,
+                 behavior: new GhostBehavior(new EnemyBaseBehavior(), _playerFinder, bullet),
+                 destroyedBehavior: new GhostDestroyedBehavior(bullet),
+                 collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
+                 hitBox: new Rectangle(4, 4, 8, 16),
+                 position: position);
+        }
 
         public Actor CreateSkull() => 
             CreateDebris(ActorId.Skull, TilesetContentKey.Skeleton);
@@ -249,6 +279,8 @@ namespace SomeGame.Main.Services
                 case ActorId.SkeletonBone: return TilesetContentKey.Skeleton;
                 case ActorId.Skull: return TilesetContentKey.Skeleton;
                 case ActorId.Bat: return TilesetContentKey.Bat;
+                case ActorId.Ghost: return TilesetContentKey.Ghost;
+                case ActorId.GhostBullet: return TilesetContentKey.Bullet2;
 
                 default: throw new Exception("No tileset set for " + actorId);
             }

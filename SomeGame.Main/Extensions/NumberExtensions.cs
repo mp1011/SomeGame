@@ -14,6 +14,17 @@ namespace SomeGame.Main.Extensions
             else
                 return 0;
         }
+
+        public static int RoundToZero(this float f)
+        {
+            if (f > 0)
+                return (int)Math.Floor(f);
+            else if (f < 0)
+                return (int)Math.Ceiling(f);
+            else
+                return 0;
+        }
+
         internal static RotatingInt AsRotatingInt(this int value, int max) => new RotatingInt(value, max);
         public static int Clamp(this int value, int max) => value.Clamp(0, max);
 
