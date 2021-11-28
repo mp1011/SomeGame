@@ -42,15 +42,15 @@ namespace SomeGame.Main.Services
 
         public void AddActor(Actor actor)
         {
-            _actors.Add(new ActorWithSprite(actor, SpriteIndex.Sprite8));
+            _actors.Add(new ActorWithSprite(actor, SpriteIndex.LastIndex));
             DebugService.Actors.Add(actor);
         }
 
         private void TryAssignSprite(ActorWithSprite actorWithSprite)
         {
-            var spriteIndex = _gameSystem.GetFreeSpriteIndex() ?? SpriteIndex.Sprite8;
+            var spriteIndex = _gameSystem.GetFreeSpriteIndex() ?? SpriteIndex.LastIndex;
 
-            if(spriteIndex == SpriteIndex.Sprite8)
+            if(spriteIndex == SpriteIndex.LastIndex)
             {
                 if (RandomUtil.RandomBit())
                     return;
@@ -67,7 +67,7 @@ namespace SomeGame.Main.Services
 
         public void Update(Scene currentScene)
         {
-            var extraSprite = _gameSystem.GetSprite(SpriteIndex.Sprite8);
+            var extraSprite = _gameSystem.GetSprite(SpriteIndex.LastIndex);
             extraSprite.Enabled = false;
 
             foreach (var actorWithSprite in _actors)
@@ -75,15 +75,16 @@ namespace SomeGame.Main.Services
                 if (ShouldActivate(actorWithSprite.Actor))
                     actorWithSprite.Actor.Create();
 
-                if (actorWithSprite.SpriteIndex == SpriteIndex.Sprite8)
+                if (actorWithSprite.SpriteIndex == SpriteIndex.LastIndex)
                     actorWithSprite.NeedsSprite = true;
 
-                if (actorWithSprite.Actor.Enabled && actorWithSprite.NeedsSprite)                
-                    TryAssignSprite(actorWithSprite);                   
+                if (actorWithSprite.Actor.Enabled && actorWithSprite.Actor.Visible && actorWithSprite.NeedsSprite)
+                    TryAssignSprite(actorWithSprite);
+                else if (!actorWithSprite.Actor.Visible)
+                    actorWithSprite.NeedsSprite = true;
                 
-
                 var spriteIndex = actorWithSprite.SpriteIndex;
-                if (actorWithSprite.NeedsSprite)
+                if (actorWithSprite.NeedsSprite && actorWithSprite.Actor.Visible)
                 {
                     var actor = actorWithSprite.Actor;
                     if (actor.Enabled || actor.Destroying)                    
@@ -96,7 +97,10 @@ namespace SomeGame.Main.Services
                     var actor = actorWithSprite.Actor;
 
                     var sprite = _gameSystem.GetSprite(spriteIndex);
-                    sprite.Enabled = actor.Enabled || actor.Destroying;
+                    sprite.Enabled = actor.Visible && (actor.Enabled || actor.Destroying);
+
+                    if (!actor.Visible && spriteIndex < SpriteIndex.LastIndex)
+                        actorWithSprite.SpriteIndex = SpriteIndex.LastIndex;
 
                     if (actor.Enabled || actor.Destroying)
                     {
@@ -124,7 +128,7 @@ namespace SomeGame.Main.Services
         {
             var sprite = _gameSystem.GetSprite(spriteIndex);
 
-            if(!needsSprite)
+            if (actor.Visible && !needsSprite)
                 sprite.Palette = actor.Palette;
 
             actor.WorldPosition.XPixel += actor.MotionVector.X;
@@ -141,7 +145,7 @@ namespace SomeGame.Main.Services
             else 
                 actor.Behavior.Update(actor, collisionInfo);
 
-            if(!needsSprite)
+            if(!needsSprite || !actor.Visible)
                 _scroller.ScrollActor(actor, sprite);
         }
 

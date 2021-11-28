@@ -91,7 +91,8 @@ namespace SomeGame.Main.Models
         Sprite5,
         Sprite6,
         Sprite7,
-        Sprite8
+        Sprite8,
+        LastIndex=Sprite8
     }
 
     public enum SpritePriority

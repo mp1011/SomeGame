@@ -30,6 +30,8 @@ namespace SomeGame.Main.Behaviors
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             var player = _playerFinder.FindActor();
+            if (player == null)
+                return;
 
             if(_bulletTravelTimer == 0)
                 PlaceOrbitingBullet(actor);

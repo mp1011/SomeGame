@@ -53,6 +53,10 @@ namespace SomeGame.Main.Models
                 layerPosition.Height);
         }
 
+        public bool IsInBounds(GameRectangleWithSubpixels worldPosition)
+        {
+            return worldPosition.IntersectsWith(_scrollBounds);
+        }
 
         private void SetTopLeftTile(int x, int y)
         {

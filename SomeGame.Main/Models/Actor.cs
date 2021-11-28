@@ -32,6 +32,8 @@ namespace SomeGame.Main.Models
         public bool HasBeenActivated { get; private set; }
         public bool Destroying { get; private set; }
 
+        public bool Visible { get; set; } = true;
+
         //todo, assumes left/right
         public Direction FacingDirection
         {

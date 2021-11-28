@@ -35,8 +35,10 @@ namespace SomeGame.Main.Behaviors
                     actor.MotionVector = new PixelPoint(0, 0);
 
                 var player = _playerFinder.FindActor();
-                if (player != null)
-                    actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
+                if (player == null)
+                    return;
+
+                actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
 
                 if (--_timer <= 0)
                 {
