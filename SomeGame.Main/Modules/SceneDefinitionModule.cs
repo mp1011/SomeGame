@@ -58,8 +58,11 @@ namespace SomeGame.Main.Modules
                },
                Sounds: new SoundInfo[]
                {
-                    new SoundInfo(SoundContentKey.GetCoin,3),
-                    new SoundInfo(SoundContentKey.Swish, 2)
+                    new SoundInfo(SoundContentKey.Collect,3),
+                    new SoundInfo(SoundContentKey.Shoot, 2),
+                    new SoundInfo(SoundContentKey.Destroy, 2),
+                    new SoundInfo(SoundContentKey.Jump, 1),
+                    new SoundInfo(SoundContentKey.Hurt, 1),
                },
                Actors: previousSaved.Actors,
                CollectiblePlacements: previousSaved.CollectiblePlacements,
@@ -89,8 +92,11 @@ namespace SomeGame.Main.Modules
                 },
                 Sounds: new SoundInfo[]
                 {
-                    new SoundInfo(SoundContentKey.GetCoin,3),
-                    new SoundInfo(SoundContentKey.Swish, 2)
+                    new SoundInfo(SoundContentKey.Collect,3),
+                    new SoundInfo(SoundContentKey.Shoot, 2),
+                    new SoundInfo(SoundContentKey.Destroy, 2),
+                    new SoundInfo(SoundContentKey.Jump, 1),
+                    new SoundInfo(SoundContentKey.Hurt, 1),
                 },
                 Actors: new ActorStart[]
                 {
@@ -125,8 +131,11 @@ namespace SomeGame.Main.Modules
                 },
                 Sounds: new SoundInfo[]
                 {
-                    new SoundInfo(SoundContentKey.GetCoin,3),
-                    new SoundInfo(SoundContentKey.Swish, 2)
+                    new SoundInfo(SoundContentKey.Collect,3),
+                    new SoundInfo(SoundContentKey.Shoot, 2),
+                    new SoundInfo(SoundContentKey.Destroy, 2),
+                    new SoundInfo(SoundContentKey.Jump, 1),
+                    new SoundInfo(SoundContentKey.Hurt, 1),
                 },
                 Actors: new ActorStart[]
                 {
@@ -158,8 +167,11 @@ namespace SomeGame.Main.Modules
                 },
                 Sounds: new SoundInfo[]
                 {
-                    new SoundInfo(SoundContentKey.GetCoin,3),
-                    new SoundInfo(SoundContentKey.Swish, 2)
+                    new SoundInfo(SoundContentKey.Collect,3),
+                    new SoundInfo(SoundContentKey.Shoot, 2),
+                    new SoundInfo(SoundContentKey.Destroy, 2),
+                    new SoundInfo(SoundContentKey.Jump, 1),
+                    new SoundInfo(SoundContentKey.Hurt, 1),
                 },
                 Actors: new ActorStart[]
                 {

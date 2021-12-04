@@ -103,7 +103,7 @@ namespace SomeGame.Main.Behaviors
                 _queueAttack = false;
                 actor.CurrentAnimation = AnimationKey.Attacking;
                 _attackCooldown = 15;
-                _audioService.Play(SoundContentKey.Swish);
+                _audioService.Play(SoundContentKey.Shoot);
             }
             else if(_inputManager.Input.B.IsPressed())
             {

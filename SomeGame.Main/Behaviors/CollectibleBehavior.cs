@@ -42,7 +42,7 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        protected override SoundContentKey CollectSound => SoundContentKey.GetCoin;
+        protected override SoundContentKey CollectSound => SoundContentKey.Collect;
 
         protected override void OnCollected(PlayerState playerState)
         {
@@ -56,7 +56,7 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        protected override SoundContentKey CollectSound => SoundContentKey.GetCoin;
+        protected override SoundContentKey CollectSound => SoundContentKey.Collect;
 
         protected override void OnCollected(PlayerState playerState)
         {
@@ -70,7 +70,7 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        protected override SoundContentKey CollectSound => SoundContentKey.GetCoin;
+        protected override SoundContentKey CollectSound => SoundContentKey.Collect;
 
         protected override void OnCollected(PlayerState playerState)
         {
@@ -84,7 +84,7 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        protected override SoundContentKey CollectSound => SoundContentKey.GetCoin;
+        protected override SoundContentKey CollectSound => SoundContentKey.Collect;
 
         protected override void OnCollected(PlayerState playerState)
         {
@@ -98,7 +98,7 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        protected override SoundContentKey CollectSound => SoundContentKey.GetCoin;
+        protected override SoundContentKey CollectSound => SoundContentKey.Collect;
 
         protected override void OnCollected(PlayerState playerState)
         {

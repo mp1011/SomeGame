@@ -403,17 +403,35 @@
 /processorParam:Quality=Best
 /build:Music/Song1/Song1C2.wav;Music/Song1/C2.wav
 
-#begin Sounds/GetCoin.wav
+#begin Sounds/Collect.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/GetCoin.wav
+/build:Sounds/Collect.wav
 
-#begin Sounds/swish.wav
+#begin Sounds/Destroy.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/swish.wav
+/build:Sounds/Destroy.wav
+
+#begin Sounds/Hurt.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Hurt.wav
+
+#begin Sounds/Jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Jump.wav
+
+#begin Sounds/Shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Shoot.wav
 
 #begin Tilesets/Bat.png
 /importer:TextureImporter

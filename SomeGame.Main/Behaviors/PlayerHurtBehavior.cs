@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 
@@ -6,6 +7,7 @@ namespace SomeGame.Main.Behaviors
 {
     class PlayerHurtBehavior : Behavior
     {
+        private AudioService _audioService;
         private PlayerStateManager _playerStateManager;
         private int _hurtTimer;
         private const int _recoilTime = 20;
@@ -16,9 +18,10 @@ namespace SomeGame.Main.Behaviors
         public bool IsRecoiling => _hurtTimer > 0 && _hurtTimer < _recoilTime;
         public bool IsInvulnerable => _hurtTimer > 0 && _hurtTimer < _invulnerableTime;
 
-        public PlayerHurtBehavior(PlayerStateManager playerStateManager)
+        public PlayerHurtBehavior(PlayerStateManager playerStateManager, AudioService audioService)
         {
             _playerStateManager = playerStateManager;
+            _audioService = audioService;
         }
 
         public override void OnCreated(Actor actor)
@@ -63,6 +66,7 @@ namespace SomeGame.Main.Behaviors
 
             if (_hurtTimer == 0)
             {
+                _audioService.Play(SoundContentKey.Hurt);
                 _playerStateManager.CurrentState.Health -= 5;
                 if (_playerStateManager.CurrentState.Health == 0)
                     actor.Destroy();

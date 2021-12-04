@@ -3,8 +3,11 @@
     public enum SoundContentKey : byte
     {
         None,
-        Swish,
-        GetCoin
+        Collect,
+        Destroy,
+        Hurt,
+        Jump,
+        Shoot
     }
 
     public enum MusicContentKey : byte

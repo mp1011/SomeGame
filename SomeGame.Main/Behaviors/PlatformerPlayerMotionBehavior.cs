@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
@@ -8,12 +9,14 @@ namespace SomeGame.Main.Behaviors
     class PlatformerPlayerMotionBehavior : Behavior
     {
         private readonly InputManager _inputManger;
+        private readonly AudioService _audioService;
         private int _exJumpCounter;
         private bool _jumpQueued;
 
-        public PlatformerPlayerMotionBehavior(InputManager inputManger)
+        public PlatformerPlayerMotionBehavior(InputManager inputManger, AudioService audioService)
         {
             _inputManger = inputManger;
+            _audioService = audioService;
         }
 
         public override void Update(Actor actor, CollisionInfo backgroundCollisionInfo)
@@ -35,6 +38,7 @@ namespace SomeGame.Main.Behaviors
 
             if ((_jumpQueued || _inputManger.Input.A.IsPressed()) && backgroundCollisionInfo.IsOnGround)
             {
+                _audioService.Play(SoundContentKey.Jump);
                 _jumpQueued = false;
                 actor.MotionVector = new PixelPoint(actor.MotionVector.X, new PixelValue(-2, 0));
                 _exJumpCounter = 15;

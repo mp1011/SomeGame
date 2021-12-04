@@ -5,24 +5,33 @@ using System;
 
 namespace SomeGame.Main.Behaviors
 {
-    class GhostDestroyedBehavior : IDestroyedBehavior
+    class GhostDestroyedBehavior : EnemyDestroyedBehavior
     {
         private readonly Actor _bullet;
         private int _timer = 0;
+        private byte _soundTimer = 0;
 
-        public GhostDestroyedBehavior(Actor bullet)
+        public GhostDestroyedBehavior(int score, Actor bullet, PlayerStateManager playerStateManager, AudioService audioService) 
+            : base(score, playerStateManager, audioService)
         {
             _bullet = bullet;
         }
 
-        public void OnDestroyed(Actor actor)
+        protected override void OnDestroyedStart(Actor actor)
         {
             actor.MotionVector = new PixelPoint(0, 0);
             _timer = 0;
         }
 
-        public DestroyedState Update(Actor actor)
+        public override DestroyedState Update(Actor actor)
         {
+            _soundTimer++;
+            if(_soundTimer == 10)
+            {
+                _soundTimer = 0;
+                PlayDestroyedSound();
+            }
+
             _timer++;
             actor.Palette = (PaletteIndex)(_timer % 4);
             _bullet.Palette = (PaletteIndex)((_timer+1) % 4);

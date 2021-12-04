@@ -112,8 +112,8 @@ namespace SomeGame.Main.Services
                 actorId: ActorId.Player,
                 actorType: ActorType.Player | ActorType.Character,
                 behavior: new PlayerBehavior(
-                                new PlatformerPlayerMotionBehavior(_inputManager),
-                                new PlayerHurtBehavior(_playerStateManager),
+                                new PlatformerPlayerMotionBehavior(_inputManager, _audioService),
+                                new PlayerHurtBehavior(_playerStateManager, _audioService),
                                 new CameraBehavior(_scroller, _gameSystem),
                                 new Gravity(),
                                 _inputManager,
@@ -157,7 +157,7 @@ namespace SomeGame.Main.Services
                  actorId: ActorId.Skeleton,
                  actorType: ActorType.Enemy | ActorType.Character,
                  behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), bone),
-                 destroyedBehavior: new SkeletonDestroyedBehavior(score: 100, _playerStateManager, skull,bones),
+                 destroyedBehavior: new SkeletonDestroyedBehavior(score: 100, _playerStateManager, skull,bones, _audioService),
                  collisionDetector: new BgCollisionDetector(_gameSystem, _scroller.GetTilemap(LayerIndex.FG), _actorManager),
                  hitBox: new Rectangle(4, 0, 8, 15),
                  position: position);
@@ -199,7 +199,7 @@ namespace SomeGame.Main.Services
                  actorId: ActorId.Bat,
                  actorType: ActorType.Enemy | ActorType.Character,
                  behavior: new BatBehavior(new EnemyBaseBehavior(), _playerFinder),
-                 destroyedBehavior: new EmptyDestroyedBehavior(),
+                 destroyedBehavior: new EnemyDestroyedBehavior(score:25, _playerStateManager, _audioService),
                  collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                  hitBox: new Rectangle(4, 4, 8, 8),
                  position: position);
@@ -212,7 +212,7 @@ namespace SomeGame.Main.Services
                  actorId: ActorId.Ghost,
                  actorType: ActorType.Enemy | ActorType.Character,
                  behavior: new GhostBehavior(new EnemyBaseBehavior(), _playerFinder, bullet),
-                 destroyedBehavior: new GhostDestroyedBehavior(bullet),
+                 destroyedBehavior: new GhostDestroyedBehavior(score:200, bullet, _playerStateManager, _audioService),
                  collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                  hitBox: new Rectangle(4, 4, 8, 16),
                  position: position);

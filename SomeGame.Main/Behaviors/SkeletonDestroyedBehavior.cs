@@ -9,7 +9,7 @@ namespace SomeGame.Main.Behaviors
         private readonly ActorPool _bones;
 
         public SkeletonDestroyedBehavior(int score, PlayerStateManager playerStateManager,
-            Actor skull, ActorPool bones) : base(score, playerStateManager)
+            Actor skull, ActorPool bones, AudioService audioService) : base(score, playerStateManager, audioService)
         {
             _skull = skull;
             _bones = bones;
