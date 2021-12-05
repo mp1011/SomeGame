@@ -33,7 +33,6 @@ namespace SomeGame.Main.Services
             var backSprites = _gameSystem.GetBackSprites().ToArray();
             var frontSprites = _gameSystem.GetFrontSprites().ToArray();
 
-
             for (int y = 0; y < _gameSystem.Screen.Height; y++)
             {
                 for (int x = 0; x < _gameSystem.Screen.Width; x++)
@@ -82,7 +81,16 @@ namespace SomeGame.Main.Services
                 return false;
 
             var tileLocation = sprite.TilePointFromScreenPixelPoint(screenX, screenY);
-            var tile = sprite.TileMap.GetTile(tileLocation);
+            Tile tile;
+
+            if ((sprite.Flip & Flip.H & Flip.V) > 0)
+                tile = sprite.TileMap.GetTile(new Point(1-tileLocation.X,1-tileLocation.Y));
+            else if ((sprite.Flip & Flip.H) > 0)
+                tile = sprite.TileMap.GetTile(new Point(1 - tileLocation.X, tileLocation.Y));
+            else if ((sprite.Flip & Flip.V) > 0)
+                tile = sprite.TileMap.GetTile(new Point(tileLocation.X, 1 - tileLocation.Y));
+            else
+                tile = sprite.TileMap.GetTile(tileLocation);
 
             if (tile.Index == -1)
                 return false;
@@ -93,10 +101,20 @@ namespace SomeGame.Main.Services
 
             var tileScreenLocation = new Point(sprite.ScrollX + tileLocation.X * _gameSystem.TileSize,
                                                sprite.ScrollY + tileLocation.Y * _gameSystem.TileSize);
-            var tileSrcPt = new Point(tileSrcRec.X + (screenX- tileScreenLocation.X),
-                                      tileSrcRec.Y + (screenY- tileScreenLocation.Y));
+            int tileSrcX; int tileSrcY;
 
-            var colorByte = _gameSystem.GetVramData(tileSrcPt);
+            if ((sprite.Flip & Flip.H) > 0)
+                tileSrcX = tileSrcRec.Right - (screenX - tileScreenLocation.X)-1;
+            else
+                tileSrcX = tileSrcRec.X + (screenX - tileScreenLocation.X);
+
+            if ((sprite.Flip & Flip.V) > 0)
+                tileSrcY = tileSrcRec.Bottom - (screenY - tileScreenLocation.Y)-1;
+            else
+                tileSrcY = tileSrcRec.Y + (screenY - tileScreenLocation.Y);
+
+
+            var colorByte = _gameSystem.GetVramData(new Point(tileSrcX, tileSrcY));
             if (colorByte == 0)
                 return false;
 
@@ -123,13 +141,29 @@ namespace SomeGame.Main.Services
 
             var tileSrcRec = tileSet.GetSrcRec(layer.TileOffset + tile.Index);
 
-            var tileScreenLocation = new Point(layer.ScrollX + tileLocation.X * _gameSystem.TileSize,
-                                               layer.ScrollY + tileLocation.Y * _gameSystem.TileSize);
+            var tileScreenX = layer.ScrollX + tileLocation.X * _gameSystem.TileSize;
+            var tileScreenY = layer.ScrollY + tileLocation.Y * _gameSystem.TileSize;
 
-            var tileSrcPt = new Point(tileSrcRec.X + (screenX - tileScreenLocation.X), 
-                                      tileSrcRec.Y + (screenY - tileScreenLocation.Y));
+            if (tileScreenX > _gameSystem.Screen.Width)
+                tileScreenX -= _gameSystem.LayerPixelWidth;
 
-            var colorByte = _gameSystem.GetVramData(tileSrcPt);
+            if (tileScreenY > _gameSystem.Screen.Height)
+                tileScreenX -= _gameSystem.LayerPixelHeight;
+
+            int tileSrcX; int tileSrcY;
+
+            if ((tile.Flags & TileFlags.FlipH) > 0)
+                tileSrcX = tileSrcRec.Right - (screenX - tileScreenX)-1;
+            else
+                tileSrcX = tileSrcRec.X + (screenX - tileScreenX);
+
+            if ((tile.Flags & TileFlags.FlipV) > 0)
+                tileSrcY = tileSrcRec.Bottom - (screenY - tileScreenY)-1;
+            else
+                tileSrcY = tileSrcRec.Y + (screenY - tileScreenY);
+        
+
+            var colorByte = _gameSystem.GetVramData(new Point(tileSrcX,tileSrcY));
             if (colorByte == 0)
                 return false;
 
