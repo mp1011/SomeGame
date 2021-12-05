@@ -54,7 +54,9 @@ namespace SomeGame.Main.Behaviors
                 {
                     _baseBehavior.SetIdle(actor, stopMotion:false);
                     actor.MotionVector = new PixelPoint(new PixelValue(0, 0), _riseSpeed);
-                    _riseHeight = _playerFinder.FindActor().WorldPosition.Top - 50;
+                    var player = _playerFinder.FindActor();
+                    if(player != null)
+                        _riseHeight = player.WorldPosition.Top - 50;
                     ResetTimer();
                 }
             }

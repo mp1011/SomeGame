@@ -124,6 +124,8 @@ namespace SomeGame.Main.Models
             SaveVramSnapshot(PaletteIndex.P2);
             SaveVramSnapshot(PaletteIndex.P3);
             SaveVramSnapshot(PaletteIndex.P4);
+
+            
         }
 
         private void SaveVramSnapshot(PaletteIndex p)

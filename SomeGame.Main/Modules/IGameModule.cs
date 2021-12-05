@@ -36,7 +36,7 @@ namespace SomeGame.Main.Modules
         public GameModuleBase(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
             GameSystem = new GameSystem();
-            RenderService= new RasterBasedRenderService(GameSystem);
+            RenderService= new RasterBasedRenderService(GameSystem, graphicsDevice);
             InputManager = new InputManager(GameSystem);
             DataSerializer = new DataSerializer();
             ResourceLoader = new ResourceLoader(contentManager);
