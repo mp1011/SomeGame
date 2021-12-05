@@ -38,7 +38,19 @@ namespace SomeGame.Main.Models
 
         public T this[int x, int y]
         {
-            get => _grid[x.AsRotatingInt(Width), y.AsRotatingInt(Height)];
+            get 
+            {
+                if (x < 0)
+                    x = 0;
+                if (x >= Width)
+                    x = Width - 1;
+                if (y < 0)
+                    y = 0;
+                if (y >= Height)
+                    y = Height - 1;
+
+                return _grid[x, y];
+            }
             set => _grid[x.AsRotatingInt(Width), y.AsRotatingInt(Height)] = value;
         }
 
@@ -48,7 +60,7 @@ namespace SomeGame.Main.Models
             {
                 int row = i / Width;
                 int col = i % Width;
-                return _grid[col.AsRotatingInt(Width), row.AsRotatingInt(Height)];
+                return this[col, row];
             }
         }
 

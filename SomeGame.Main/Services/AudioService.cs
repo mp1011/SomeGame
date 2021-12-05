@@ -93,8 +93,8 @@ namespace SomeGame.Main.Services
             var stem1 = currentSection.Channel1Index == 0 ? null : _songStems[currentSection.Channel1Index - 1];
             var stem2 = currentSection.Channel2Index == 0 ? null : _songStems[currentSection.Channel2Index - 1];
 
-            _songChannel1.Play(stem1);
-            _songChannel2.Play(stem2);
+           // _songChannel1.Play(stem1);
+          //  _songChannel2.Play(stem2);
         }
 
         public void UnloadSounds()

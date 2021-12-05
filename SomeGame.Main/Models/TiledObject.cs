@@ -13,6 +13,10 @@ namespace SomeGame.Main.Models
         public RotatingInt ScrollX { get; set; }
         public RotatingInt ScrollY { get; set; }
 
+        private readonly int _tileXMax;
+        private readonly int _tileYMax;
+
+
         public TiledObject(TileMap tileMap, PaletteIndex palette, RotatingInt scrollX, RotatingInt scrollY, int tileSize)
         {
             _tileSize = tileSize;
@@ -20,16 +24,39 @@ namespace SomeGame.Main.Models
             Palette = palette;
             ScrollX = scrollX;
             ScrollY = scrollY;
+
+            _tileXMax = tileMap.TilesX;
+            _tileYMax = tileMap.TilesY;
         }
 
         public Point TilePointFromScreenPixelPoint(int x, int y)
         {
-            var sx = x - ScrollX;
-            var sy = y - ScrollY;
+            x = x - ScrollX.Value;
+            y = y - ScrollY.Value;
 
-            var tileX = (sx / _tileSize).Clamp(0, TileMap.TilesX - 1);
-            var tileY = (sy / _tileSize).Clamp(0, TileMap.TilesY - 1);
-            return new Point(tileX, tileY);
+            while (x < 0)
+                x += ScrollX.Max;
+            while (x >= ScrollX.Max)
+                x -= ScrollX.Max;
+
+            while (y < 0)
+                y += ScrollY.Max;
+            while (y >= ScrollY.Max)
+                y -= ScrollY.Max;
+
+            x = x / _tileSize;
+            y = y / _tileSize;
+
+            if (x < 0)
+                x = 0;
+            if (x > _tileXMax - 1)
+                x = _tileXMax - 1;
+            if (y < 0)
+                y = 0;
+            if (y > _tileYMax - 1)
+                y = _tileYMax - 1;
+
+            return new Point(x, y);
         }
 
         public GameRectangleWithSubpixels GetTileLayerPosition(int tileX, int tileY)

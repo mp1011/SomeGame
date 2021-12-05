@@ -138,7 +138,6 @@ namespace SomeGame.Main.Services
             actor.IsAnimationFinished = animationState == AnimationState.Finished;
 
             var collisionInfo = actor.CollisionDetector.DetectCollisions(actor);
-            DebugService.ShowPosition(actor);
 
             if(actor.Destroying)
                 actor.OnBeingDestroyed();

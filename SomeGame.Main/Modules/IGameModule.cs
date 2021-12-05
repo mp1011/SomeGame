@@ -25,7 +25,7 @@ namespace SomeGame.Main.Modules
         protected ResourceLoader ResourceLoader { get; }
         protected DataSerializer DataSerializer { get; }
         protected GameSystem GameSystem { get; }
-        protected RenderService RenderService { get; }
+        protected IRenderService RenderService { get; }
         protected InputManager InputManager { get; } 
         protected InputModel Input => InputManager.Input;
 
@@ -36,7 +36,7 @@ namespace SomeGame.Main.Modules
         public GameModuleBase(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
             GameSystem = new GameSystem();
-            RenderService= new RenderService(GameSystem);
+            RenderService= new RasterBasedRenderService(GameSystem);
             InputManager = new InputManager(GameSystem);
             DataSerializer = new DataSerializer();
             ResourceLoader = new ResourceLoader(contentManager);
@@ -45,17 +45,7 @@ namespace SomeGame.Main.Modules
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var sprite in GameSystem.GetBackSprites())
-                RenderService.DrawSprite(spriteBatch, sprite);
-
-            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.BG));
-            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.FG));
-
-            foreach (var sprite in GameSystem.GetFrontSprites())
-                RenderService.DrawSprite(spriteBatch, sprite);
-
-            RenderService.DrawLayer(spriteBatch, GameSystem.GetLayer(LayerIndex.Interface));
-
+            RenderService.DrawFrame(spriteBatch);
         }
 
         public abstract void Initialize();

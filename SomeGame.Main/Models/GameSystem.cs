@@ -19,6 +19,7 @@ namespace SomeGame.Main.Models
         private TileSet[] _tileSets;
         private Sprite[] _sprites;
         private Dictionary<TilesetContentKey, PaletteIndex> _tilesetPalettes;
+        private Texture2D[] _paletteTextures;
 
         public readonly Rectangle Screen = new Rectangle(0, 0, 320, 240);
         public readonly int TileSize = 8;
@@ -58,6 +59,7 @@ namespace SomeGame.Main.Models
 
         public TileSet GetTileSet(PaletteIndex paletteIndex) => _tileSets[(int)paletteIndex];
 
+        public Texture2D GetPaletteTexture(PaletteIndex paletteIndex) => _paletteTextures[(int)paletteIndex];
         public Layer GetLayer(LayerIndex layerIndex) =>_layers[(int)layerIndex];
 
         public Sprite GetSprite(SpriteIndex spriteIndex) => _sprites[(int)spriteIndex];
@@ -99,6 +101,8 @@ namespace SomeGame.Main.Models
             _tilesetPalettes = data.ToDictionary(k => k.TileSet, v => v.Palette);
         }
 
+        public byte GetVramData(Point p) => _tileSetData.ImageData[p.X, p.Y];
+
         public void SetVram(GraphicsDevice graphicsDevice, IndexedTilesetImage[] data)
         {
             _tileSetData = CreateVramImage(data);
@@ -111,6 +115,10 @@ namespace SomeGame.Main.Models
 
                     return new TileSet(texture, _tileSetData.Offsets, TileSize);
                 }).ToArray();
+
+            _paletteTextures = _palettes
+                .Select(p => p.ToTexture2D(graphicsDevice))
+                .ToArray();
 
             SaveVramSnapshot(PaletteIndex.P1);
             SaveVramSnapshot(PaletteIndex.P2);

@@ -5,37 +5,51 @@ using SomeGame.Main.Models;
 
 namespace SomeGame.Main.Services
 {
-    class RenderService
+    class TextureBasedRenderService : IRenderService
     {
         private readonly GameSystem _gameSystem;
 
-        public RenderService(GameSystem gameSystem)
+        public TextureBasedRenderService(GameSystem gameSystem)
         {
             _gameSystem = gameSystem;
         }
 
-        public void DrawLayer(SpriteBatch spriteBatch, Layer layer)
+        public void DrawFrame(SpriteBatch spriteBatch)
         {
-            DrawWrappingTileMap(spriteBatch, 
-                layer.TileMap, 
+            foreach (var sprite in _gameSystem.GetBackSprites())
+                DrawSprite(spriteBatch, sprite);
+
+            DrawLayer(spriteBatch, _gameSystem.GetLayer(LayerIndex.BG));
+            DrawLayer(spriteBatch, _gameSystem.GetLayer(LayerIndex.FG));
+
+            foreach (var sprite in _gameSystem.GetFrontSprites())
+                DrawSprite(spriteBatch, sprite);
+
+            DrawLayer(spriteBatch, _gameSystem.GetLayer(LayerIndex.Interface));
+        }
+
+        private void DrawLayer(SpriteBatch spriteBatch, Layer layer)
+        {
+            DrawWrappingTileMap(spriteBatch,
+                layer.TileMap,
                 _gameSystem.GetTileSet(layer.Palette),
-                x: layer.ScrollX, 
+                x: layer.ScrollX,
                 y: layer.ScrollY,
                 tileOffset: layer.TileOffset);
         }
 
-        public void DrawSprite(SpriteBatch spriteBatch, Sprite sprite)
+        private void DrawSprite(SpriteBatch spriteBatch, Sprite sprite)
         {
             var tileSet = _gameSystem.GetTileSet(sprite.Palette);
             DrawWrappingTileMap(spriteBatch, sprite.TileMap, tileSet, sprite.ScrollX, sprite.ScrollY, sprite.TileOffset, sprite.Flip);
         }
 
-        private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y, int tileOffset, Flip flip= Flip.None)
+        private void DrawWrappingTileMap(SpriteBatch spriteBatch, TileMap tileMap, TileSet tileSet, RotatingInt x, RotatingInt y, int tileOffset, Flip flip = Flip.None)
         {
             tileMap.ForEach((tileX, tileY, tile) =>
             {
                 if ((flip & Flip.H) > 0)
-                    tileX = tileMap.TilesX - tileX-1;
+                    tileX = tileMap.TilesX - tileX - 1;
 
                 var screenX = (int)(x + (tileX * _gameSystem.TileSize));
                 var screenY = (int)(y + (tileY * _gameSystem.TileSize));
@@ -59,12 +73,12 @@ namespace SomeGame.Main.Services
                     flip: flip);
             });
         }
-   
 
-        private void DrawTile(SpriteBatch spriteBatch, 
-                              int screenX, 
-                              int screenY, 
-                              Tile tile, 
+
+        private void DrawTile(SpriteBatch spriteBatch,
+                              int screenX,
+                              int screenY,
+                              Tile tile,
                               TileSet tileSet,
                               int tileOffset,
                               Flip flip)
@@ -81,8 +95,8 @@ namespace SomeGame.Main.Services
                 return;
 
             var effects = SpriteEffects.None;
-    
-            if(((flip & Flip.H) > 0) ^ ((tile.Flags & TileFlags.FlipH) > 0))       
+
+            if (((flip & Flip.H) > 0) ^ ((tile.Flags & TileFlags.FlipH) > 0))
                 effects |= SpriteEffects.FlipHorizontally;
 
             if (((flip & Flip.V) > 0) ^ ((tile.Flags & TileFlags.FlipV) > 0))

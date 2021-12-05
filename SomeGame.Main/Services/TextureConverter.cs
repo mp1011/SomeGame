@@ -72,5 +72,12 @@ namespace SomeGame.Main.Services
 
             return texture;
         }
+
+        public static Texture2D ToTexture2D(this Palette palette, GraphicsDevice graphicsDevice)
+        {
+            var texture = new Texture2D(graphicsDevice, palette.Count(),1);
+            texture.SetData(palette.ToArray());
+            return texture;
+        }
     }
 }
