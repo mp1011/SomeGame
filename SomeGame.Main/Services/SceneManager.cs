@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Content;
-using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Scenes;
 
@@ -19,14 +18,20 @@ namespace SomeGame.Main.Services
             _transitionInfo = new TransitionInfo(sceneContentKey, Rectangle.Empty, Point.Zero, Direction.None);
         }
        
-        public void Update(SceneLoader sceneLoader)
+        public SceneLoadResult Update(SceneLoader sceneLoader)
         {
             if (_transitionInfo.NextScene != SceneContentKey.None)
             {
                 CurrentScene = sceneLoader.LoadScene(_transitionInfo);
                 sceneLoader.InitializeScene(CurrentScene.SceneInfo, _transitionInfo);
                 _transitionInfo = new TransitionInfo();
+
+                return new SceneLoadResult(NewScene: true, 
+                    GameInterface: sceneLoader.CreateInterfaceLayer(CurrentScene.SceneInfo),
+                    Controller: sceneLoader.CreateSceneController(CurrentScene.SceneInfo));
             }
+
+            return new SceneLoadResult();
         }
 
         public bool CheckLevelTransitions(Actor actor)

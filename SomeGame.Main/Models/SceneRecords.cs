@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Content;
+using SomeGame.Main.GameInterface;
+using SomeGame.Main.SceneControllers;
 using SomeGame.Main.Scenes;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,11 @@ namespace SomeGame.Main.Models
     record TransitionInfo(SceneContentKey NextScene, Rectangle ExitSide, Point PlayerExitPosition, Direction Direction)
     {
         public TransitionInfo() : this(SceneContentKey.None, Rectangle.Empty, Point.Zero, Direction.None) { }
+    }
+
+    record SceneLoadResult(bool NewScene, IGameInterface GameInterface, ISceneController Controller)
+    {
+        public SceneLoadResult() : this(false, null, null) { }
     }
 
     record SceneInfo(

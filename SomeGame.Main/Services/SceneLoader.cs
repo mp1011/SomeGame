@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
+using SomeGame.Main.GameInterface;
 using SomeGame.Main.Models;
+using SomeGame.Main.SceneControllers;
 using SomeGame.Main.Scenes;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +17,18 @@ namespace SomeGame.Main.Services
         private readonly ActorFactory _actorFactory;
         private readonly GameSystem _gameSystem;
         private readonly AudioService _audioService;
-        private readonly HUDManager _hudManager;
         private readonly CollectiblesService _collectiblesService;
         private readonly Scroller _scroller;
         private readonly PlayerStateManager _playerStateManager;
         private readonly ActorManager _actorManager;
+        private readonly InputManager _inputManager;
+        private readonly SceneManager _sceneManager;
 
         public SceneLoader(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice, 
             DataSerializer dataSerializer, ActorFactory actorFactory, AudioService audioService, 
-            HUDManager hudManager, CollectiblesService collectiblesService, Scroller scroller, 
-            GameSystem gameSystem, PlayerStateManager playerStateManager, ActorManager actorManager)
+            CollectiblesService collectiblesService, Scroller scroller, 
+            GameSystem gameSystem, PlayerStateManager playerStateManager, ActorManager actorManager, InputManager inputManager,
+            SceneManager sceneManager)
         {
             _actorManager = actorManager;
             _playerStateManager = playerStateManager;
@@ -36,13 +40,27 @@ namespace SomeGame.Main.Services
             _dataSerializer = dataSerializer;
             _audioService = audioService;
             _collectiblesService = collectiblesService;
-            _hudManager = hudManager;
+            _inputManager = inputManager;
+            _sceneManager = sceneManager;
         }
 
         public Scene LoadScene(TransitionInfo sceneTransition)
         {
             UnloadPreviousScene();
-            return new Scene(sceneTransition.NextScene, _dataSerializer.Load(sceneTransition.NextScene), _gameSystem);
+
+            //redo this
+            switch(sceneTransition.NextScene)
+            {
+                case SceneContentKey.Level1TitleCard:
+                    var sceneInfo = _dataSerializer.Load(SceneContentKey.LevelTitleCard);
+                    sceneInfo = new SceneInfo(sceneInfo.BgMap, sceneInfo.FgMap, sceneInfo.InterfaceType, sceneInfo.Song,
+                        sceneInfo.Bounds, sceneInfo.PaletteKeys, sceneInfo.BackgroundColor, sceneInfo.VramImages,
+                        sceneInfo.Sounds, sceneInfo.Actors, sceneInfo.CollectiblePlacements, new SceneTransitions(Right: SceneContentKey.Test3));
+                    return new Scene(sceneTransition.NextScene, sceneInfo, _gameSystem);
+                default:
+                    return new Scene(sceneTransition.NextScene, _dataSerializer.Load(sceneTransition.NextScene), _gameSystem);
+            }
+            
         }
 
         public void InitializeScene(SceneInfo sceneInfo, TransitionInfo sceneTransition)
@@ -67,7 +85,6 @@ namespace SomeGame.Main.Services
             var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG, vramImages[1].Key);
             _scroller.SetTileMaps(bg, fg);
 
-            InitializeInterfaceLayer(sceneInfo.InterfaceType);
             InitializeActors(sceneInfo, sceneTransition);
             PlaceCollectibles(sceneInfo, fg);
             InitializeSounds(sceneInfo);
@@ -84,14 +101,25 @@ namespace SomeGame.Main.Services
             }
         }
 
-        private void InitializeInterfaceLayer(InterfaceType interfaceType)
-        {
-            switch(interfaceType)
+        public IGameInterface CreateInterfaceLayer(SceneInfo sceneInfo)
+        { 
+            switch(sceneInfo.InterfaceType)
             {
                 case InterfaceType.PlayerStatus:
-                    _hudManager.Initialize();
-                    break;
+                    return new PlayerStatusInterface(_playerStateManager, _gameSystem);
+                case InterfaceType.TitleCard:
+                    return new TitleCardInterface(_gameSystem, sceneInfo.Transitions.Right);
+                default:
+                    return new EmptyGameInterface();
             }
+        }
+
+        public ISceneController CreateSceneController(SceneInfo sceneInfo)
+        {
+            if (sceneInfo.InterfaceType == InterfaceType.TitleCard)
+                return new TitleCardSceneController(sceneInfo.Transitions.Right, _inputManager, _sceneManager);
+            else
+                return new EmptySceneController();
         }
 
         private TileMap InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex, TilesetContentKey tilesetKey)
@@ -111,7 +139,8 @@ namespace SomeGame.Main.Services
             foreach (var actorStart in sceneInfo.Actors)            
                 _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
             
-            _collectiblesService.CreateCollectedItemActors(_actorFactory);
+            if(sceneInfo.CollectiblePlacements.Any())
+                _collectiblesService.CreateCollectedItemActors(_actorFactory);
         }
 
         private void PlaceCollectibles(SceneInfo sceneInfo, TileMap tileMap)

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
+using SomeGame.Main.GameInterface;
 using SomeGame.Main.Models;
+using SomeGame.Main.SceneControllers;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Modules
@@ -17,14 +19,14 @@ namespace SomeGame.Main.Modules
         private readonly SceneManager _sceneManager;
         private readonly PlayerStateManager _playerStateManager;
         private readonly AudioService _audioService;
-        private readonly HUDManager _hudManager;
+        private IGameInterface _gameInterface;
+        private ISceneController _sceneController;
 
         public SceneModule(SceneContentKey initialScene, ContentManager contentManager, GraphicsDevice graphicsDevice) 
             : base(contentManager, graphicsDevice)
         {
             _initialScene = initialScene;
             _playerStateManager = new PlayerStateManager();
-            _hudManager = new HUDManager(_playerStateManager, GameSystem);
             _audioService = new AudioService(ResourceLoader);
             _scroller = new Scroller(GameSystem);
             _collectiblesService = new CollectiblesService(GameSystem,_scroller);         
@@ -33,7 +35,7 @@ namespace SomeGame.Main.Modules
             _actorFactory = new ActorFactory(_actorManager, GameSystem, DataSerializer, InputManager, 
                 _sceneManager, _scroller, _playerStateManager, _audioService, _collectiblesService);
             _sceneLoader = new SceneLoader(ResourceLoader, GraphicsDevice, DataSerializer, _actorFactory, 
-                _audioService, _hudManager, _collectiblesService, _scroller, GameSystem, _playerStateManager, _actorManager);
+                _audioService, _collectiblesService, _scroller, GameSystem, _playerStateManager, _actorManager, InputManager, _sceneManager);
         }
 
         public override void Initialize()
@@ -44,13 +46,19 @@ namespace SomeGame.Main.Modules
 
         protected override void Update()
         {
-            _scroller.Update();
-            _sceneManager.Update(_sceneLoader);
-           
-            _actorManager.Update(_sceneManager.CurrentScene);
-            _hudManager.Update();
+            var sceneUpdate = _sceneManager.Update(_sceneLoader);
+            if(sceneUpdate.NewScene)
+            {
+                _gameInterface = sceneUpdate.GameInterface;
+                _sceneController = sceneUpdate.Controller;
+            }
 
+            _scroller.Update();        
+            _actorManager.Update(_sceneManager.CurrentScene);
+            _gameInterface.Update();
             _audioService.UpdateMusic();
+            _sceneController.Update();
+
         }
     }
 }

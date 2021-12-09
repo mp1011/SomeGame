@@ -159,7 +159,7 @@ namespace SomeGame.Main.Services
             var tileLocation = layer.TilePointFromScreenPixelPoint(screenX, screenY);
             var tile = layer.TileMap.GetTile(tileLocation);
 
-            if (tile.Index == -1)
+            if (tile == null || tile.Index == -1)
                 return false;
 
             var tileSet = _gameSystem.GetTileSet(layer.Palette);

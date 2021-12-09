@@ -6,7 +6,8 @@ namespace SomeGame.Main.Models
     public enum InterfaceType
     {
         None,
-        PlayerStatus
+        PlayerStatus,
+        TitleCard
     }
 
     public enum Direction

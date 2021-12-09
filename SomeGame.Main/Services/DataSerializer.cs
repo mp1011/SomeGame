@@ -147,6 +147,9 @@ namespace SomeGame.Main.Services
         public SceneInfo Load(SceneContentKey sceneContentKey)
         {
             var path = GetPath(sceneContentKey);
+            if (!File.Exists(path))
+                return null;
+
             using var stream = File.OpenRead(path);
             using var reader = new DataReader(stream);
             return reader.ReadScene();
@@ -195,7 +198,7 @@ namespace SomeGame.Main.Services
         private Grid<T> LoadGrid<T>(string path)
         {
             if (!File.Exists(path))
-                return new Grid<T>(0,0);
+                return new Grid<T>(1,1);
 
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);

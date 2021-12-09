@@ -13,6 +13,20 @@ namespace SomeGame.Main.Modules
         private readonly DataSerializer _dataSerializer;
         private readonly GameSystem _gameSystem;
 
+
+        public void Initialize()
+        {
+            UpdateScene(SceneContentKey.Test3, CreateTest3);
+            UpdateScene(SceneContentKey.LevelTitleCard, CreateLevelTitleCard);
+
+            //_dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
+            //_dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
+            //_dataSerializer.Save(SceneContentKey.Test3, CreateTest3());
+            //_dataSerializer.Save(SceneContentKey.LongMapTest, CreateLongMapTest());
+        }
+
+
+
         public Rectangle Screen => new Rectangle(0, 0, 20, 20);
 
         public SceneDefinitionModule()
@@ -29,6 +43,34 @@ namespace SomeGame.Main.Modules
             var current = _dataSerializer.Load(key);
             var newScene = createScene(current);
             _dataSerializer.Save(key, newScene);
+        }
+
+        private SceneInfo CreateLevelTitleCard(SceneInfo previouslySaved)
+        {
+            return new SceneInfo(
+               BgMap: new LayerInfo(LevelContentKey.None, PaletteIndex.P1, ScrollFactor: 100),
+               FgMap: new LayerInfo(LevelContentKey.None, PaletteIndex.P1, ScrollFactor: 100),
+               InterfaceType.TitleCard,
+               MusicContentKey.None,
+               Bounds: new Rectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height),
+               PaletteKeys: new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette3, ImageContentKey.Palette4),
+               BackgroundColor: 0,
+               VramImages: new TilesetWithPalette[]
+               {
+                    new TilesetWithPalette(TilesetContentKey.Hud, PaletteIndex.P3),
+                    new TilesetWithPalette(TilesetContentKey.Font, PaletteIndex.P3),
+               },
+               Sounds: new SoundInfo[]
+               {
+                    new SoundInfo(SoundContentKey.Collect,3),
+                    new SoundInfo(SoundContentKey.Shoot, 2),
+                    new SoundInfo(SoundContentKey.Destroy, 2),
+                    new SoundInfo(SoundContentKey.Jump, 1),
+                    new SoundInfo(SoundContentKey.Hurt, 1),
+               },
+               Actors: previouslySaved?.Actors ?? new ActorStart[] { },
+               CollectiblePlacements: previouslySaved?.CollectiblePlacements ?? new CollectiblePlacement[] { },
+               Transitions: new SceneTransitions());
         }
 
         private SceneInfo CreateTest3(SceneInfo previousSaved)
@@ -185,15 +227,6 @@ namespace SomeGame.Main.Modules
 
         public void Draw(SpriteBatch spriteBatch)
         {
-        }
-
-        public void Initialize()
-        {
-            UpdateScene(SceneContentKey.Test3, CreateTest3);
-            //_dataSerializer.Save(SceneContentKey.Test1, CreateTest1());
-            //_dataSerializer.Save(SceneContentKey.Test2, CreateTest2());
-            //_dataSerializer.Save(SceneContentKey.Test3, CreateTest3());
-            //_dataSerializer.Save(SceneContentKey.LongMapTest, CreateLongMapTest());
         }
 
         public void OnWindowSizeChanged(Viewport viewport)
