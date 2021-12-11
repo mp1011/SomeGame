@@ -29,7 +29,7 @@ namespace SomeGame.Main.Behaviors
         {
             var bone = _bones.ActivateNext();
             bone.WorldPosition.Center = actor.WorldPosition.Center;
-            bone.MotionVector = new PixelPoint(initialX, -2);
+            bone.MotionVector.Set(new PixelPoint(initialX, -2));
         }
     }
 }

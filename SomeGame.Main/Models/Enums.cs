@@ -3,14 +3,14 @@
 namespace SomeGame.Main.Models
 {
 
-    public enum InterfaceType
+    public enum InterfaceType : byte
     {
         None,
         PlayerStatus,
         TitleCard
     }
 
-    public enum Direction
+    public enum Direction : byte
     {
         None,
         Up,
@@ -31,7 +31,7 @@ namespace SomeGame.Main.Models
         Down=192
     }
 
-    public enum InputButton
+    public enum InputButton : byte
     {
         None,
         Up,
@@ -43,22 +43,46 @@ namespace SomeGame.Main.Models
         B
     }
 
-    public enum ButtonState
+    public enum ButtonState : byte
     {
         None=0,
         Down=1,
         Changed=2
     }
 
-    public enum Flip
+    public enum Flip : byte
     {
-        None=0,
-        H=1,
+        None = 0,
+        FlipH = 1,
+        H =1,
+        FlipV = 2,
         V=2,
-        Both=3
+        Both = 3,
     }
 
-    public enum TileFlags
+    public enum SpriteFlags: byte
+    {
+        None=0,
+        FlipH=1,
+        FlipV=2,
+        Visible=4,
+        Priority=8
+    }
+
+    public enum ActorFlags : byte
+    {
+        None=0,
+        FlipH=1,
+        FlipV=2,
+        Both=3,
+        Enabled=4,
+        Visible=16,
+        IsAnimationFinished=32,
+        HasBeenActivated=64,
+        Destroying=128
+    }
+
+    public enum TileFlags : byte
     {
         None=0,
         FlipH=1,
@@ -68,7 +92,7 @@ namespace SomeGame.Main.Models
         Collectible=8
     }
 
-    public enum PaletteIndex
+    public enum PaletteIndex : byte
     {
         P1,
         P2,
@@ -76,14 +100,14 @@ namespace SomeGame.Main.Models
         P4
     }
 
-    public enum LayerIndex
+    public enum LayerIndex : byte
     {
         BG,
         FG,
         Interface
     }
 
-    public enum SpriteIndex
+    public enum SpriteIndex : byte
     {
         Sprite1,
         Sprite2,
@@ -96,12 +120,6 @@ namespace SomeGame.Main.Models
         LastIndex=Sprite8
     }
 
-    public enum SpritePriority
-    {
-        Back,
-        Front
-    }
-
     public enum AnimationKey : byte
     {
         Idle,
@@ -111,27 +129,27 @@ namespace SomeGame.Main.Models
         Hurt
     }
 
-    public enum Orientation
+    public enum Orientation : byte
     {
         Vertical,
         Horizontal
     }
 
-    public enum TileChoiceMode
+    public enum TileChoiceMode : byte
     {
         Free,
         SemiStrict,
         Strict
     }
 
-    public enum UIButtonState
+    public enum UIButtonState : byte
     {
         None,
         MouseOver,
         Pressed
     }
 
-    public enum LevelEditorMode
+    public enum LevelEditorMode : byte
     {
         Free,
         Auto,
@@ -143,7 +161,7 @@ namespace SomeGame.Main.Models
         Collectibles
     }
 
-    public enum StandardEnemyState
+    public enum StandardEnemyState : byte
     {
         Idle,
         Moving,
@@ -151,7 +169,7 @@ namespace SomeGame.Main.Models
     }
 
     [Flags]
-    public enum ActorType
+    public enum ActorType : byte
     {
         Player=1,
         Enemy=2,
@@ -162,7 +180,7 @@ namespace SomeGame.Main.Models
         Gizmo=64
     }
 
-    public enum AnimationState
+    public enum AnimationState : byte
     {
         None,
         Playing,
@@ -197,7 +215,7 @@ namespace SomeGame.Main.Models
         Key = ActorId.Key
     }
 
-    public enum DestroyedState
+    public enum DestroyedState : byte
     {
         None,
         Destroying,

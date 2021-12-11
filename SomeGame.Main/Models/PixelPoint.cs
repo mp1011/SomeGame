@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Extensions;
+using SomeGame.Main.Services;
 using System;
 
 namespace SomeGame.Main.Models
@@ -182,6 +183,44 @@ namespace SomeGame.Main.Models
         }
     }
 
+    public record RamPixelPoint(RamPixelValue X, RamPixelValue Y)
+    {
+        public RamPixelPoint Set(PixelPoint p)
+        {
+            X.Set(p.X);
+            Y.Set(p.Y);
+            return this;
+        }
+
+        public RamPixelPoint Offset(Orientation orientation, int offset)
+        {
+            if (orientation == Orientation.Horizontal)
+                X.Add(offset);
+            else
+                Y.Add(offset);
+
+            return this;
+        }
+
+        public RamPixelPoint Offset(Orientation orientation, int pixelOffset, int subPixelOffset)
+        {
+            if (orientation == Orientation.Horizontal)
+                X.Add(new PixelValue(pixelOffset, subPixelOffset));
+            else
+                Y.Add(new PixelValue(pixelOffset, subPixelOffset));
+
+            return this;
+        }
+
+        public Angle ToAngle()
+        {
+            var vector = new Vector2(X.ToFloat(), Y.ToFloat());
+            var radians = vector.GetRadians();
+
+            var a = (byte)(255 * (radians / (2 * Math.PI)));
+            return (Angle)a;
+        }
+    }
 
     public record RamPixelValue(RamInt Pixel, RamSignedByte SubPixel)
     {
@@ -189,6 +228,13 @@ namespace SomeGame.Main.Models
         {
             Pixel.Set(value);
             SubPixel.Set(0);
+            return this;
+        }
+
+        public RamPixelValue Set(PixelValue value)
+        {
+            Pixel.Set(value.Pixel);
+            SubPixel.Set(value.SubPixel);
             return this;
         }
 
@@ -230,6 +276,53 @@ namespace SomeGame.Main.Models
             return this;
         }
 
+        public PixelValue Subtract(PixelValue value)
+        {
+            int newSubPixel = SubPixel - value.SubPixel;
+            int newPixel = Pixel - value.Pixel;
+
+            while (newSubPixel > 128)
+            {
+                newSubPixel -= 128;
+                newPixel++;
+            }
+
+            while (newSubPixel < -128)
+            {
+                newSubPixel += 128;
+                newPixel--;
+            }
+
+            return new PixelValue(newPixel, newSubPixel);
+        }
+
+        public float ToFloat()
+        {
+            var pixel = (int)Pixel;
+            var subPixel = (int)SubPixel;
+            return pixel + (subPixel / 128.0f);
+        }
+
+        public PixelValue NearestPixel(int direction)
+        {
+            if (direction > 0)
+            {
+                if (SubPixel > 0)
+                    return new PixelValue(Pixel + 1, 0);
+                else
+                    return new PixelValue(Pixel, 0);
+            }
+            else if (direction < 0)
+            {
+                if (SubPixel < 0)
+                    return new PixelValue(Pixel - 1, 0);
+                else
+                    return new PixelValue(Pixel, 0);
+            }
+            else
+                return new PixelValue(Pixel, 0);
+        }
+
         public static implicit operator PixelValue(RamPixelValue p) =>
             new PixelValue(p.Pixel, p.SubPixel);
 
@@ -241,6 +334,16 @@ namespace SomeGame.Main.Models
         public static bool operator <(RamPixelValue p, int i)
         {
             return p.Pixel < i || ((p.Pixel == i) && (p.SubPixel < 0));
+        }
+
+        public static bool operator >=(RamPixelValue p, int i)
+        {
+            return p > i || p == i;
+        }
+
+        public static bool operator <=(RamPixelValue p, int i)
+        {
+            return p < i || p == i;
         }
 
         public static bool operator >(RamPixelValue p1, RamPixelValue p2)

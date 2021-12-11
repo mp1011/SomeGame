@@ -26,21 +26,21 @@ namespace SomeGame.Main.Behaviors
                 if (_inputManger.Input.A.IsPressed() && backgroundCollisionInfo.IsOnGround)
                     _jumpQueued = true;
 
-                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+                actor.MotionVector.X.Set(0);
                 return;
             }
 
             if (backgroundCollisionInfo.XCorrection != 0)
-                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+                actor.MotionVector.X.Set(0);
 
             if (backgroundCollisionInfo.YCorrection != 0)
-                actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
+                actor.MotionVector.Y.Set(0);
 
             if ((_jumpQueued || _inputManger.Input.A.IsPressed()) && backgroundCollisionInfo.IsOnGround)
             {
                 _audioService.Play(SoundContentKey.Jump);
                 _jumpQueued = false;
-                actor.MotionVector = new PixelPoint(actor.MotionVector.X, new PixelValue(-2, 0));
+                actor.MotionVector.Y.Set(new PixelValue(-2, 0));
                 _exJumpCounter = 15;
             }
 
@@ -49,26 +49,26 @@ namespace SomeGame.Main.Behaviors
             else if(_exJumpCounter > 0)
             {
                 _exJumpCounter--;
-                actor.MotionVector = new PixelPoint(actor.MotionVector.X, new PixelValue(-2, 0));
+                actor.MotionVector.Y.Set(new PixelValue(-2, 0));
             }
 
             bool isMoving = false;
 
             if (_inputManger.Input.Left.IsDown())
             {
-                actor.MotionVector = new PixelPoint(-1, actor.MotionVector.Y);
-                actor.Flip = Flip.H;
+                actor.MotionVector.X.Set(-1);
+                actor.Flip = Flip.FlipH;
                 isMoving = true;
             }
             else if (_inputManger.Input.Right.IsDown())
             {
-                actor.MotionVector = new PixelPoint(1, actor.MotionVector.Y);
+                actor.MotionVector.X.Set(1);
                 actor.Flip = Flip.None;
                 isMoving = true;
             }
             else
             {
-                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+                actor.MotionVector.X.Set(0);
             }
 
             if(actor.CurrentAnimation != AnimationKey.Attacking && actor.CurrentAnimation != AnimationKey.Hurt)

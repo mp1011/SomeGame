@@ -13,10 +13,10 @@ namespace SomeGame.Main.Behaviors
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if (collisionInfo.XCorrection != 0)
-                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+                actor.MotionVector.X.Set(0);
 
             if (collisionInfo.YCorrection != 0)
-                actor.MotionVector = new PixelPoint(actor.MotionVector.X, 0);
+                actor.MotionVector.Y.Set(0);
         }
 
         public void SetIdle(Actor actor, bool stopMotion=true)
@@ -24,15 +24,15 @@ namespace SomeGame.Main.Behaviors
             CurrentState = StandardEnemyState.Idle;
             actor.CurrentAnimation = AnimationKey.Idle;
 
-            if(stopMotion)
-                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+            if (stopMotion)
+                actor.MotionVector.X.Set(0);
         }
 
         public void SetAttacking(Actor actor)
         {
             CurrentState = StandardEnemyState.Attacking;
             actor.CurrentAnimation = AnimationKey.Attacking;
-            actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+            actor.MotionVector.X.Set(0);
         }
 
         public void SetMoving(Actor actor, Direction direction)
@@ -41,14 +41,14 @@ namespace SomeGame.Main.Behaviors
             actor.CurrentAnimation = AnimationKey.Moving;
 
             actor.FacingDirection = direction;
-            actor.MotionVector = new PixelPoint(WalkSpeed * direction.GetSpeedMod(), actor.MotionVector.Y);          
+            actor.MotionVector.X.Set(WalkSpeed * direction.GetSpeedMod());          
         }
 
         public void SetMoving(Actor actor, PixelPoint unitVector, PixelValue speed)
         {
             CurrentState = StandardEnemyState.Moving;
             actor.CurrentAnimation = AnimationKey.Moving;
-            actor.MotionVector = unitVector * speed;
+            actor.MotionVector.Set(unitVector * speed);
         }
     }
 }

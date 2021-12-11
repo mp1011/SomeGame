@@ -8,6 +8,10 @@ namespace SomeGame.Main.Models
 {
     class Actor
     {
+        private readonly RamEnum<ActorFlags> _flags;
+        private readonly RamEnum<PaletteIndex> _palette;
+        private readonly RamEnum<AnimationKey> _animation;
+
         public RamEnum<ActorType> ActorType { get; }
         public Behavior Behavior { get; }
         public IDestroyedBehavior DestroyedBehavior { get; }
@@ -17,22 +21,70 @@ namespace SomeGame.Main.Models
 
         public ICollisionDetector CollisionDetector { get; }
         public RamGameRectangle WorldPosition { get; set; }
-        public PixelPoint MotionVector { get; set; } = new PixelPoint(0, 0);
-        public TilesetContentKey Tileset { get; }
-        public PaletteIndex Palette { get; set; }
+        public RamPixelPoint MotionVector { get; } 
+        public RamEnum<TilesetContentKey> Tileset { get; }
+      
+        public PaletteIndex Palette
+        {
+            get => _palette;
+            set => _palette.Set(value);
+        }
 
-        public Flip Flip { get; set; } 
+       
+        public Flip Flip
+        {
+            get
+            {
+                var ret = Flip.None;
+                if ((_flags & ActorFlags.FlipH) > 0)
+                    ret = ret | Flip.FlipH;
+                if ((_flags & ActorFlags.FlipV) > 0)
+                    ret = ret | Flip.FlipV;
 
-        public bool Enabled { get; private set; }
+                return ret;
+            }
+            set
+            {
+                _flags.SetFlag(ActorFlags.FlipH, (value & Flip.FlipH) > 0);
+                _flags.SetFlag(ActorFlags.FlipV, (value & Flip.FlipV) > 0);
+            }
+        }
 
-        public AnimationKey CurrentAnimation { get; set; }
+        public bool Enabled
+        {
+            get => (_flags & ActorFlags.Enabled) > 0;
+            set => _flags.SetFlag(ActorFlags.Enabled, value);
+        }
 
-        public bool IsAnimationFinished { get; set; }
+        public AnimationKey CurrentAnimation
+        {
+            get => _animation;
+            set => _animation.Set(value);
+        }
 
-        public bool HasBeenActivated { get; private set; }
-        public bool Destroying { get; private set; }
+        public bool IsAnimationFinished
+        {
+            get => (_flags & ActorFlags.IsAnimationFinished) > 0;
+            set => _flags.SetFlag(ActorFlags.IsAnimationFinished, value);
+        }
 
-        public bool Visible { get; set; } = true;
+        public bool HasBeenActivated
+        {
+            get => (_flags & ActorFlags.HasBeenActivated) > 0;
+            set => _flags.SetFlag(ActorFlags.HasBeenActivated, value);
+        }
+
+        public bool Destroying
+        {
+            get => (_flags & ActorFlags.Destroying) > 0;
+            set => _flags.SetFlag(ActorFlags.Destroying, value);
+        }
+
+        public bool Visible
+        {
+            get => (_flags & ActorFlags.Visible) > 0;
+            set => _flags.SetFlag(ActorFlags.Visible, value);
+        }
 
         //todo, assumes left/right
         public Direction FacingDirection
@@ -43,7 +95,7 @@ namespace SomeGame.Main.Models
                 if (value == Direction.Right)
                     Flip = Flip.None;
                 else if (value == Direction.Left)
-                    Flip = Flip.H;
+                    Flip = Flip.FlipH;
             }
         }
 
@@ -56,14 +108,19 @@ namespace SomeGame.Main.Models
                      Rectangle localHitbox,
                      SpriteAnimator animator)
         {
-            ActorType = gameSystem.RAM.DeclareEnum<ActorType>(actorType);
+
+            _flags = gameSystem.RAM.DeclareEnum(ActorFlags.Visible);
+            _palette = gameSystem.RAM.DeclareEnum(PaletteIndex.P1);
+            _animation = gameSystem.RAM.DeclareEnum(AnimationKey.Idle);
+            ActorType = gameSystem.RAM.DeclareEnum(actorType);
             WorldPosition = gameSystem.RAM.DeclareGameRectangleWithSubpixels(16,16);
+            Tileset = gameSystem.RAM.DeclareEnum(tilesetKey);
+            LocalHitbox = gameSystem.RAM.DeclareRectangle(localHitbox);
+            MotionVector = gameSystem.RAM.DeclarePixelPoint();
+            Animator = animator;
             Behavior = behavior;
             DestroyedBehavior = destroyedBehavior;
-            CollisionDetector = collisionDetector;
-            Tileset = tilesetKey;
-            LocalHitbox = gameSystem.RAM.DeclareRectangle(localHitbox);
-            Animator = animator;
+            CollisionDetector = collisionDetector;     
         }
 
         public void Destroy()

@@ -57,7 +57,7 @@ namespace SomeGame.Main.Models
             _sprites = new Sprite[Enum.GetValues<SpriteIndex>().Length];
 
             for (int i = 0; i < _sprites.Length; i++)
-                _sprites[i] = new Sprite(LayerPixelWidth, LayerPixelHeight, TileSize);
+                _sprites[i] = new Sprite(this, LayerPixelWidth, LayerPixelHeight, TileSize);
         }
 
         public TileSet GetTileSet(PaletteIndex paletteIndex) => _tileSets[(int)paletteIndex];
@@ -76,8 +76,8 @@ namespace SomeGame.Main.Models
                 return (SpriteIndex)index;
         }
 
-        public IEnumerable<Sprite> GetBackSprites() => _sprites.Where(p => p.Enabled && p.Priority == SpritePriority.Back);
-        public IEnumerable<Sprite> GetFrontSprites() => _sprites.Where(p => p.Enabled && p.Priority == SpritePriority.Front);
+        public IEnumerable<Sprite> GetBackSprites() => _sprites.Where(p => p.Enabled && !p.Priority);
+        public IEnumerable<Sprite> GetFrontSprites() => _sprites.Where(p => p.Enabled && p.Priority);
 
 
         public Palette GetPalette(PaletteIndex paletteIndex) => _palettes[(int)paletteIndex];

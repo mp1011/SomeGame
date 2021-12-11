@@ -58,7 +58,7 @@ namespace SomeGame.Main.Services
 
             var sprite = _gameSystem.GetSprite(spriteIndex);
             sprite.TileOffset = _gameSystem.GetTileOffset(actorWithSprite.Actor.Tileset);
-            sprite.Priority = SpritePriority.Front;
+            sprite.Priority = true;
             sprite.Palette = actorWithSprite.Actor.Palette;
             sprite.Enabled = actorWithSprite.Actor.Enabled;
             actorWithSprite.SpriteIndex = spriteIndex;
@@ -130,6 +130,9 @@ namespace SomeGame.Main.Services
 
             if (actor.Visible && !needsSprite)
                 sprite.Palette = actor.Palette;
+
+            if (actor.MotionVector.X.Pixel == 1)
+                DebugService.NoOp();
 
             actor.WorldPosition.X.Add(actor.MotionVector.X);
             actor.WorldPosition.Y.Add(actor.MotionVector.Y);

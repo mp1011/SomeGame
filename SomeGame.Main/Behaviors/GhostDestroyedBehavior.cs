@@ -19,7 +19,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnDestroyedStart(Actor actor)
         {
-            actor.MotionVector = new PixelPoint(0, 0);
+            actor.MotionVector.Set(new PixelPoint(0, 0));
             _timer = 0;
         }
 

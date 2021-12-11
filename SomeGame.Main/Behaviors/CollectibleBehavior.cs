@@ -24,7 +24,7 @@ namespace SomeGame.Main.Behaviors
         {
             OnCollected(_playerStateManager.CurrentState);
             _audioService.Play(CollectSound);
-            actor.MotionVector = new PixelPoint(0, -2);
+            actor.MotionVector.Set(new PixelPoint(0, -2));
             _timer = 0;
         }
 

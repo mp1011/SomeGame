@@ -41,7 +41,7 @@ namespace SomeGame.Main.Behaviors
                 if(_bulletTravelTimer == 100)
                 {
                     _bulletTravelTimer = 0;
-                    _bullet.MotionVector = new PixelPoint(0, 0);
+                    _bullet.MotionVector.Set(new PixelPoint(0, 0));
                     _baseBehavior.SetMoving(actor, Direction.Left);
                 }
             }
@@ -54,7 +54,7 @@ namespace SomeGame.Main.Behaviors
                     _attackTimer = 0;
                     _baseBehavior.SetAttacking(actor);
                     actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
-                    actor.MotionVector = new PixelPoint(0, 0);
+                    actor.MotionVector.Set(new PixelPoint(0, 0));
 
                     return;
                 }
@@ -70,7 +70,7 @@ namespace SomeGame.Main.Behaviors
                 var currentAngle = actor.MotionVector.ToAngle();
 
                 var newAngle = currentAngle.RotateToward(targetAngle, 4);
-                actor.MotionVector = newAngle.ToPixelPoint(_baseBehavior.WalkSpeed);
+                actor.MotionVector.Set(newAngle.ToPixelPoint(_baseBehavior.WalkSpeed));
             }
             else if(_baseBehavior.CurrentState == StandardEnemyState.Attacking)
             {
@@ -79,9 +79,9 @@ namespace SomeGame.Main.Behaviors
                     actor.CurrentAnimation = AnimationKey.Moving;
                     _bulletTravelTimer = 1;
                     _bullet.WorldPosition.Center = actor.WorldPosition.Center;
-                    _bullet.MotionVector = _bullet.WorldPosition.Center
+                    _bullet.MotionVector.Set(_bullet.WorldPosition.Center
                                                   .GetAngleTo(player.WorldPosition.Center)
-                                                  .ToPixelPoint(new PixelValue(2, 0));
+                                                  .ToPixelPoint(new PixelValue(2, 0)));
                 }
             }
         }

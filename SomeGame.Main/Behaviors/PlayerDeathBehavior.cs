@@ -18,7 +18,7 @@ namespace SomeGame.Main.Behaviors
         {
             timer = 0;
             actor.CurrentAnimation = AnimationKey.Hurt;
-            actor.MotionVector = new PixelPoint(0, 0);
+            actor.MotionVector.Set(new PixelPoint(0, 0));
         }
 
         public DestroyedState Update(Actor actor)

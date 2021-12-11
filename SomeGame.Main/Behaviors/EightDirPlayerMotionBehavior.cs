@@ -16,7 +16,7 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
-            actor.MotionVector = GetVectorFromInput(_inputManger.Input);
+            actor.MotionVector.Set(GetVectorFromInput(_inputManger.Input));
 
             if (actor.MotionVector.X == 0 && actor.MotionVector.Y == 0)
                 actor.CurrentAnimation = AnimationKey.Idle;

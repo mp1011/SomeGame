@@ -74,6 +74,8 @@ namespace SomeGame.Main.Models
             return new RamPixelValue(DeclareInt(pixel), DeclareSignedByte(subPixel));
         }
 
+        public RamPixelPoint DeclarePixelPoint() => new RamPixelPoint(DeclarePixelValue(0, 0), DeclarePixelValue(0, 0));
+
         public RamGameRectangle DeclareGameRectangleWithSubpixels(int x, int y, byte width, byte height)
         {
             var ret = DeclareGameRectangleWithSubpixels(width, height);
@@ -145,10 +147,29 @@ namespace SomeGame.Main.Models
         {
         }
 
-        public RamByte Set(T newValue) => Set((byte)(int)(object)newValue);
+        public RamByte Set(T newValue) => Set((byte)(object)newValue);
 
-        public static bool operator ==(RamEnum<T> r, T value) => r.Memory[r.Index] == (byte)(int)(object)value;
-        public static bool operator !=(RamEnum<T> r, T value) => r.Memory[r.Index] != (byte)(int)(object)value;
+        public RamByte SetFlag(T flag, bool on)
+        {
+            var flagByte = (byte)(object)flag;
+            var thisByte = Memory[Index];
+
+            if (on)
+                Memory[Index] = (byte)(thisByte | flagByte);
+            else
+                Memory[Index] = (byte)(thisByte & ~flagByte);
+
+            return this;
+        }
+
+        public override string ToString()
+        {
+            var e = (T)this;
+            return e.ToString();
+        }
+
+        public static bool operator ==(RamEnum<T> r, T value) => r.Memory[r.Index] == (byte)(object)value;
+        public static bool operator !=(RamEnum<T> r, T value) => r.Memory[r.Index] != (byte)(object)value;
 
         public static implicit operator T (RamEnum<T> ramEnum) => (T)Enum.ToObject(typeof(T), ramEnum.Memory[ramEnum.Index]);
 

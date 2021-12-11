@@ -34,7 +34,7 @@ namespace SomeGame.Main.Behaviors
         {
             if (IsRecoiling)
             {
-                actor.MotionVector = new PixelPoint(0, actor.MotionVector.Y);
+                actor.MotionVector.X.Set(0);
                 actor.CurrentAnimation = AnimationKey.Hurt;
             }
             

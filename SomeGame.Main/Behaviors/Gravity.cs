@@ -11,7 +11,7 @@ namespace SomeGame.Main.Behaviors
             if (collisionInfo.IsOnGround)
                 return;
 
-            actor.MotionVector = actor.MotionVector.Offset(Orientation.Vertical, 0, _acceleration);
+            actor.MotionVector.Offset(Orientation.Vertical, 0, _acceleration);
         }
     }
 }

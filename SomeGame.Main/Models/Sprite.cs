@@ -4,17 +4,24 @@ namespace SomeGame.Main.Models
 {
     class Sprite : TiledObject
     {
-        
-        public SpritePriority Priority { get; set; }
+        private RamEnum<SpriteFlags> _flags;
+
+        public bool Priority
+        {
+            get => (_flags & SpriteFlags.Priority) > 0;
+            set => _flags.SetFlag(SpriteFlags.Priority, value);
+        }
+
         public Flip Flip { get; set; }
         public bool Enabled { get; set; }
 
-        public Sprite(int layerPixelWidth, int layerPixelHeight, int tileSize) 
+        public Sprite(GameSystem gameSystem, int layerPixelWidth, int layerPixelHeight, int tileSize) 
             : base(CreateBlankTilemap(), PaletteIndex.P1, 
                   new RotatingInt(0,layerPixelWidth), 
                   new RotatingInt(0,layerPixelHeight),
                   tileSize)
         {
+            _flags = gameSystem.RAM.DeclareEnum(SpriteFlags.None);
         }
 
         private static TileMap CreateBlankTilemap()

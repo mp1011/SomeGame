@@ -28,7 +28,8 @@ namespace SomeGame.Main.Behaviors
             {
                 var direction = actor.Flip == Flip.H ? Direction.Left : Direction.Right;
                 var pt = direction.ToPoint();
-                actor.MotionVector = new PixelPoint(_speed * pt.X, _speed * pt.Y);
+                actor.MotionVector.X.Set(_speed * pt.X);
+                actor.MotionVector.Y.Set(_speed * pt.Y);
             }
 
             _destroyTimer++;

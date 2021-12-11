@@ -220,7 +220,7 @@ namespace SomeGame.Main.Behaviors
                 if (actor.WorldPosition.IntersectsWith(block.WorldPosition))
                 {
                     var yTemp = new PixelValue(0, 0);
-                    var relativeYMotion = actor.MotionVector.Y - block.MotionVector.Y;
+                    var relativeYMotion = actor.MotionVector.Y.Subtract(block.MotionVector.Y);
                    
                     if (relativeYMotion > 0)
                     {

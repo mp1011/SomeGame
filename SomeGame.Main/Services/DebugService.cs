@@ -7,6 +7,8 @@ namespace SomeGame.Main.Services
 {
     internal static class DebugService
     {
+        public static void NoOp() { }
+
         public static GameSystem GameSystem { get; set; }
         public static List<Actor> Actors { get; } = new List<Actor>();
 

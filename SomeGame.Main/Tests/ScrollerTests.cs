@@ -37,7 +37,7 @@ namespace SomeGame.Main.Tests
             actor.WorldPosition.X.Set(actorWorldX);
 
             var scroller = CreateScroller();
-            var sprite = new Sprite(640, 480, 8);
+            var sprite = new Sprite(gameSystem, 640, 480, 8);
 
             scroller.Camera.X = cameraX;
             scroller.ScrollActor(actor, sprite);

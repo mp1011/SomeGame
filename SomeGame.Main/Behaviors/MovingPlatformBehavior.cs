@@ -13,15 +13,15 @@ namespace SomeGame.Main.Behaviors
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if(actor.MotionVector.X < 0 && actor.WorldPosition.X < _origin.X)
-                actor.MotionVector = new PixelPoint(new PixelValue(0, 100), new PixelValue(0, 0));
+                actor.MotionVector.Set(new PixelPoint(new PixelValue(0, 100), new PixelValue(0, 0)));
             else if(actor.MotionVector.X > 0 && actor.WorldPosition.X > _origin.X + _xSpan)
-                actor.MotionVector = new PixelPoint(new PixelValue(0, -100), new PixelValue(0, 0));
+                actor.MotionVector.Set(new PixelPoint(new PixelValue(0, -100), new PixelValue(0, 0)));
         }
 
         public override void OnCreated(Actor actor)
         {
             _origin = actor.WorldPosition.Center;
-            actor.MotionVector = new PixelPoint(new PixelValue(0, -100), new PixelValue(0, 0));
+            actor.MotionVector.Set(new PixelPoint(new PixelValue(0, -100), new PixelValue(0, 0)));
         }
     }
 }
