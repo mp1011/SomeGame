@@ -46,9 +46,9 @@ namespace SomeGame.Main.Services
             IDestroyedBehavior destroyedBehavior=null)
         {
             var tileset = GetTileset(actorId);
-            var actor = new Actor(actorType, tileset, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
+            var actor = new Actor(_gameSystem, actorType, tileset, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
             actor.Palette = _gameSystem.GetTilesetPalette(actor.Tileset);
-            actor.WorldPosition = new GameRectangleWithSubpixels(position.X,position.Y, hitBox.Width,hitBox.Height);
+            actor.WorldPosition = _gameSystem.RAM.DeclareGameRectangleWithSubpixels(position.X,position.Y, (byte)hitBox.Width, (byte)hitBox.Height);
             _actorManager.AddActor(actor);                
             return actor;
         }
@@ -135,7 +135,7 @@ namespace SomeGame.Main.Services
             var bullet = CreateActor(
                actorId: ActorId.PlayerBullet,
                actorType: ActorType.Player | ActorType.Bullet,
-               behavior: new ProjectileBehavior(new PixelValue(2, 150), duration:20),               
+               behavior: new ProjectileBehavior(new PixelValue(2, 80), duration:20),               
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),

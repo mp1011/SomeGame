@@ -69,7 +69,7 @@ namespace SomeGame.Main.Behaviors
                 var targetAngle = actor.WorldPosition.Center.GetAngleTo(_anchor);
                 var currentAngle = actor.MotionVector.ToAngle();
 
-                var newAngle = currentAngle.RotateToward(targetAngle, 2);
+                var newAngle = currentAngle.RotateToward(targetAngle, 4);
                 actor.MotionVector = newAngle.ToPixelPoint(_baseBehavior.WalkSpeed);
             }
             else if(_baseBehavior.CurrentState == StandardEnemyState.Attacking)

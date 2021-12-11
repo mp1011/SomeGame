@@ -120,8 +120,8 @@ namespace SomeGame.Main.Services
 
             //todo, Y axis
             int padding = _gameSystem.Screen.Width / 4;
-            return (a.WorldPosition.Right > _scroller.Camera.Left - padding)
-                && (a.WorldPosition.Left < _scroller.Camera.Right + padding);
+            return (a.WorldPosition.Right() > _scroller.Camera.Left() - padding)
+                && (a.WorldPosition.Left() < _scroller.Camera.Right() + padding);
         }
 
         private void UpdateActor(Actor actor, SpriteIndex spriteIndex, Scene scene, bool needsSprite)
@@ -131,8 +131,8 @@ namespace SomeGame.Main.Services
             if (actor.Visible && !needsSprite)
                 sprite.Palette = actor.Palette;
 
-            actor.WorldPosition.XPixel += actor.MotionVector.X;
-            actor.WorldPosition.YPixel += actor.MotionVector.Y;
+            actor.WorldPosition.X.Add(actor.MotionVector.X);
+            actor.WorldPosition.Y.Add(actor.MotionVector.Y);
 
             var animationState = actor.Animator.Update(spriteIndex, actor.CurrentAnimation, needsSprite);
             actor.IsAnimationFinished = animationState == AnimationState.Finished;

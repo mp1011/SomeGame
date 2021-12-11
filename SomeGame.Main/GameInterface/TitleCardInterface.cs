@@ -10,7 +10,7 @@ namespace SomeGame.Main.GameInterface
         private readonly GameSystem _gameSystem;
         private readonly Font _font;
         private readonly string _text;
-        private int _timer;
+        private RamByte _timer;
 
         public TitleCardInterface(GameSystem gameSystem, SceneContentKey nextScene)
         {
@@ -20,6 +20,8 @@ namespace SomeGame.Main.GameInterface
 
             int textX = ((_gameSystem.Screen.Width / _gameSystem.TileSize) - _text.Length) / 2;
             _font.WriteToLayer(_text, _gameSystem.GetLayer(LayerIndex.Interface), new Point(textX, 10));
+
+            _timer = gameSystem.RAM.DeclareByte();
         }
 
         private string GetLevelText(SceneContentKey nextScene)
@@ -37,7 +39,7 @@ namespace SomeGame.Main.GameInterface
         {
             if (++_timer == 18)
             {
-                _timer = 0;
+                _timer.Set(0);
                 var layer = _gameSystem.GetLayer(LayerIndex.Interface);
                 if (layer.Palette == PaletteIndex.P1)
                     layer.Palette = PaletteIndex.P3;

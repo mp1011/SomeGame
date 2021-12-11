@@ -32,8 +32,9 @@ namespace SomeGame.Main.Tests
 
         public void TestSpriteScreenPosition(int actorWorldX, int cameraX, int? expectedActorLayerX)
         {
-            var actor = new Actor(ActorType.Character, TilesetContentKey.None, null, null, null, new Rectangle(0, 0, 16, 16), null);
-            actor.WorldPosition.X = actorWorldX;
+            var gameSystem = new GameSystem();
+            var actor = new Actor(gameSystem, ActorType.Character, TilesetContentKey.None, null, null, null, new Rectangle(0, 0, 16, 16), null);
+            actor.WorldPosition.X.Set(actorWorldX);
 
             var scroller = CreateScroller();
             var sprite = new Sprite(640, 480, 8);

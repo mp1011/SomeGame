@@ -14,7 +14,7 @@ namespace SomeGame.Main.Behaviors
 
         public void Update(Actor a)
         {
-            if (a.WorldPosition.Top > _sceneManager.CurrentScene.Bounds.Bottom)
+            if (a.WorldPosition.Top() > _sceneManager.CurrentScene.Bounds.Bottom)
                 a.Destroy();
         }
     }

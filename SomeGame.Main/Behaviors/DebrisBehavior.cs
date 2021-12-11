@@ -19,7 +19,7 @@ namespace SomeGame.Main.Behaviors
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             _gravity.Update(actor, collisionInfo);
-            if (actor.WorldPosition.Y > _scroller.Camera.Bottom)
+            if (actor.WorldPosition.Y > _scroller.Camera.Bottom())
                 actor.Destroy();
         }
     }

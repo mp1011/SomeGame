@@ -52,5 +52,4 @@
 
         public static implicit operator int(BoundedInt b) => b.Value;
     }
-
 }

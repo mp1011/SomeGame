@@ -12,11 +12,12 @@ namespace SomeGame.Main.Services
         private ScrollingLayer _bgLayer;
         private ScrollingLayer _fgLayer;
 
-        public GameRectangle Camera { get; private set; }
+        public BoundedGameRectangle Camera { get; }
 
         public Scroller(GameSystem gameSystem)
         {
             _gameSystem = gameSystem;
+            Camera = gameSystem.RAM.DeclareBoundedRectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height, 0, 0);
             SetTileMaps(new TileMap(LevelContentKey.None,2,2),new TileMap(LevelContentKey.None, 2, 2));
         }
 
@@ -66,9 +67,10 @@ namespace SomeGame.Main.Services
             var maxHeight = Math.Max(bg.TilesY, fg.TilesY) * _gameSystem.TileSize;
 
             var bounds = new Rectangle(0, 0, maxWidth, maxHeight);
-            Camera = new BoundedGameRectangle(bounds.X, bounds.Y, _gameSystem.Screen.Width, _gameSystem.Screen.Height,
-                    maxX: bounds.Width - _gameSystem.Screen.Width,
-                    maxY: bounds.Height - _gameSystem.Screen.Height);
+            Camera.X = bounds.X;
+            Camera.Y = bounds.Y;
+            Camera.MaxX = bounds.Width - _gameSystem.Screen.Width;
+            Camera.MaxY = bounds.Height - _gameSystem.Screen.Height;
 
             _bgLayer = new ScrollingLayer(_gameSystem, bg, _gameSystem.GetLayer(LayerIndex.BG));
             _fgLayer = new ScrollingLayer(_gameSystem, fg, _gameSystem.GetLayer(LayerIndex.FG));
@@ -96,8 +98,8 @@ namespace SomeGame.Main.Services
 
             actor.Visible = true;
 
-            var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X - Camera.X);
-            var actorScreenY = sprite.ScrollY.Set(actor.WorldPosition.Y - Camera.Y);
+            var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X.Pixel - Camera.X);
+            var actorScreenY = sprite.ScrollY.Set(actor.WorldPosition.Y.Pixel - Camera.Y);
 
             sprite.ScrollX = actorScreenX - actor.LocalHitbox.X;
             sprite.ScrollY = actorScreenY - actor.LocalHitbox.Y;

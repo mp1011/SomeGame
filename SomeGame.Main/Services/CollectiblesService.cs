@@ -65,7 +65,7 @@ namespace SomeGame.Main.Services
             }
         }
 
-        public CollisionInfo HandleCollectibleCollision(GameRectangleWithSubpixels actorPosition)
+        public CollisionInfo HandleCollectibleCollision(IGameRectangle actorPosition)
         {
             var layer = _gameSystem.GetLayer(LayerIndex.FG);
 
@@ -74,7 +74,7 @@ namespace SomeGame.Main.Services
                 if (collectible.Collected)
                     continue;
 
-                if (!actorPosition.IntersectsWith(collectible.Position))
+                if (!actorPosition.IntersectsWithRec(collectible.Position))
                     continue;
 
                 collectible.EraseFromMap(_scroller.GetTopLeftTile(LayerIndex.FG), layer);

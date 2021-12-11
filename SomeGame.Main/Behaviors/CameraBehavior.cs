@@ -18,8 +18,8 @@ namespace SomeGame.Main.Behaviors
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
-            _scroller.Camera.X = actor.WorldPosition.X - _gameSystem.Screen.Width / 2;
-            _scroller.Camera.Y = actor.WorldPosition.Y - _gameSystem.Screen.Height / 2;
+            _scroller.Camera.X = actor.WorldPosition.X.Pixel - (_gameSystem.Screen.Width / 2);
+            _scroller.Camera.Y = actor.WorldPosition.Y.Pixel - (_gameSystem.Screen.Height / 2);
         }
     }
 }

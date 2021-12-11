@@ -8,15 +8,15 @@ namespace SomeGame.Main.Models
 {
     class Actor
     {
-        public ActorType ActorType { get; }
+        public RamEnum<ActorType> ActorType { get; }
         public Behavior Behavior { get; }
         public IDestroyedBehavior DestroyedBehavior { get; }
-        public Rectangle LocalHitbox { get; }
+        public RamRectangle LocalHitbox { get; }
 
         public SpriteAnimator Animator { get; }
 
         public ICollisionDetector CollisionDetector { get; }
-        public GameRectangleWithSubpixels WorldPosition { get; set; }
+        public RamGameRectangle WorldPosition { get; set; }
         public PixelPoint MotionVector { get; set; } = new PixelPoint(0, 0);
         public TilesetContentKey Tileset { get; }
         public PaletteIndex Palette { get; set; }
@@ -47,7 +47,8 @@ namespace SomeGame.Main.Models
             }
         }
 
-        public Actor(ActorType actorType,
+        public Actor(GameSystem gameSystem,
+                     ActorType actorType,
                      TilesetContentKey tilesetKey, 
                      Behavior behavior,
                      IDestroyedBehavior destroyedBehavior,
@@ -55,13 +56,13 @@ namespace SomeGame.Main.Models
                      Rectangle localHitbox,
                      SpriteAnimator animator)
         {
-            ActorType = actorType;
-            WorldPosition = new GameRectangleWithSubpixels(0, 0, 16, 16);
+            ActorType = gameSystem.RAM.DeclareEnum<ActorType>(actorType);
+            WorldPosition = gameSystem.RAM.DeclareGameRectangleWithSubpixels(16,16);
             Behavior = behavior;
             DestroyedBehavior = destroyedBehavior;
             CollisionDetector = collisionDetector;
             Tileset = tilesetKey;
-            LocalHitbox = localHitbox;
+            LocalHitbox = gameSystem.RAM.DeclareRectangle(localHitbox);
             Animator = animator;
         }
 

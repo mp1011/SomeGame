@@ -31,7 +31,7 @@ namespace SomeGame.Main.Behaviors
         {
             if (_baseBehavior.CurrentState == StandardEnemyState.Idle)
             {
-                if (actor.WorldPosition.Top < _riseHeight)
+                if (actor.WorldPosition.Y < _riseHeight)
                     actor.MotionVector = new PixelPoint(0, 0);
 
                 var player = _playerFinder.FindActor();
@@ -56,7 +56,7 @@ namespace SomeGame.Main.Behaviors
                     actor.MotionVector = new PixelPoint(new PixelValue(0, 0), _riseSpeed);
                     var player = _playerFinder.FindActor();
                     if(player != null)
-                        _riseHeight = player.WorldPosition.Top - 50;
+                        _riseHeight = player.WorldPosition.Y.Pixel - 50;
                     ResetTimer();
                 }
             }

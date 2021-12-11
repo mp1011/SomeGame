@@ -22,11 +22,11 @@ namespace SomeGame.Main.Behaviors
         {
             var collisionInfo = new CollisionInfo();
 
-            var topLeftTile = actor.WorldPosition.TopLeft
+            var topLeftTile = actor.WorldPosition.TopLeft()
                                         .Divide(_gameSystem.TileSize)
                                         .Offset(-2, -2);
 
-            var bottomRightTile = actor.WorldPosition.BottomRight
+            var bottomRightTile = actor.WorldPosition.BottomRight()
                                         .Divide(_gameSystem.TileSize)
                                         .Offset(2, 2);
 
@@ -73,7 +73,7 @@ namespace SomeGame.Main.Behaviors
 
             if (xCorrection != 0)
             {
-                actor.WorldPosition.XPixel += xCorrection;
+                actor.WorldPosition.X.Add(xCorrection);
                 collisionInfo += new CollisionInfo(XCorrection: xCorrection);
             }
 
@@ -126,7 +126,7 @@ namespace SomeGame.Main.Behaviors
 
             if (yCorrection != 0)
             {
-                actor.WorldPosition.YPixel += yCorrection;
+                actor.WorldPosition.Y.Add(yCorrection);
                 collisionInfo += new CollisionInfo(YCorrection: yCorrection);
             }
 
@@ -137,15 +137,15 @@ namespace SomeGame.Main.Behaviors
         {
             if (actor.MotionVector.X > 0
                 && !rightTileSolid
-                && tile.Bottom > actor.WorldPosition.Bottom
-                && actor.WorldPosition.Right > tile.Center.X)
+                && tile.Bottom > actor.WorldPosition.Bottom()
+                && actor.WorldPosition.Right() > tile.Center.X)
             {
                 return new CollisionInfo(IsFacingLedge: true);
             }
             else if (actor.MotionVector.X < 0
                && !leftTileSolid
-               && tile.Bottom > actor.WorldPosition.Bottom
-               && actor.WorldPosition.Left < tile.Center.X)
+               && tile.Bottom > actor.WorldPosition.Bottom()
+               && actor.WorldPosition.Left() < tile.Center.X)
             {
                 return new CollisionInfo(IsFacingLedge: true);
             }
@@ -159,8 +159,8 @@ namespace SomeGame.Main.Behaviors
 
             if (actor.MotionVector.Y >= 0
                 && correctedBottom == collidingTile.Top
-                && actor.WorldPosition.Right >= collidingTile.Left
-                && actor.WorldPosition.Left <= collidingTile.Right)
+                && actor.WorldPosition.Right() >= collidingTile.Left
+                && actor.WorldPosition.Left() <= collidingTile.Right)
             {
                 return new CollisionInfo(IsOnGround: true);
             }
@@ -247,8 +247,8 @@ namespace SomeGame.Main.Behaviors
 
                 if(collisionInfo.IsOnGround)
                 {
-                    actor.WorldPosition.XPixel += block.MotionVector.X;
-                    actor.WorldPosition.YPixel += block.MotionVector.Y;
+                    actor.WorldPosition.X.Add(block.MotionVector.X);
+                    actor.WorldPosition.Y.Add(block.MotionVector.Y);
                 }
 
                 if (collisionInfo.IsOnGround)
@@ -257,7 +257,7 @@ namespace SomeGame.Main.Behaviors
 
             if (yCorrection != 0)
             {
-                actor.WorldPosition.YPixel += yCorrection;
+                actor.WorldPosition.Y.Add(yCorrection);
                 collisionInfo += new CollisionInfo(YCorrection: yCorrection);
             }
 

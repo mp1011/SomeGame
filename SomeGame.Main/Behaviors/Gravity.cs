@@ -4,7 +4,7 @@ namespace SomeGame.Main.Behaviors
 {
     class Gravity : Behavior
     {
-        private byte _acceleration = 30;
+        private byte _acceleration = 15;
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {

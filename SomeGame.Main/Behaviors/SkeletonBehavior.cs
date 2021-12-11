@@ -67,8 +67,8 @@ namespace SomeGame.Main.Behaviors
             _enemyMotionBehavior.SetAttacking(actor);
 
             _projectile.Flip = actor.Flip;           
-            _projectile.WorldPosition.X = actor.WorldPosition.X;
-            _projectile.WorldPosition.Y = actor.WorldPosition.Y;
+            _projectile.WorldPosition.X.Set(actor.WorldPosition.X);
+            _projectile.WorldPosition.Y.Set(actor.WorldPosition.Y);
 
             _projectile.Create();
 

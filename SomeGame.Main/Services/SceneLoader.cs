@@ -136,10 +136,10 @@ namespace SomeGame.Main.Services
 
         private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)
         {
-            foreach (var actorStart in sceneInfo.Actors)            
+            foreach (var actorStart in sceneInfo.Actors)
                 _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
-            
-            if(sceneInfo.CollectiblePlacements.Any())
+
+            if (sceneInfo.CollectiblePlacements.Any())
                 _collectiblesService.CreateCollectedItemActors(_actorFactory);
         }
 

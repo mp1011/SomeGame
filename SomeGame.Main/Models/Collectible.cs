@@ -21,7 +21,7 @@ namespace SomeGame.Main.Models
         protected abstract int Width { get; }
         protected abstract int Height { get; }
 
-        public GameRectangle Position { get; }
+        public IGameRectangle Position { get; }
 
         public bool Collected { get; private set; }
 
@@ -33,8 +33,8 @@ namespace SomeGame.Main.Models
             _collectedItemPool = collectedItemPool;
             _layer = layer;
 
-            Position = new GameRectangle(tileLocation.X * gameSystem.TileSize, tileLocation.Y * gameSystem.TileSize,
-                                         Width * _gameSystem.TileSize, Height * gameSystem.TileSize);
+            Position = gameSystem.RAM.DeclareRectangle(new Rectangle(tileLocation.X * gameSystem.TileSize, tileLocation.Y * gameSystem.TileSize,
+                                         Width * _gameSystem.TileSize, Height * gameSystem.TileSize));
         }
 
         public abstract MapCollectible StampOntoMap();
@@ -45,8 +45,8 @@ namespace SomeGame.Main.Models
             if (collected == null)
                 return null;
 
-            collected.WorldPosition.X = Position.X;
-            collected.WorldPosition.Y = Position.Y;
+            collected.WorldPosition.X.Set(Position.X);
+            collected.WorldPosition.Y.Set(Position.Y);
             return collected;
         }
 

@@ -13,6 +13,8 @@ namespace SomeGame.Main.Models
 {
     class GameSystem
     {
+        public RAM RAM { get; }
+
         private VramData _tileSetData;
         private Palette[] _palettes;
         private Layer[] _layers;
@@ -39,6 +41,7 @@ namespace SomeGame.Main.Models
         public GameSystem()
         {
             DebugService.GameSystem = this;
+            RAM = new RAM();
 
             _layers = new Layer[]
             {

@@ -8,7 +8,7 @@ namespace SomeGame.Main.Behaviors
     {
         public StandardEnemyState CurrentState { get; private set; }
 
-        public PixelValue WalkSpeed { get; set; } = new PixelValue(0, 100);
+        public PixelValue WalkSpeed { get; set; } = new PixelValue(0, 50);
         
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
