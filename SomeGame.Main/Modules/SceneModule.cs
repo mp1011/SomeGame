@@ -22,8 +22,8 @@ namespace SomeGame.Main.Modules
         private IGameInterface _gameInterface;
         private ISceneController _sceneController;
 
-        public SceneModule(SceneContentKey initialScene, ContentManager contentManager, GraphicsDevice graphicsDevice) 
-            : base(contentManager, graphicsDevice)
+        public SceneModule(SceneContentKey initialScene, GameStartup startup) 
+            : base(startup)
         {
             _initialScene = initialScene;
             _playerStateManager = new PlayerStateManager();

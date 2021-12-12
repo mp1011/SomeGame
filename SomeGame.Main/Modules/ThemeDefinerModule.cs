@@ -26,7 +26,7 @@ namespace SomeGame.Main.Modules
         private IndexedImage _image;
 
         public ThemeDefinerModule(ImageContentKey imageKey, TilesetContentKey tilesetContentKey, 
-            ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager,graphicsDevice)
+            GameStartup gameStartup) : base(gameStartup)
         {
             _imageKey = imageKey;
             _tileSetKey = tilesetContentKey;

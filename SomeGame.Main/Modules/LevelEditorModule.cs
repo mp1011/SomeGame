@@ -40,8 +40,8 @@ namespace SomeGame.Main.Modules
 
         protected override PaletteKeys PaletteKeys { get; }
 
-        public LevelEditorModule(SceneContentKey scene, LayerIndex editLayer, ContentManager contentManager, GraphicsDevice graphicsDevice) 
-            : base(contentManager, graphicsDevice)
+        public LevelEditorModule(SceneContentKey scene, LayerIndex editLayer, GameStartup gameStartup) 
+            : base(gameStartup)
         {
             _tileSetService = new TileSetService();
             _blockSelect = new UIBlockSelect(HandleBlockAction, HandleBlockMouseMove);

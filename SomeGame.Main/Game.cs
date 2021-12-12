@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Models;
 using SomeGame.Main.Modules;
-using SomeGame.Main.Services;
 using System;
 
 namespace SomeGame.Main
@@ -13,11 +13,15 @@ namespace SomeGame.Main
         private SpriteBatch _spriteBatch;
         private RenderTarget2D _renderTarget;
 
-        private readonly Func<ContentManager, GraphicsDevice, IGameModule> _createModule;
+        private readonly Func<GameStartup, IGameModule> _createModule;
         private IGameModule _currentModule;
+        private IRamViewer _ramViewer;
 
-        public GameEngine(Func<ContentManager,GraphicsDevice,IGameModule> createModule)
+        public IGameModule CurrentModule => _currentModule; 
+
+        public GameEngine(Func<GameStartup, IGameModule> createModule, IRamViewer ramViewer)
         {
+            _ramViewer = ramViewer;
             _createModule = createModule;
             IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromMilliseconds(15);
@@ -35,7 +39,7 @@ namespace SomeGame.Main
 
         protected override void Initialize()
         {
-            _currentModule = _createModule(Content, GraphicsDevice);
+            _currentModule = _createModule(new GameStartup(Content, GraphicsDevice, _ramViewer));
             _currentModule.Initialize();
             base.Initialize();
         }

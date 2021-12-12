@@ -166,6 +166,7 @@ namespace SomeGame.Main.Services
             _audioService.UnloadSounds();
             _actorManager.UnloadAll();
             _collectiblesService.Reset();
+            //_gameSystem.RAM.Reset();
         }
     }
 }

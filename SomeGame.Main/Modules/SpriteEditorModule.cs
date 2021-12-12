@@ -17,8 +17,8 @@ namespace SomeGame.Main.Modules
         private UIButton _save;        
         private Point _previewSpriteTile = new Point(0, 4);
 
-        public SpriteEditorModule(TilesetContentKey spriteKey, ContentManager contentManager, GraphicsDevice graphicsDevice) 
-            : base(contentManager, graphicsDevice)
+        public SpriteEditorModule(TilesetContentKey spriteKey, GameStartup gameStartup) 
+            : base(gameStartup)
         {
             _spriteKey = spriteKey;
         }

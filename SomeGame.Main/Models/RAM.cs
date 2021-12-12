@@ -3,21 +3,67 @@ using System;
 
 namespace SomeGame.Main.Models
 {
-    class RAM
+    public interface IRamViewer
     {
-        private byte[] _memory = new byte[5000];
+        void MemoryChanged(int address, byte value);
+    }
+
+    class EmptyRamViewer : IRamViewer
+    {
+        public void MemoryChanged(int address, byte value)
+        {
+        }
+    }
+
+    public class RAM
+    {
+        private byte[] _memory = new byte[2000];
         private int _declareIndex = 0;
+        private IRamViewer _ramViewer;
+
+        public RAM(IRamViewer ramViewer)
+        {
+            _ramViewer = ramViewer;
+        }
+
+        public void Reset()
+        {
+            for(int i = 0; i < _memory.Length;i++)
+            {
+                _memory[i] = 0;
+                _ramViewer.MemoryChanged(i, 0);
+            }
+
+            _declareIndex = 0;
+        }
+
+        public byte this[int index]
+        {
+            get => _memory[index];
+            set
+            {
+                if(value != _memory[index])
+                    _ramViewer.MemoryChanged(index, value);
+
+                _memory[index] = value;                
+            }
+        }
 
         private void IncrementDeclareIndex(byte amount)
         {
+            for(int i = _declareIndex; i < _declareIndex + amount;i++)
+                _ramViewer.MemoryChanged(i, 0);
+
             _declareIndex += amount;
             if (_declareIndex >= _memory.Length)
                 throw new Exception("Out of memory");
+
+
         }
 
         public RamByte DeclareByte(byte b=0)
         {
-            var ret = new RamByte(_declareIndex, _memory);
+            var ret = new RamByte(_declareIndex, this);
             ret.Set(b);
             IncrementDeclareIndex(1);      
             return ret;
@@ -25,7 +71,7 @@ namespace SomeGame.Main.Models
 
         public RamInt DeclareInt(int value=0)
         {
-            var ret = new RamInt(_declareIndex, _memory);
+            var ret = new RamInt(_declareIndex, this);
             ret.Set(value);
             IncrementDeclareIndex(2);
             return ret;
@@ -39,7 +85,7 @@ namespace SomeGame.Main.Models
 
         public RamSignedByte DeclareSignedByte(int value = 0)
         {
-            var ret = new RamSignedByte(_declareIndex, _memory);
+            var ret = new RamSignedByte(_declareIndex, this);
             ret.Set(value);
             IncrementDeclareIndex(1);
             return ret;
@@ -47,20 +93,20 @@ namespace SomeGame.Main.Models
 
         public RamEnum<T> DeclareEnum<T>(T value) where T:Enum
         {
-            var ret = new RamEnum<T>(_declareIndex, _memory);
+            var ret = new RamEnum<T>(_declareIndex, this);
             ret.Set(value);
             IncrementDeclareIndex(1);
             return ret;
         }
 
-        public RamRectangle DeclareRectangle(Rectangle rec)
+        internal RamRectangle DeclareRectangle(Rectangle rec)
         {
             var ret = new RamRectangle(this);
             ret.Set(rec);
             return ret;
         }
 
-        public BoundedGameRectangle DeclareBoundedRectangle(int x, int y, int width, int height, int maxX, int maxY)
+        internal BoundedGameRectangle DeclareBoundedRectangle(int x, int y, int width, int height, int maxX, int maxY)
         {
             return new BoundedGameRectangle(
                 x: DeclareBoundedInt(x, maxX),
@@ -76,7 +122,7 @@ namespace SomeGame.Main.Models
 
         public RamPixelPoint DeclarePixelPoint() => new RamPixelPoint(DeclarePixelValue(0, 0), DeclarePixelValue(0, 0));
 
-        public RamGameRectangle DeclareGameRectangleWithSubpixels(int x, int y, byte width, byte height)
+        internal RamGameRectangle DeclareGameRectangleWithSubpixels(int x, int y, byte width, byte height)
         {
             var ret = DeclareGameRectangleWithSubpixels(width, height);
             ret.X.Set(x);
@@ -84,7 +130,7 @@ namespace SomeGame.Main.Models
             return ret;
         }
 
-        public RamGameRectangle DeclareGameRectangleWithSubpixels(byte width, byte height)
+        internal RamGameRectangle DeclareGameRectangleWithSubpixels(byte width, byte height)
         {
             var ret = new RamGameRectangle(
                                 X: new RamPixelValue(DeclareInt(), DeclareSignedByte()),
@@ -98,8 +144,9 @@ namespace SomeGame.Main.Models
     public abstract class RamValue
     {
         protected readonly int Index;
-        protected readonly byte[] Memory;
-        public RamValue(int index, byte[] ram)
+        protected readonly RAM Memory;
+
+        public RamValue(int index, RAM ram)
         {
             Index = index;
             Memory = ram;
@@ -108,7 +155,7 @@ namespace SomeGame.Main.Models
 
     public class RamByte : RamValue
     {
-        public RamByte(int index, byte[] ram) : base(index, ram) { }
+        public RamByte(int index, RAM ram) : base(index, ram) { }
 
         public static RamByte operator ++(RamByte r)
         {
@@ -143,7 +190,7 @@ namespace SomeGame.Main.Models
 
     public class RamEnum<T> : RamByte where T : Enum
     {
-        public RamEnum(int index, byte[] ram) : base(index, ram)
+        public RamEnum(int index, RAM ram) : base(index, ram)
         {
         }
 
@@ -189,7 +236,7 @@ namespace SomeGame.Main.Models
 
     public class RamSignedByte : RamValue
     {
-        public RamSignedByte(int index, byte[] ram) : base(index, ram)
+        public RamSignedByte(int index, RAM ram) : base(index, ram)
         {
         }
 
@@ -216,7 +263,7 @@ namespace SomeGame.Main.Models
 
     public class RamInt : RamValue
     {
-        public RamInt(int index, byte[] ram) : base(index, ram)
+        public RamInt(int index, RAM ram) : base(index, ram)
         {
         }
 

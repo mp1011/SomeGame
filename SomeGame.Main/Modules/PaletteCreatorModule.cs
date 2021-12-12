@@ -22,7 +22,8 @@ namespace SomeGame.Main.Modules
         private Palette _constructedPalette;
 
         private Font _font;
-        public PaletteCreatorModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
+        public PaletteCreatorModule(GameStartup gameStartup) 
+            : base(gameStartup)
         {
         }
 

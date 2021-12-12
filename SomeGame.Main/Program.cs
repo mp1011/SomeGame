@@ -4,20 +4,27 @@ using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Modules;
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SomeGame.Main
 {
     public static class Program
     {
         [STAThread]
-        static void Main()
+        public static void Main()
         {
-            using (var game = new GameEngine(CreateModule))
-                game.Run();
+            StartGame();
         }
 
-        private static IGameModule CreateModule(ContentManager cm, GraphicsDevice gd)
+        public static void StartGame(IRamViewer ramViewer=null)
+        {
+            using (var game = new GameEngine(CreateModule, ramViewer))
+            {
+                game.Run();
+            }
+        }
+
+        private static IGameModule CreateModule(GameStartup startup)
         {
          //  return new SceneDefinitionModule();
          //return new LevelEditorModule(SceneContentKey.Test3, LayerIndex.FG, cm, gd);
@@ -26,7 +33,7 @@ namespace SomeGame.Main
 
           //  return new SpriteEditorModule(TilesetContentKey.Bullet2, cm, gd);
           //   return new AnimationDefinitionModule();
-          return new SceneModule(SceneContentKey.Level1TitleCard, cm, gd);
+          return new SceneModule(SceneContentKey.Level1TitleCard, startup);
            // return new TextureCreatorModule(cm, gd, ImageContentKey.Mountains);
             // ImageContentKey.Bullet3, ImageContentKey.Clouds, ImageContentKey.Ghost, ImageContentKey.Mountains);
          //  return new ThemeDefinerModule(ImageContentKey.Tiles1, TilesetContentKey.Tiles1, cm, gd);

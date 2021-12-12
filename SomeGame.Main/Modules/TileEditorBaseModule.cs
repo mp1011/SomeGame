@@ -10,7 +10,8 @@ namespace SomeGame.Main.Modules
     {
         private Point _lastMouseTile;
 
-        protected TileEditorBaseModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
+        protected TileEditorBaseModule(GameStartup gameStartup) 
+            : base(gameStartup)
         {
         }
 

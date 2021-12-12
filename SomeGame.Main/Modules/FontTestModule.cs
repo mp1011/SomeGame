@@ -11,7 +11,8 @@ namespace SomeGame.Main.Modules
 {
     class FontTestModule : EditorModule
     {
-        public FontTestModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
+        public FontTestModule(GameStartup startup) 
+            : base(startup)
         {
         }
 

@@ -38,10 +38,10 @@ namespace SomeGame.Main.Models
 
         public IUserInputSource Input { get; }
 
-        public GameSystem()
+        public GameSystem(IRamViewer ramViewer=null)
         {
             DebugService.GameSystem = this;
-            RAM = new RAM();
+            RAM = new RAM(ramViewer ?? new EmptyRamViewer());
 
             _layers = new Layer[]
             {

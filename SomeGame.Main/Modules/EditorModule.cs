@@ -8,8 +8,8 @@ namespace SomeGame.Main.Modules
 {
     abstract class EditorModule : GameModuleBase
     {
-        protected EditorModule(ContentManager contentManager, GraphicsDevice graphicsDevice)
-            : base(contentManager, graphicsDevice) { }
+        protected EditorModule(GameStartup startup)
+            : base(startup) { }
 
         protected virtual PaletteKeys PaletteKeys => new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);
 

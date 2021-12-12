@@ -19,10 +19,12 @@ namespace SomeGame.Main.Services
 #if DEBUG
             dir = dir.Parent;
 #endif
-            while (_contentFolder == null)
+            while (_contentFolder == null || !_contentFolder.Exists)
             {
                 _contentFolder = dir.GetDirectories()
-                                    .FirstOrDefault(p => p.Name == "Content");
+                                    .FirstOrDefault(p => p.Name == "Content")
+                                    ?? new DirectoryInfo($"{dir.FullName}\\SomeGame.Main\\Content");
+                
                 dir = dir.Parent;
             }
         }

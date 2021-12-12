@@ -10,7 +10,8 @@ namespace SomeGame.Main.Modules
 {
     class GameSystemTestModule : EditorModule
     {
-        public GameSystemTestModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
+        public GameSystemTestModule(GameStartup startup) 
+            : base(startup)
         {
         }
 

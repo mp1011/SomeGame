@@ -10,9 +10,9 @@ namespace SomeGame.Main.Modules
     {
         private readonly AudioService _audioService;
         private readonly SongData _song;
-        public MusicEditorModule(ContentManager contentManager, GraphicsDevice graphicsDevice) : base(contentManager, graphicsDevice)
+        public MusicEditorModule(GameStartup gameStartup) : base(gameStartup)
         {
-            _audioService = new AudioService(new ResourceLoader(contentManager));
+            _audioService = new AudioService(new ResourceLoader(gameStartup.ContentManager));
 
             _song = CreateSong1();
             DataSerializer.Save(_song);

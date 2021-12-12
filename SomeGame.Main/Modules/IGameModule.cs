@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using SomeGame.Main.Content;
 using SomeGame.Main.Models;
-using SomeGame.Main.Scenes;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Modules
@@ -33,14 +31,14 @@ namespace SomeGame.Main.Modules
 
         public Rectangle Screen => GameSystem.Screen;
 
-        public GameModuleBase(ContentManager contentManager, GraphicsDevice graphicsDevice)
+        public GameModuleBase(GameStartup startup)
         {
-            GameSystem = new GameSystem();
-            RenderService= new RasterBasedRenderService(GameSystem, graphicsDevice);
+            GameSystem = new GameSystem(startup.RamViewer);
+            RenderService= new RasterBasedRenderService(GameSystem, startup.GraphicsDevice);
             InputManager = new InputManager(GameSystem);
             DataSerializer = new DataSerializer();
-            ResourceLoader = new ResourceLoader(contentManager);
-            GraphicsDevice = graphicsDevice;
+            ResourceLoader = new ResourceLoader(startup.ContentManager);
+            GraphicsDevice = startup.GraphicsDevice;
         }
 
         public void Draw(SpriteBatch spriteBatch)
