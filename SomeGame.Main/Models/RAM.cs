@@ -83,6 +83,11 @@ namespace SomeGame.Main.Models
             return ret;
         }
 
+        public BoundedRamByte DeclareBoundedByte(byte value, byte max)
+        {
+            return new BoundedRamByte(DeclareByte(value), DeclareByte(max));
+        }
+
         public RamSignedByte DeclareSignedByte(int value = 0)
         {
             var ret = new RamSignedByte(_declareIndex, this);
@@ -104,6 +109,11 @@ namespace SomeGame.Main.Models
             var ret = new RamRectangle(this);
             ret.Set(rec);
             return ret;
+        }
+
+        internal RamPoint DeclarePoint()
+        {
+            return new RamPoint(DeclareInt(), DeclareInt());
         }
 
         internal BoundedGameRectangle DeclareBoundedRectangle(int x, int y, int width, int height, int maxX, int maxY)
@@ -163,6 +173,21 @@ namespace SomeGame.Main.Models
             return r;
         }
 
+        public RamByte Inc()
+        {
+            Memory[Index]++;
+            return this;
+        }
+
+        public RamByte Dec()
+        {
+            Memory[Index]--;
+            return this;
+        }
+
+        public void Add(int value) => Set(this + value);
+        public void Subtract(int value) => Set(this - value);
+
         public static implicit operator byte(RamByte r)=> r.Memory[r.Index];
 
         public RamByte Set(byte newValue)
@@ -170,6 +195,7 @@ namespace SomeGame.Main.Models
             Memory[Index] = newValue;
             return this;
         }
+        public RamByte Set(int newValue) => Set((byte)newValue);
 
         public static bool operator ==(RamByte r, byte value) => r.Memory[r.Index] == value;
         public static bool operator !=(RamByte r, byte value) => r.Memory[r.Index] != value;
@@ -186,6 +212,11 @@ namespace SomeGame.Main.Models
         {
             return Memory[Index];
         }
+
+        public override string ToString()
+        {
+            return ((byte)this).ToString("X2");
+        }
     }
 
     public class RamEnum<T> : RamByte where T : Enum
@@ -195,6 +226,14 @@ namespace SomeGame.Main.Models
         }
 
         public RamByte Set(T newValue) => Set((byte)(object)newValue);
+
+        public bool GetFlag(T flag)
+        {
+            var flagByte = (byte)(object)flag;
+            var thisByte = Memory[Index];
+            return (thisByte & flagByte) > 0;
+
+        }
 
         public RamByte SetFlag(T flag, bool on)
         {
@@ -267,6 +306,9 @@ namespace SomeGame.Main.Models
         {
         }
 
+        public void Add(int value) => Set(this + value);
+        public void Subtract(int value) => Set(this - value);
+
         public RamInt Set(int value)
         {
             value = value + 32768;
@@ -287,7 +329,47 @@ namespace SomeGame.Main.Models
             return unsigned - 32768;
         }
 
+        public string ToString(string format)
+        {
+            int i = this;
+            return i.ToString(format);
+        }
+
         public override string ToString() => ((int)this).ToString();
+    }
+
+    public class BoundedRamByte
+    {
+        private readonly RamByte _limit;
+        private readonly RamByte _value;
+
+        public int Max
+        {
+            get => _limit;
+            set => _limit.Set(value);
+        }
+
+        public BoundedRamByte(RamByte value, RamByte limit)
+        {
+            _limit = limit;
+            _value = value;
+        }
+
+        public BoundedRamByte Set(int value)
+        {
+            if (value > Max)
+                value = Max;
+            else if (value < 0)
+                value = 0;
+
+            _value.Set(value);
+            return this;
+        }
+
+        public void Add(int value) => Set(this + value);
+        public void Subtract(int value) => Set(this - value);
+
+        public static implicit operator byte(BoundedRamByte r) => r._value;
     }
 
     public class BoundedRamInt
@@ -320,7 +402,16 @@ namespace SomeGame.Main.Models
 
         public static implicit operator int(BoundedRamInt r) => r._value;
     }
+    record RamPoint(RamInt X, RamInt Y)
+    {
+        public void Set(Point p)
+        {
+            X.Set(p.X);
+            Y.Set(p.Y);
+        }
 
+        public static implicit operator Point(RamPoint r)=> new Point(r.X,r.Y);
+    }
 
     class RamRectangle : IGameRectangle
     {

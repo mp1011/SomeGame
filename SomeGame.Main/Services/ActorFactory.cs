@@ -108,12 +108,16 @@ namespace SomeGame.Main.Services
         {
             var playerProjectiles = CreatePool(ActorId.PlayerBullet, 2);
 
+            var inputQueue = _gameSystem.RAM.DeclareEnum(InputQueue.None);
+
             return CreateActor(
                 actorId: ActorId.Player,
                 actorType: ActorType.Player | ActorType.Character,
                 behavior: new PlayerBehavior(
-                                new PlatformerPlayerMotionBehavior(_inputManager, _audioService),
-                                new PlayerHurtBehavior(_playerStateManager, _audioService),
+                                _gameSystem,
+                                inputQueue,
+                                new PlatformerPlayerMotionBehavior(_gameSystem, _inputManager, _audioService, inputQueue),
+                                new PlayerHurtBehavior(_gameSystem, _playerStateManager, _audioService),
                                 new CameraBehavior(_scroller, _gameSystem),
                                 new Gravity(),
                                 _inputManager,
@@ -122,7 +126,7 @@ namespace SomeGame.Main.Services
                                 _sceneManager,
                                 _audioService,
                                 transitionInfo),
-                destroyedBehavior: new PlayerDeathBehavior(_sceneManager),
+                destroyedBehavior: new PlayerDeathBehavior(_gameSystem, _sceneManager),
                 collisionDetector: new PlayerCollisionDetector(
                                             new BgCollisionDetector(_gameSystem, _scroller.GetTilemap(LayerIndex.FG), _actorManager),
                                             new CollectiblesCollectionDetector(_collectiblesService)),
@@ -135,7 +139,7 @@ namespace SomeGame.Main.Services
             var bullet = CreateActor(
                actorId: ActorId.PlayerBullet,
                actorType: ActorType.Player | ActorType.Bullet,
-               behavior: new ProjectileBehavior(new PixelValue(2, 80), duration:20),               
+               behavior: new ProjectileBehavior(_gameSystem, new PixelValue(2, 80), duration:20),               
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Enemy | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
@@ -156,7 +160,7 @@ namespace SomeGame.Main.Services
             return CreateActor(
                  actorId: ActorId.Skeleton,
                  actorType: ActorType.Enemy | ActorType.Character,
-                 behavior: new SkeletonBehavior(new Gravity(), new EnemyBaseBehavior(), bone),
+                 behavior: new SkeletonBehavior(_gameSystem, new Gravity(), new EnemyBaseBehavior(_gameSystem), bone),
                  destroyedBehavior: new SkeletonDestroyedBehavior(score: 100, _playerStateManager, skull,bones, _audioService),
                  collisionDetector: new BgCollisionDetector(_gameSystem, _scroller.GetTilemap(LayerIndex.FG), _actorManager),
                  hitBox: new Rectangle(4, 0, 8, 15),
@@ -168,7 +172,7 @@ namespace SomeGame.Main.Services
             var enemyProjectile = CreateActor(
                actorId: ActorId.SkeletonBone,
                actorType: ActorType.Enemy | ActorType.Bullet,
-               behavior: new ProjectileBehavior(new PixelValue(1, 0), duration:100),
+               behavior: new ProjectileBehavior(_gameSystem, new PixelValue(1, 0), duration:100),
                destroyedBehavior: new EmptyDestroyedBehavior(),
                collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                hitBox: new Rectangle(0, 0, 8, 8),
@@ -198,7 +202,7 @@ namespace SomeGame.Main.Services
             return CreateActor(
                  actorId: ActorId.Bat,
                  actorType: ActorType.Enemy | ActorType.Character,
-                 behavior: new BatBehavior(new EnemyBaseBehavior(), _playerFinder),
+                 behavior: new BatBehavior(_gameSystem, new EnemyBaseBehavior(_gameSystem), _playerFinder),
                  destroyedBehavior: new EnemyDestroyedBehavior(score:25, _playerStateManager, _audioService),
                  collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                  hitBox: new Rectangle(4, 4, 8, 8),
@@ -211,8 +215,8 @@ namespace SomeGame.Main.Services
             return CreateActor(
                  actorId: ActorId.Ghost,
                  actorType: ActorType.Enemy | ActorType.Character,
-                 behavior: new GhostBehavior(new EnemyBaseBehavior(), _playerFinder, bullet),
-                 destroyedBehavior: new GhostDestroyedBehavior(score:200, bullet, _playerStateManager, _audioService),
+                 behavior: new GhostBehavior(_gameSystem, new EnemyBaseBehavior(_gameSystem), _playerFinder, bullet),
+                 destroyedBehavior: new GhostDestroyedBehavior(gameSystem: _gameSystem, score:200, bullet, _playerStateManager, _audioService),
                  collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                  hitBox: new Rectangle(4, 4, 8, 16),
                  position: position);

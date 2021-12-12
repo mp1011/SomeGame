@@ -46,7 +46,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnCollected(PlayerState playerState)
         {
-            playerState.Score += 25;
+            playerState.Score.Add(25);
         }
     }
 
@@ -60,7 +60,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnCollected(PlayerState playerState)
         {
-            playerState.Score += 500;
+            playerState.Score.Add(500);
         }
     }
 
@@ -74,7 +74,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnCollected(PlayerState playerState)
         {
-            playerState.Health += 4;
+            playerState.Health.Add(4);
         }
     }
 
@@ -88,7 +88,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnCollected(PlayerState playerState)
         {
-            playerState.Health += 20;
+            playerState.Health.Add(20);
         }
     }
 

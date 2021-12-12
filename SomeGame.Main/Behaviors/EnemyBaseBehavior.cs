@@ -6,10 +6,26 @@ namespace SomeGame.Main.Behaviors
 {
     class EnemyBaseBehavior : Behavior
     {
-        public StandardEnemyState CurrentState { get; private set; }
+        private RamEnum<StandardEnemyState> _state;
+        private RamPixelValue _walkSpeed;
 
-        public PixelValue WalkSpeed { get; set; } = new PixelValue(0, 50);
+        public StandardEnemyState CurrentState
+        {
+            get => _state;
+            set => _state.Set(value);
+        }
+
+        public PixelValue WalkSpeed
+        {
+            get => _walkSpeed;
+            set => _walkSpeed.Set(value);
+        }
         
+        public EnemyBaseBehavior(GameSystem gameSystem)
+        {
+            _state = gameSystem.RAM.DeclareEnum(StandardEnemyState.Idle);
+            _walkSpeed = gameSystem.RAM.DeclarePixelValue(0, 50);
+        }
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
             if (collisionInfo.XCorrection != 0)

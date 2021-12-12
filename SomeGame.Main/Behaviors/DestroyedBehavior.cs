@@ -37,7 +37,7 @@ namespace SomeGame.Main.Behaviors
         public void OnDestroyed(Actor actor)
         {
             _audioService.Play(DestroySound);
-            _playerStateManager.CurrentState.Score += _score;
+            _playerStateManager.CurrentState.Score.Add(_score);
             OnDestroyedStart(actor);
         }
 

@@ -6,19 +6,20 @@ namespace SomeGame.Main.Behaviors
 {
     class ProjectileBehavior : Behavior
     {
-        private int _destroyTimer;
-        private int _duration;
-        private PixelValue _speed;
+        private RamByte _destroyTimer;
+        private RamByte _duration;
+        private RamPixelValue _speed;
 
-        public ProjectileBehavior(PixelValue speed, int duration)
+        public ProjectileBehavior(GameSystem gameSystem, PixelValue speed, byte duration)
         {
-            _duration = duration;
-            _speed = speed;
+            _destroyTimer = gameSystem.RAM.DeclareByte();
+            _duration = gameSystem.RAM.DeclareByte(duration);
+            _speed = gameSystem.RAM.DeclarePixelValue(speed.Pixel,speed.SubPixel);
         }
 
         public override void OnCreated(Actor actor)
         {
-            _destroyTimer = 0;
+            _destroyTimer.Set(0);
             actor.CurrentAnimation = AnimationKey.Moving;           
         }
 
@@ -28,8 +29,8 @@ namespace SomeGame.Main.Behaviors
             {
                 var direction = actor.Flip == Flip.H ? Direction.Left : Direction.Right;
                 var pt = direction.ToPoint();
-                actor.MotionVector.X.Set(_speed * pt.X);
-                actor.MotionVector.Y.Set(_speed * pt.Y);
+                actor.MotionVector.X.Set((PixelValue)_speed * pt.X);
+                actor.MotionVector.Y.Set((PixelValue)_speed * pt.Y);
             }
 
             _destroyTimer++;

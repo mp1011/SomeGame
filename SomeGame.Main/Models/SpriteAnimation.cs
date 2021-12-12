@@ -2,14 +2,24 @@
 {
     class SpriteAnimation
     {
-        public AnimationKey Key { get; }
-        public byte FramesRemaining { get; set; }
-        public byte CurrentIndex { get; set; }
 
-        public SpriteAnimation(AnimationKey key)
+        private readonly RamEnum<AnimationKey> _key;
+        public AnimationKey Key => _key;
+        public RamByte FramesRemaining { get; }
+        public RamByte CurrentIndex { get;  }
+
+        public SpriteAnimation(GameSystem gameSystem, AnimationKey key)
         {
-            Key = key;
-            CurrentIndex = 254;
+            _key = gameSystem.RAM.DeclareEnum(key);
+            CurrentIndex = gameSystem.RAM.DeclareByte(254);
+            FramesRemaining = gameSystem.RAM.DeclareByte();
+        }
+
+        public void ChangeKey(AnimationKey key)
+        {
+            _key.Set(key);
+            FramesRemaining.Set(0);
+            CurrentIndex.Set(254);
         }
     }
 }

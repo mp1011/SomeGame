@@ -9,7 +9,7 @@ namespace SomeGame.Main.Behaviors
     {
         private AudioService _audioService;
         private PlayerStateManager _playerStateManager;
-        private int _hurtTimer;
+        private readonly RamByte _hurtTimer;
         private const int _recoilTime = 20;
         private const int _invulnerableTime = 200;
         private PaletteIndex _normalPalette;
@@ -18,8 +18,9 @@ namespace SomeGame.Main.Behaviors
         public bool IsRecoiling => _hurtTimer > 0 && _hurtTimer < _recoilTime;
         public bool IsInvulnerable => _hurtTimer > 0 && _hurtTimer < _invulnerableTime;
 
-        public PlayerHurtBehavior(PlayerStateManager playerStateManager, AudioService audioService)
+        public PlayerHurtBehavior(GameSystem gameSystem, PlayerStateManager playerStateManager, AudioService audioService)
         {
+            _hurtTimer = gameSystem.RAM.DeclareByte();
             _playerStateManager = playerStateManager;
             _audioService = audioService;
         }
@@ -52,10 +53,10 @@ namespace SomeGame.Main.Behaviors
                 actor.Palette = _normalPalette;
 
             if (_hurtTimer > 0)
-                _hurtTimer++;
+                _hurtTimer.Inc();
 
             if (_hurtTimer == _invulnerableTime)
-                _hurtTimer = 0;
+                _hurtTimer.Set(0);
         }
 
 
@@ -67,10 +68,10 @@ namespace SomeGame.Main.Behaviors
             if (_hurtTimer == 0)
             {
                 _audioService.Play(SoundContentKey.Hurt);
-                _playerStateManager.CurrentState.Health -= 5;
+                _playerStateManager.CurrentState.Health.Subtract(5);
                 if (_playerStateManager.CurrentState.Health == 0)
                     actor.Destroy();
-                _hurtTimer = 1;
+                _hurtTimer.Set(1);
             }
         }
     }

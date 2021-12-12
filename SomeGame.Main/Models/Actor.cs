@@ -2,7 +2,6 @@
 using SomeGame.Main.Behaviors;
 using SomeGame.Main.Content;
 using SomeGame.Main.Services;
-using System.Collections.Generic;
 
 namespace SomeGame.Main.Models
 {

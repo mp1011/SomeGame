@@ -20,10 +20,16 @@ namespace SomeGame.Main.Behaviors
         private readonly SceneManager _sceneManager;
         private readonly TransitionInfo _incomingTransition;
 
-        private int _attackCooldown;
-        private bool _queueAttack;
+        private readonly RamByte _attackCooldown;
+        private readonly RamEnum<InputQueue> _inputQueue;
 
-        public PlayerBehavior(PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, 
+        private bool _queueAttack
+        {
+            get => _inputQueue.GetFlag(InputQueue.Attack);
+            set => _inputQueue.SetFlag(InputQueue.Attack, value);
+        }
+
+        public PlayerBehavior(GameSystem gameSystem, RamEnum<InputQueue> inputQueue, PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, 
             CameraBehavior cameraBehavior, Gravity gravity, InputManager inputManager, ActorPool bullets,  
             DestroyOnFall destroyOnFall, SceneManager sceneManager, AudioService audioService, TransitionInfo incomingTransition)
         {
@@ -37,6 +43,8 @@ namespace SomeGame.Main.Behaviors
             _audioService = audioService;
             _sceneManager = sceneManager;
             _incomingTransition = incomingTransition;
+            _attackCooldown = gameSystem.RAM.DeclareByte();
+            _inputQueue = inputQueue;
         }
 
         public override void OnCreated(Actor actor)
@@ -102,7 +110,7 @@ namespace SomeGame.Main.Behaviors
             {
                 _queueAttack = false;
                 actor.CurrentAnimation = AnimationKey.Attacking;
-                _attackCooldown = 15;
+                _attackCooldown.Set(15);
                 _audioService.Play(SoundContentKey.Shoot);
             }
             else if(_inputManager.Input.B.IsPressed())
@@ -111,7 +119,7 @@ namespace SomeGame.Main.Behaviors
             }
 
             if (_attackCooldown > 0)
-                _attackCooldown--;
+                _attackCooldown.Dec();
 
             _sceneManager.CheckLevelTransitions(actor);
         }

@@ -2,8 +2,15 @@
 {
     internal class PlayerState
     {
-        public BoundedInt Health { get; set; } 
-        public byte Lives { get; set; } 
-        public int Score { get; set; }
+        public BoundedRamByte Health { get; } 
+        public RamByte Lives { get; } 
+        public RamInt Score { get; }
+
+        public PlayerState(GameSystem gameSystem)
+        {
+            Health = gameSystem.RAM.DeclareBoundedByte(1,1);
+            Lives = gameSystem.RAM.DeclareByte();
+            Score = gameSystem.RAM.DeclareInt();
+        }
     }
 }

@@ -10,13 +10,22 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly InputManager _inputManger;
         private readonly AudioService _audioService;
-        private int _exJumpCounter;
-        private bool _jumpQueued;
-
-        public PlatformerPlayerMotionBehavior(InputManager inputManger, AudioService audioService)
+        private RamByte _exJumpCounter;
+        private RamEnum<InputQueue> _inputQueue;
+        
+        private bool _jumpQueued
         {
+            get => _inputQueue.GetFlag(InputQueue.Jump);
+            set => _inputQueue.SetFlag(InputQueue.Jump, value);
+        }
+
+        public PlatformerPlayerMotionBehavior(GameSystem gameSystem, InputManager inputManger, AudioService audioService,
+            RamEnum<InputQueue> inputQueue)
+        {
+            _exJumpCounter = gameSystem.RAM.DeclareByte();
             _inputManger = inputManger;
             _audioService = audioService;
+            _inputQueue = inputQueue;
         }
 
         public override void Update(Actor actor, CollisionInfo backgroundCollisionInfo)
@@ -41,14 +50,14 @@ namespace SomeGame.Main.Behaviors
                 _audioService.Play(SoundContentKey.Jump);
                 _jumpQueued = false;
                 actor.MotionVector.Y.Set(new PixelValue(-2, 0));
-                _exJumpCounter = 15;
+                _exJumpCounter.Set(15);
             }
 
             if (!_inputManger.Input.A.IsDown())
-                _exJumpCounter = 0;
+                _exJumpCounter.Set(0);
             else if(_exJumpCounter > 0)
             {
-                _exJumpCounter--;
+                _exJumpCounter.Dec();
                 actor.MotionVector.Y.Set(new PixelValue(-2, 0));
             }
 

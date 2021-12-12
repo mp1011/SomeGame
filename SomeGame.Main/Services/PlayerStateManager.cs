@@ -6,14 +6,18 @@ namespace SomeGame.Main.Services
     {
         public PlayerState CurrentState { get; private set; }
 
-        public PlayerStateManager()
+        public PlayerStateManager(GameSystem gameSystem)
         {
+            CurrentState = new PlayerState(gameSystem);
             ResetPlayerState();
         }
 
         public void ResetPlayerState()
         {
-            CurrentState = new PlayerState { Health = new BoundedInt(12, 12), Lives = 3, Score = 0 };
+            CurrentState.Health.Max = 12;
+            CurrentState.Health.Set(12);
+            CurrentState.Lives.Set(3);
+            CurrentState.Score.Set(0);
         }
     }
 }

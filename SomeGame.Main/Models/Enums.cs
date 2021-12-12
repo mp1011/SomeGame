@@ -3,6 +3,13 @@
 namespace SomeGame.Main.Models
 {
 
+    public enum InputQueue : byte
+    {
+        None=0,
+        Jump=1,
+        Attack=2
+    }
+
     public enum InterfaceType : byte
     {
         None,

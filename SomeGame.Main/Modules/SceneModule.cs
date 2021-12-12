@@ -26,7 +26,7 @@ namespace SomeGame.Main.Modules
             : base(startup)
         {
             _initialScene = initialScene;
-            _playerStateManager = new PlayerStateManager();
+            _playerStateManager = new PlayerStateManager(GameSystem);
             _audioService = new AudioService(ResourceLoader);
             _scroller = new Scroller(GameSystem);
             _collectiblesService = new CollectiblesService(GameSystem,_scroller);         

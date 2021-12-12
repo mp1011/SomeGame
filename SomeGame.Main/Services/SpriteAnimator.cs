@@ -17,13 +17,13 @@ namespace SomeGame.Main.Services
             _gameSystem = gameSystem;
             _animations = animations;
             _spriteFrames = spriteFrames;
+            _spriteAnimation = new SpriteAnimation(_gameSystem, AnimationKey.Idle);
         }
-
 
         public AnimationState Update(SpriteIndex spriteIndex, AnimationKey animationKey, bool needsSprite)
         {
-            if(_spriteAnimation == null || _spriteAnimation.Key != animationKey)
-                _spriteAnimation = new SpriteAnimation(animationKey);
+            if (_spriteAnimation.Key != animationKey)
+                _spriteAnimation.ChangeKey(animationKey);
              
             var animation = _animations[animationKey];
             bool newFrame = false;
@@ -31,14 +31,14 @@ namespace SomeGame.Main.Services
 
             if (_spriteAnimation.FramesRemaining == 0)
             {
-                _spriteAnimation.CurrentIndex++;
+                _spriteAnimation.CurrentIndex.Inc();
                 newFrame = true;
             }
 
             if (_spriteAnimation.CurrentIndex >= animation.Frames.Length)
             {
                 finished = _spriteAnimation.CurrentIndex == animation.Frames.Length;
-                _spriteAnimation.CurrentIndex = 0;
+                _spriteAnimation.CurrentIndex.Set(0);
                 newFrame = true;
             }
 
@@ -46,9 +46,9 @@ namespace SomeGame.Main.Services
             var spriteFrame = _spriteFrames[animationFrame.SpriteFrameIndex];
 
             if (newFrame)
-                _spriteAnimation.FramesRemaining = animationFrame.Duration;         
+                _spriteAnimation.FramesRemaining.Set(animationFrame.Duration);
             else
-                _spriteAnimation.FramesRemaining--;
+                _spriteAnimation.FramesRemaining.Dec();
 
 
             if (!needsSprite)

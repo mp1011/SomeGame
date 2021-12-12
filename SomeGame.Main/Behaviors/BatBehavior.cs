@@ -7,17 +7,19 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly EnemyBaseBehavior _baseBehavior;
         private readonly PlayerFinder _playerFinder;
-        private int _timer;
+        private RamByte _timer;
+        private RamByte _riseHeight;
+
         private const int _minDistance = 120;
-        private PixelValue _speed = new PixelValue(1, 0);
-        private PixelValue _riseSpeed = new PixelValue(0, -50);
-
-        private int _riseHeight;
-
-        public BatBehavior(EnemyBaseBehavior baseBehavior, PlayerFinder playerFinder)
+        private readonly PixelValue _speed = new PixelValue(1, 0);
+        private readonly PixelValue _riseSpeed = new PixelValue(0, -50);
+        
+        public BatBehavior(GameSystem gameSystem, EnemyBaseBehavior baseBehavior, PlayerFinder playerFinder)
         {
             _baseBehavior = baseBehavior;
             _playerFinder = playerFinder;
+            _timer = gameSystem.RAM.DeclareByte();
+            _riseHeight = gameSystem.RAM.DeclareByte();
         }
 
         public override void OnCreated(Actor actor)
@@ -25,7 +27,7 @@ namespace SomeGame.Main.Behaviors
             ResetTimer();
         }
 
-        private void ResetTimer() => _timer = RandomUtil.RandomItem(60, 120, 120, 120, 240);
+        private void ResetTimer() => _timer.Set(RandomUtil.RandomItem<byte>(60, 120, 120, 120, 240));
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)
         {
@@ -40,7 +42,7 @@ namespace SomeGame.Main.Behaviors
 
                 actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
 
-                if (--_timer <= 0)
+                if (_timer.Dec() <= 0)
                 {
                     ResetTimer();
 
@@ -50,13 +52,13 @@ namespace SomeGame.Main.Behaviors
             }
             else if (_baseBehavior.CurrentState == StandardEnemyState.Moving)
             {
-                if (--_timer <= 0)
+                if (_timer.Dec() <= 0)
                 {
                     _baseBehavior.SetIdle(actor, stopMotion:false);
                     actor.MotionVector.Set(new PixelPoint(new PixelValue(0, 0), _riseSpeed));
                     var player = _playerFinder.FindActor();
                     if(player != null)
-                        _riseHeight = player.WorldPosition.Y.Pixel - 50;
+                        _riseHeight.Set(player.WorldPosition.Y.Pixel - 50);
                     ResetTimer();
                 }
             }

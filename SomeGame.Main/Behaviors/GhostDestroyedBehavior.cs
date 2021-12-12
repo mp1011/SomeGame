@@ -8,31 +8,33 @@ namespace SomeGame.Main.Behaviors
     class GhostDestroyedBehavior : EnemyDestroyedBehavior
     {
         private readonly Actor _bullet;
-        private int _timer = 0;
-        private byte _soundTimer = 0;
+        private readonly RamByte _timer;
+        private readonly RamByte _soundTimer;
 
-        public GhostDestroyedBehavior(int score, Actor bullet, PlayerStateManager playerStateManager, AudioService audioService) 
+        public GhostDestroyedBehavior(GameSystem gameSystem, int score, Actor bullet, PlayerStateManager playerStateManager, AudioService audioService) 
             : base(score, playerStateManager, audioService)
         {
             _bullet = bullet;
+            _timer = gameSystem.RAM.DeclareByte();
+            _soundTimer = gameSystem.RAM.DeclareByte();
         }
 
         protected override void OnDestroyedStart(Actor actor)
         {
             actor.MotionVector.Set(new PixelPoint(0, 0));
-            _timer = 0;
+            _timer.Set(0);
         }
 
         public override DestroyedState Update(Actor actor)
         {
-            _soundTimer++;
+            _soundTimer.Inc();
             if(_soundTimer == 10)
             {
-                _soundTimer = 0;
+                _soundTimer.Set(0);
                 PlayDestroyedSound();
             }
 
-            _timer++;
+            _timer.Inc();
             actor.Palette = (PaletteIndex)(_timer % 4);
             _bullet.Palette = (PaletteIndex)((_timer+1) % 4);
 

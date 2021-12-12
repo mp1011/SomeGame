@@ -8,11 +8,11 @@ namespace SomeGame.Main.Behaviors
         private readonly Gravity _gravity;
         private readonly EnemyBaseBehavior _enemyMotionBehavior;
         private readonly Actor _projectile;
+        private readonly RamByte _timer;
 
-        private int _timer;
-
-        public SkeletonBehavior(Gravity gravity, EnemyBaseBehavior enemyMotionBehavior, Actor projectile)
+        public SkeletonBehavior(GameSystem gameSystem, Gravity gravity, EnemyBaseBehavior enemyMotionBehavior, Actor projectile)
         {
+            _timer = gameSystem.RAM.DeclareByte();
             _gravity = gravity;
             _enemyMotionBehavior = enemyMotionBehavior;
             _projectile = projectile;
@@ -21,7 +21,7 @@ namespace SomeGame.Main.Behaviors
         public override void OnCreated(Actor actor)
         {
             _enemyMotionBehavior.SetIdle(actor);
-            _timer = 100;
+            _timer.Set(100);
         }
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)
@@ -37,7 +37,7 @@ namespace SomeGame.Main.Behaviors
                 else
                     _enemyMotionBehavior.SetMoving(actor, Direction.Right);
 
-                _timer = 10;
+                _timer.Set(10);
             }
 
             if (_timer == 0)
@@ -45,21 +45,21 @@ namespace SomeGame.Main.Behaviors
                 if (_enemyMotionBehavior.CurrentState == StandardEnemyState.Idle)
                 {
                     _enemyMotionBehavior.SetMoving(actor, RandomUtil.RandomItem(Direction.Left, Direction.Right));
-                    _timer = RandomUtil.RandomItem(100, 150, 200);
+                    _timer.Set(RandomUtil.RandomItem(100, 150, 200));
                 }
                 else if (_enemyMotionBehavior.CurrentState == StandardEnemyState.Moving)
                 {
                     DoAttack(actor);
-                    _timer = 30;
+                    _timer.Set(30);
                 }
                 else if (_enemyMotionBehavior.CurrentState == StandardEnemyState.Attacking)
                 {
                     _enemyMotionBehavior.SetIdle(actor);
-                    _timer = RandomUtil.RandomItem(20, 50);
+                    _timer.Set(RandomUtil.RandomItem(20, 50));
                 }
             }
 
-            _timer--;
+            _timer.Dec();
         }
 
         private void DoAttack(Actor actor)
