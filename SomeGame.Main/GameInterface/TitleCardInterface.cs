@@ -12,11 +12,11 @@ namespace SomeGame.Main.GameInterface
         private readonly string _text;
         private RamByte _timer;
 
-        public TitleCardInterface(GameSystem gameSystem, SceneContentKey nextScene)
+        public TitleCardInterface(GameSystem gameSystem, SceneContentKey thisScene)
         {
             _gameSystem = gameSystem;
             _font = new Font(_gameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
-            _text = GetLevelText(nextScene);
+            _text = GetLevelText(thisScene);
 
             int textX = ((_gameSystem.Screen.Width / _gameSystem.TileSize) - _text.Length) / 2;
             _font.WriteToLayer(_text, _gameSystem.GetLayer(LayerIndex.Interface), new Point(textX, 10));
@@ -24,12 +24,14 @@ namespace SomeGame.Main.GameInterface
             _timer = gameSystem.RAM.DeclareByte();
         }
 
-        private string GetLevelText(SceneContentKey nextScene)
+        private string GetLevelText(SceneContentKey thisScene)
         {
-            switch (nextScene)
+            switch (thisScene)
             {
-                case SceneContentKey.Test3:
+                case SceneContentKey.Level1TitleCard:
                     return "STAGE 1-1";
+                case SceneContentKey.GameOver:
+                    return "GAME OVER";
                 default:
                     return "UNDEFINED";
             }

@@ -126,7 +126,7 @@ namespace SomeGame.Main.Services
                                 _sceneManager,
                                 _audioService,
                                 transitionInfo),
-                destroyedBehavior: new PlayerDeathBehavior(_gameSystem, _sceneManager),
+                destroyedBehavior: new PlayerDeathBehavior(_gameSystem, _sceneManager, _playerStateManager),
                 collisionDetector: new PlayerCollisionDetector(
                                             new BgCollisionDetector(_gameSystem, _scroller.GetTilemap(LayerIndex.FG), _actorManager),
                                             new CollectiblesCollectionDetector(_collectiblesService)),

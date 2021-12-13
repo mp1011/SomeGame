@@ -1,5 +1,7 @@
 ﻿using SomeGame.Main.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
@@ -16,6 +18,8 @@ namespace RamConsole
 
     class RamWindow : IRamViewer
     {
+        public IReadOnlyDictionary<int,string> Labels { get; set; }
+
         public RamWindow()
         {
             Console.Clear();
@@ -25,20 +29,30 @@ namespace RamConsole
         [SupportedOSPlatform("windows")]
         public void MemoryChanged(int address, byte value)
         {
-            var index = address * 2;
+            var labelsBefore = Labels
+                .Where(p => p.Key < address)
+                .ToArray();
 
+            var thisLabel = Labels.Where(p => p.Key == address).ToArray();
+
+            int labelOffset = labelsBefore
+                .Select(p => p.Value.Length)
+                .Sum();
+
+            var index = labelOffset + (address * 2);
+         
             int width = Math.Min(32 * 2, Console.BufferWidth);
 
             var row = index / width;
             var col = index % width;
 
-            //Task.Run(() =>
-            //{
-            //    int f = 500 + (int)((500) * ((double)value / 255.0));
-            //    Console.Beep(f, 100);
-            //});
-
             Console.SetCursorPosition(col, row);
+
+            if (thisLabel.Length == 1)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(thisLabel[0].Value);
+            }
 
             if (address % 2 == 0)
                 Console.ForegroundColor = ConsoleColor.Blue;
@@ -46,7 +60,7 @@ namespace RamConsole
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
 
             
-            Console.Write(value.ToString("X2"));
+           Console.Write(value.ToString("X2"));
         }
     }
 }

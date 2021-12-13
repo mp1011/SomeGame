@@ -1,4 +1,5 @@
-﻿using SomeGame.Main.Models;
+﻿using SomeGame.Main.Content;
+using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 using System;
 
@@ -8,16 +9,22 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly SceneManager _sceneManager;
         private readonly RamByte _timer;
+        private readonly PlayerStateManager _playerStateManager;
 
-        public PlayerDeathBehavior(GameSystem gameSystem, SceneManager sceneManager)
+        public PlayerDeathBehavior(GameSystem gameSystem, SceneManager sceneManager,
+            PlayerStateManager playerStateManager)
         {
             _timer = gameSystem.RAM.DeclareByte();
+            _playerStateManager = playerStateManager;
             _sceneManager = sceneManager;
         }
 
         public void OnDestroyed(Actor actor)
         {
             _timer.Set(0);
+
+            _playerStateManager.CurrentState.Lives.Dec();
+
             actor.CurrentAnimation = AnimationKey.Hurt;
             actor.MotionVector.Set(new PixelPoint(0, 0));
         }
@@ -29,7 +36,11 @@ namespace SomeGame.Main.Behaviors
                 return DestroyedState.Destroying;
             else
             {
-                _sceneManager.RestartCurrentScene();
+                if (_playerStateManager.CurrentState.Lives == 0)
+                    _sceneManager.QueueNextScene(SceneContentKey.GameOver);
+                else
+                    _sceneManager.RestartCurrentScene();
+
                 return DestroyedState.Destroyed;
             }
         }

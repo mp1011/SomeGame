@@ -11,7 +11,7 @@ namespace SomeGame.Main.Services
         public Scene CurrentScene { get; private set; }
 
  
-        public void RestartCurrentScene() => QueueNextScene(CurrentScene.Key);
+        public void RestartCurrentScene() => QueueNextScene(CurrentScene.Key.GetTitleCardFromScene());
 
         public void QueueNextScene(SceneContentKey sceneContentKey)
         {
@@ -27,7 +27,7 @@ namespace SomeGame.Main.Services
                 _transitionInfo = new TransitionInfo();
 
                 return new SceneLoadResult(NewScene: true, 
-                    GameInterface: sceneLoader.CreateInterfaceLayer(CurrentScene.SceneInfo),
+                    GameInterface: sceneLoader.CreateInterfaceLayer(CurrentScene),
                     Controller: sceneLoader.CreateSceneController(CurrentScene.SceneInfo));
             }
 

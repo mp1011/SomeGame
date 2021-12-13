@@ -25,6 +25,7 @@ namespace SomeGame.Main.Modules
         public SceneModule(SceneContentKey initialScene, GameStartup startup) 
             : base(startup)
         {
+            GameSystem.RAM.AddLabel("Begin Scene");
             _initialScene = initialScene;
             _playerStateManager = new PlayerStateManager(GameSystem);
             _audioService = new AudioService(ResourceLoader);
@@ -36,6 +37,7 @@ namespace SomeGame.Main.Modules
                 _sceneManager, _scroller, _playerStateManager, _audioService, _collectiblesService);
             _sceneLoader = new SceneLoader(ResourceLoader, GraphicsDevice, DataSerializer, _actorFactory, 
                 _audioService, _collectiblesService, _scroller, GameSystem, _playerStateManager, _actorManager, InputManager, _sceneManager);
+            GameSystem.RAM.AddLabel("End Scene");
         }
 
         public override void Initialize()

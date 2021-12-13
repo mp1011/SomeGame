@@ -4,7 +4,6 @@ using SomeGame.Main.GameInterface;
 using SomeGame.Main.Models;
 using SomeGame.Main.SceneControllers;
 using SomeGame.Main.Scenes;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SomeGame.Main.Services
@@ -48,23 +47,24 @@ namespace SomeGame.Main.Services
         {
             UnloadPreviousScene();
 
-            //redo this
-            switch(sceneTransition.NextScene)
+            var titleCardScene = sceneTransition.NextScene.GetSceneAfterTitleCard();
+            if(titleCardScene != SceneContentKey.None)
             {
-                case SceneContentKey.Level1TitleCard:
-                    var sceneInfo = _dataSerializer.Load(SceneContentKey.LevelTitleCard);
-                    sceneInfo = new SceneInfo(sceneInfo.BgMap, sceneInfo.FgMap, sceneInfo.InterfaceType, sceneInfo.Song,
-                        sceneInfo.Bounds, sceneInfo.PaletteKeys, sceneInfo.BackgroundColor, sceneInfo.VramImages,
-                        sceneInfo.Sounds, sceneInfo.Actors, sceneInfo.CollectiblePlacements, new SceneTransitions(Right: SceneContentKey.Test3));
-                    return new Scene(sceneTransition.NextScene, sceneInfo, _gameSystem);
-                default:
-                    return new Scene(sceneTransition.NextScene, _dataSerializer.Load(sceneTransition.NextScene), _gameSystem);
+                var sceneInfo = _dataSerializer.Load(SceneContentKey.LevelTitleCard);
+                sceneInfo = new SceneInfo(sceneInfo.BgMap, sceneInfo.FgMap, sceneInfo.InterfaceType, sceneInfo.Song,
+                    sceneInfo.Bounds, sceneInfo.PaletteKeys, sceneInfo.BackgroundColor, sceneInfo.VramImages,
+                    sceneInfo.Sounds, sceneInfo.Actors, sceneInfo.CollectiblePlacements, new SceneTransitions(Right: titleCardScene));
+                return new Scene(sceneTransition.NextScene, sceneInfo, _gameSystem);
             }
-            
+
+            return new Scene(sceneTransition.NextScene, _dataSerializer.Load(sceneTransition.NextScene), _gameSystem);            
         }
 
         public void InitializeScene(SceneInfo sceneInfo, TransitionInfo sceneTransition)
         {
+            _gameSystem.RAM.MarkSceneDataAddress();
+            _gameSystem.RAM.AddLabel("Begin Current Level");
+
             _gameSystem.SetPalettes(
                _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P1).ToIndexedTilesetImage().Palette,
                _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P2).ToIndexedTilesetImage().Palette,
@@ -99,16 +99,18 @@ namespace SomeGame.Main.Services
                 _audioService.LoadSong(song);
                 _audioService.StartMusic();
             }
+
+            _gameSystem.RAM.AddLabel("End Current Level");
         }
 
-        public IGameInterface CreateInterfaceLayer(SceneInfo sceneInfo)
+        public IGameInterface CreateInterfaceLayer(Scene scene)
         { 
-            switch(sceneInfo.InterfaceType)
+            switch(scene.SceneInfo.InterfaceType)
             {
                 case InterfaceType.PlayerStatus:
                     return new PlayerStatusInterface(_playerStateManager, _gameSystem);
                 case InterfaceType.TitleCard:
-                    return new TitleCardInterface(_gameSystem, sceneInfo.Transitions.Right);
+                    return new TitleCardInterface(_gameSystem, scene.Key);
                 default:
                     return new EmptyGameInterface();
             }
@@ -136,11 +138,14 @@ namespace SomeGame.Main.Services
 
         private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)
         {
+            _gameSystem.RAM.AddLabel("Begin Actors");
             foreach (var actorStart in sceneInfo.Actors)
                 _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
 
             if (sceneInfo.CollectiblePlacements.Any())
                 _collectiblesService.CreateCollectedItemActors(_actorFactory);
+            _gameSystem.RAM.AddLabel("End Actors");
+
         }
 
         private void PlaceCollectibles(SceneInfo sceneInfo, TileMap tileMap)
@@ -162,11 +167,11 @@ namespace SomeGame.Main.Services
 
         private void UnloadPreviousScene()
         {
-            _playerStateManager.ResetPlayerState();
+            _playerStateManager.ResetPlayerHealth();
             _audioService.UnloadSounds();
             _actorManager.UnloadAll();
             _collectiblesService.Reset();
-            //_gameSystem.RAM.Reset();
+            _gameSystem.RAM.ResetSceneData();
         }
     }
 }

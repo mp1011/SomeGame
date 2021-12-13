@@ -56,8 +56,10 @@ namespace SomeGame.Main.Models
             Input = new MouseAndKeyboardInputSource();
             _sprites = new Sprite[Enum.GetValues<SpriteIndex>().Length];
 
+            RAM.AddLabel("Begin Sprites");
             for (int i = 0; i < _sprites.Length; i++)
                 _sprites[i] = new Sprite(this, LayerPixelWidth, LayerPixelHeight, TileSize);
+            RAM.AddLabel("End Sprites");
         }
 
         public TileSet GetTileSet(PaletteIndex paletteIndex) => _tileSets[(int)paletteIndex];

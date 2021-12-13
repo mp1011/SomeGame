@@ -1,4 +1,6 @@
-﻿namespace SomeGame.Main.Content
+﻿using System;
+
+namespace SomeGame.Main.Content
 {
     public enum SoundContentKey : byte
     {
@@ -92,6 +94,29 @@
         Test3,
         LongMapTest,
         LevelTitleCard,
-        Level1TitleCard
+        Level1TitleCard,
+        GameOver
+    }
+
+    public static class SceneContentKeyExtensions
+    {
+        public static SceneContentKey GetSceneAfterTitleCard(this SceneContentKey sceneContentKey)
+        {
+            switch(sceneContentKey)
+            {
+                case SceneContentKey.Level1TitleCard: return SceneContentKey.Test3;
+                case SceneContentKey.GameOver: return SceneContentKey.Level1TitleCard;
+                default: return SceneContentKey.None;
+            }
+        }
+
+        public static SceneContentKey GetTitleCardFromScene(this SceneContentKey sceneContentKey)
+        {
+            switch (sceneContentKey)
+            {
+                case SceneContentKey.Test3: return SceneContentKey.Level1TitleCard;
+                default: return SceneContentKey.None;
+            }
+        }
     }
 }

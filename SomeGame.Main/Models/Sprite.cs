@@ -12,8 +12,30 @@ namespace SomeGame.Main.Models
             set => _flags.SetFlag(SpriteFlags.Priority, value);
         }
 
-        public Flip Flip { get; set; }
-        public bool Enabled { get; set; }
+        public Flip Flip
+        {
+            get
+            {
+                var ret = Flip.None;
+                if ((_flags & SpriteFlags.FlipH) > 0)
+                    ret = ret | Flip.FlipH;
+                if ((_flags & SpriteFlags.FlipV) > 0)
+                    ret = ret | Flip.FlipV;
+
+                return ret;
+            }
+            set
+            {
+                _flags.SetFlag(SpriteFlags.FlipH, (value & Flip.FlipH) > 0);
+                _flags.SetFlag(SpriteFlags.FlipV, (value & Flip.FlipV) > 0);
+            }
+        }
+
+        public bool Enabled
+        {
+            get => _flags.GetFlag(SpriteFlags.Visible);
+            set => _flags.SetFlag(SpriteFlags.Visible, value);
+        }
 
         public Sprite(GameSystem gameSystem, int layerPixelWidth, int layerPixelHeight, int tileSize) 
             : base(CreateBlankTilemap(), PaletteIndex.P1, 

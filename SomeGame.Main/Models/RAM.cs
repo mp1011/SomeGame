@@ -1,18 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace SomeGame.Main.Models
 {
     public interface IRamViewer
     {
         void MemoryChanged(int address, byte value);
+        IReadOnlyDictionary<int,string> Labels { get; set; }
     }
 
     class EmptyRamViewer : IRamViewer
     {
-        public void MemoryChanged(int address, byte value)
-        {
-        }
+        public void MemoryChanged(int address, byte value) { }
+        public IReadOnlyDictionary<int, string> Labels { get; set; } 
     }
 
     public class RAM
@@ -21,20 +22,37 @@ namespace SomeGame.Main.Models
         private int _declareIndex = 0;
         private IRamViewer _ramViewer;
 
+        public int SceneDataAddress { get; private set; }
+
+        private Dictionary<int, string> _labels = new Dictionary<int, string>();
+
         public RAM(IRamViewer ramViewer)
         {
             _ramViewer = ramViewer;
+            _ramViewer.Labels = _labels;
         }
 
-        public void Reset()
+        public void MarkSceneDataAddress() => SceneDataAddress = _declareIndex;
+        public void AddLabel(string label)
         {
-            for(int i = 0; i < _memory.Length;i++)
+            if (_labels.ContainsKey(_declareIndex))
+                _labels[_declareIndex] = label;
+            else 
+                _labels.Add(_declareIndex, label);
+        }
+
+        public void ResetSceneData()
+        {
+            if (SceneDataAddress == 0)
+                return;
+
+            for(int i = SceneDataAddress; i < _memory.Length;i++)
             {
                 _memory[i] = 0;
                 _ramViewer.MemoryChanged(i, 0);
             }
 
-            _declareIndex = 0;
+            _declareIndex = SceneDataAddress;
         }
 
         public byte this[int index]
