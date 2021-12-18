@@ -22,12 +22,13 @@ namespace SomeGame.Main.Services
         private readonly ActorManager _actorManager;
         private readonly InputManager _inputManager;
         private readonly SceneManager _sceneManager;
+        private readonly RasterBasedRenderService _renderService;
 
         public SceneLoader(ResourceLoader resourceLoader, GraphicsDevice graphicsDevice, 
             DataSerializer dataSerializer, ActorFactory actorFactory, AudioService audioService, 
             CollectiblesService collectiblesService, Scroller scroller, 
             GameSystem gameSystem, PlayerStateManager playerStateManager, ActorManager actorManager, InputManager inputManager,
-            SceneManager sceneManager)
+            SceneManager sceneManager, RasterBasedRenderService renderService)
         {
             _actorManager = actorManager;
             _playerStateManager = playerStateManager;
@@ -41,6 +42,7 @@ namespace SomeGame.Main.Services
             _collectiblesService = collectiblesService;
             _inputManager = inputManager;
             _sceneManager = sceneManager;
+            _renderService = renderService;
         }
 
         public Scene LoadScene(TransitionInfo sceneTransition)
@@ -52,7 +54,8 @@ namespace SomeGame.Main.Services
             {
                 var sceneInfo = _dataSerializer.Load(SceneContentKey.LevelTitleCard);
                 sceneInfo = new SceneInfo(sceneInfo.BgMap, sceneInfo.FgMap, sceneInfo.InterfaceType, sceneInfo.Song,
-                    sceneInfo.Bounds, sceneInfo.PaletteKeys, sceneInfo.BackgroundColor, sceneInfo.VramImages,
+                    sceneInfo.Bounds, sceneInfo.BackgroundColor, 
+                    sceneInfo.VramImagesP1, sceneInfo.VramImagesP2, sceneInfo.VramImagesP3, sceneInfo.VramImagesP4,
                     sceneInfo.Sounds, sceneInfo.Actors, sceneInfo.CollectiblePlacements, new SceneTransitions(Right: titleCardScene));
                 return new Scene(sceneTransition.NextScene, sceneInfo, _gameSystem);
             }
@@ -64,25 +67,12 @@ namespace SomeGame.Main.Services
         {
             _gameSystem.RAM.MarkSceneDataAddress();
             _gameSystem.RAM.AddLabel("Begin Current Level");
-
-            _gameSystem.SetPalettes(
-               _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P1).ToIndexedTilesetImage().Palette,
-               _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P2).ToIndexedTilesetImage().Palette,
-               _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P3).ToIndexedTilesetImage().Palette,
-               _resourceLoader.LoadTexture(sceneInfo.PaletteKeys.P4).ToIndexedTilesetImage().Palette);
-
-            _gameSystem.BackgroundColorIndex = sceneInfo.BackgroundColor;
-
-            var vramImages = sceneInfo.VramImages
-                .Select(p => _resourceLoader.LoadTexture(p.TileSet)
-                                           .ToIndexedTilesetImage(_gameSystem.GetPalette(p.Palette)))
-                .ToArray();
-
-            _gameSystem.SetVram(_graphicsDevice, vramImages);
-            _gameSystem.SetTilesetPalettes(sceneInfo.VramImages);
-
-            var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG, vramImages[0].Key);
-            var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG, vramImages[1].Key);
+          
+            _gameSystem.BackgroundColorIndex.Set(sceneInfo.BackgroundColor);
+            _gameSystem.SetVram(sceneInfo.VramImagesP1, sceneInfo.VramImagesP2, sceneInfo.VramImagesP3, sceneInfo.VramImagesP4);
+          
+            var bg = InitializeLayer(sceneInfo.BgMap, LayerIndex.BG, sceneInfo.VramImagesP1[0]);
+            var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG, sceneInfo.VramImagesP2[0]);
             _scroller.SetTileMaps(bg, fg);
 
             InitializeActors(sceneInfo, sceneTransition);
@@ -108,7 +98,7 @@ namespace SomeGame.Main.Services
             switch(scene.SceneInfo.InterfaceType)
             {
                 case InterfaceType.PlayerStatus:
-                    return new PlayerStatusInterface(_playerStateManager, _gameSystem);
+                    return new PlayerStatusInterface(_playerStateManager, _gameSystem, _renderService);
                 case InterfaceType.TitleCard:
                     return new TitleCardInterface(_gameSystem, scene.Key);
                 default:
@@ -140,7 +130,7 @@ namespace SomeGame.Main.Services
         {
             _gameSystem.RAM.AddLabel("Begin Actors");
             foreach (var actorStart in sceneInfo.Actors)
-                _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, transitionInfo);
+                _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, actorStart.Palette, transitionInfo);
 
             if (sceneInfo.CollectiblePlacements.Any())
                 _collectiblesService.CreateCollectedItemActors(_actorFactory);
@@ -172,6 +162,7 @@ namespace SomeGame.Main.Services
             _actorManager.UnloadAll();
             _collectiblesService.Reset();
             _gameSystem.RAM.ResetSceneData();
+            _renderService.ClearInterrupts();
         }
     }
 }

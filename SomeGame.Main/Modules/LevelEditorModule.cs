@@ -18,7 +18,6 @@ namespace SomeGame.Main.Modules
         private readonly Scroller _scroller;
         private readonly SceneContentKey _scene;
         private readonly LevelContentKey _levelKey;
-        private readonly TilesetWithPalette[] _tilesets;
         private readonly TileSetService _tileSetService;
         private readonly UIBlockSelect _blockSelect;
         private readonly PaletteIndex _tilePalette;
@@ -37,9 +36,6 @@ namespace SomeGame.Main.Modules
         private List<ActorStart> _actorStarts = new List<ActorStart>();
         private List<CollectiblePlacement> _collectiblePlacements = new List<CollectiblePlacement>();
 
-
-        protected override PaletteKeys PaletteKeys { get; }
-
         public LevelEditorModule(SceneContentKey scene, LayerIndex editLayer, GameStartup gameStartup) 
             : base(gameStartup)
         {
@@ -48,22 +44,21 @@ namespace SomeGame.Main.Modules
             _scroller = new Scroller(GameSystem);
             _scene = scene;
             var sceneInfo = DataSerializer.Load(scene);
-            PaletteKeys = sceneInfo.PaletteKeys;
-            GameSystem.BackgroundColorIndex = sceneInfo.BackgroundColor;
-            _tilesets = sceneInfo.VramImages;
-            
+            GameSystem.BackgroundColorIndex.Set(sceneInfo.BackgroundColor);
 
+            SetVram(sceneInfo.VramImagesP1, sceneInfo.VramImagesP2, sceneInfo.VramImagesP3, sceneInfo.VramImagesP4);
+    
             if (editLayer == LayerIndex.BG)
             {
                 _levelKey = sceneInfo.BgMap.Key;
                 _tilePalette = sceneInfo.BgMap.Palette;
-                _editorTileset = DataSerializer.LoadEditorTileset(_tilesets[0].TileSet);
+                _editorTileset = DataSerializer.LoadEditorTileset(VramImagesP1[0]); 
             }
             else if (editLayer == LayerIndex.FG)
             {
                 _levelKey = sceneInfo.FgMap.Key;
                 _tilePalette = sceneInfo.FgMap.Palette;
-                _editorTileset = DataSerializer.LoadEditorTileset(_tilesets[1].TileSet);
+                _editorTileset = DataSerializer.LoadEditorTileset(VramImagesP2[0]); 
                 _actorStarts = sceneInfo.Actors.ToList();
                 _collectiblePlacements = sceneInfo.CollectiblePlacements.ToList();
             }
@@ -118,7 +113,7 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override void Update()
+        protected override bool Update()
         {
             _scroller.Update();
             var foreground = GameSystem.GetLayer(LayerIndex.FG);
@@ -154,7 +149,7 @@ namespace SomeGame.Main.Modules
                 }
 
                 _blockSelect.ClearSelection(foreground);
-                return;
+                return true;
             }
 
             if (_modeSelector.SelectedItem == LevelEditorMode.Objects)
@@ -172,7 +167,7 @@ namespace SomeGame.Main.Modules
                 if (_themeSelector.Update(ui, Input))
                 {
                     OnThemeChanged();
-                    return;
+                    return true;
                 }
             }
 
@@ -231,6 +226,8 @@ namespace SomeGame.Main.Modules
 
             if (Input.Start.IsPressed())
                 SaveMap();
+
+            return true;
         }
 
         protected override void AfterTilePlaced(Point location)
@@ -299,7 +296,23 @@ namespace SomeGame.Main.Modules
 
             if(Input.A.IsPressed())
             {
-                _actorStarts.Add(new ActorStart(_objectSelector.SelectedItem, new PixelPoint(worldTile.X * GameSystem.TileSize, worldTile.Y * GameSystem.TileSize)));
+                var position = new PixelPoint(worldTile.X * GameSystem.TileSize, worldTile.Y * GameSystem.TileSize);
+                var current = _actorStarts.FirstOrDefault(p => p.Position == position);
+                PaletteIndex actorPalette;
+
+                if (current != null)
+                {
+                    _actorStarts.Remove(current);
+                    actorPalette = current.Palette.Next();
+                }
+                else
+                    actorPalette = PaletteIndex.P1;
+
+                    _actorStarts.Add(new ActorStart(ActorId: _objectSelector.SelectedItem,
+                                                Position: position,
+                                                Palette: actorPalette));
+
+                foreground.Palette = actorPalette;
             }
             else if(Input.B.IsPressed())
             {
@@ -576,7 +589,7 @@ namespace SomeGame.Main.Modules
             interfaceLayer.Palette = background.Palette;
 
             foreground.TileOffset = background.TileOffset;
-            foreground.Palette = background.Palette == PaletteIndex.P4 ? PaletteIndex.P1 : background.Palette + 1;
+            foreground.Palette = background.Palette.Next();
 
             _themeSelector.Refresh(interfaceLayer);
             _modeSelector.Refresh(interfaceLayer);
@@ -647,14 +660,6 @@ namespace SomeGame.Main.Modules
             var index = tileChoices.GetIndexAfter(currentTile);          
             bg.TileMap.SetTile(mouseTile.X, mouseTile.Y, tileChoices[index]);
             AfterTilePlaced(mouseTile);
-        }
-
-
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-            return _tilesets
-                        .Select(t =>resourceLoader.LoadTexture(t.TileSet).ToIndexedTilesetImage(GameSystem.GetPalette(t.Palette)))
-                        .ToArray();
         }
     }
 }

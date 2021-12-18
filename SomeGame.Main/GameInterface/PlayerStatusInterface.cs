@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
+using SomeGame.Main.RasterInterrupts;
 using SomeGame.Main.Services;
 
 namespace SomeGame.Main.GameInterface
@@ -12,7 +13,7 @@ namespace SomeGame.Main.GameInterface
         private readonly Font _font;
         private const int _sectionsPerHeart = 4;
 
-        public PlayerStatusInterface(PlayerStateManager playerStateManager, GameSystem gameSystem)
+        public PlayerStatusInterface(PlayerStateManager playerStateManager, GameSystem gameSystem, RasterBasedRenderService renderService)
         {
             _gameSystem = gameSystem;
             _playerStateManager = playerStateManager;
@@ -39,6 +40,10 @@ namespace SomeGame.Main.GameInterface
             _font.WriteToLayer("SCORE", interfaceLayer, new Point(1, 1));
 
             _font.WriteToLayer("LIVES", interfaceLayer, new Point(20, 1));
+
+            var bgColor = _gameSystem.BackgroundColorIndex;
+            renderService.AddInterrupt(new ChangeBackgroundColor(_gameSystem, 12, 0));
+            renderService.AddInterrupt(new ChangeBackgroundColor(_gameSystem, bgColor, 24));
 
         }
 

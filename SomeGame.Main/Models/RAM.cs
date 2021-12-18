@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SomeGame.Main.Models
 {
     public interface IRamViewer
     {
+        void Initialize(RAM ram);
+        void BeforeFrame();
         void MemoryChanged(int address, byte value);
         IReadOnlyDictionary<int,string> Labels { get; set; }
     }
@@ -13,11 +16,21 @@ namespace SomeGame.Main.Models
     class EmptyRamViewer : IRamViewer
     {
         public void MemoryChanged(int address, byte value) { }
+
+        public void Initialize(RAM ram)
+        {
+        }
+
+        public void BeforeFrame()
+        {
+        }
+
         public IReadOnlyDictionary<int, string> Labels { get; set; } 
     }
 
     public class RAM
     {
+        private GameSystem _gameSystem;
         private byte[] _memory = new byte[2000];
         private int _declareIndex = 0;
         private IRamViewer _ramViewer;
@@ -26,10 +39,12 @@ namespace SomeGame.Main.Models
 
         private Dictionary<int, string> _labels = new Dictionary<int, string>();
 
-        public RAM(IRamViewer ramViewer)
+        internal RAM(GameSystem gameSystem, IRamViewer ramViewer)
         {
+            _gameSystem = gameSystem;
             _ramViewer = ramViewer;
             _ramViewer.Labels = _labels;
+            _ramViewer.Initialize(this);
         }
 
         public void MarkSceneDataAddress() => SceneDataAddress = _declareIndex;
@@ -166,6 +181,12 @@ namespace SomeGame.Main.Models
                                 Width: DeclareByte(width),
                                 Height: DeclareByte(height));
             return ret;
+        }
+
+        internal RamPalette DeclarePalette(Palette systemPalette)
+        {
+            return new RamPalette(systemPalette,
+                Enumerable.Range(0, _gameSystem.ColorsPerPalette).Select(e => DeclareByte()));
         }
     }
 
@@ -429,6 +450,41 @@ namespace SomeGame.Main.Models
         }
 
         public static implicit operator Point(RamPoint r)=> new Point(r.X,r.Y);
+    }
+
+    class RamPalette
+    {
+        private Palette _systemPalette;
+        public RamByte[] Colors { get; }
+
+        public RamPalette(Palette systemPalette, IEnumerable<RamByte> colors)
+        {
+            _systemPalette = systemPalette;
+            Colors = colors.ToArray();
+        }
+
+        public byte GetIndex(Color color)
+        {
+            byte i = 0;
+            while(i < Colors.Length)
+            {
+                if (this[i] == color)
+                    return i;
+
+                i++;
+            }
+
+            return 0;
+        }
+
+        public void Set(IEnumerable<byte> data)
+        {
+            int i = 0;
+            foreach (var item in data)
+                Colors[i++].Set(item);
+        }
+
+        public Color this[byte index] => (index < Colors.Length) ? _systemPalette[Colors[index]] : Color.Black;
     }
 
     class RamRectangle : IGameRectangle

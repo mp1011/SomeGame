@@ -18,8 +18,11 @@ namespace SomeGame.Main.GameInterface
             _font = new Font(_gameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
             _text = GetLevelText(thisScene);
 
+            var layer = _gameSystem.GetLayer(LayerIndex.Interface);
+            layer.TileMap.SetEach((x, y) => new Tile(-1, TileFlags.None));
+
             int textX = ((_gameSystem.Screen.Width / _gameSystem.TileSize) - _text.Length) / 2;
-            _font.WriteToLayer(_text, _gameSystem.GetLayer(LayerIndex.Interface), new Point(textX, 10));
+            _font.WriteToLayer(_text, layer, new Point(textX, 10));
 
             _timer = gameSystem.RAM.DeclareByte();
         }

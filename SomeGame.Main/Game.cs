@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Models;
 using SomeGame.Main.Modules;
+using SomeGame.Main.Services;
 using System;
 
 namespace SomeGame.Main
@@ -56,7 +57,10 @@ namespace SomeGame.Main
 
         protected override void Update(GameTime gameTime)
         {
-            _currentModule.Update(gameTime);
+            _ramViewer?.BeforeFrame();
+            if (!_currentModule.Update(gameTime))
+                Exit();
+
             base.Update(gameTime);
         }
 

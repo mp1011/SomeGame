@@ -32,7 +32,7 @@ namespace SomeGame.Main.Services
         {
             DrawWrappingTileMap(spriteBatch,
                 layer.TileMap,
-                _gameSystem.GetTileSet(layer.Palette),
+                _gameSystem.GetTileSet(),
                 x: layer.ScrollX,
                 y: layer.ScrollY,
                 tileOffset: layer.TileOffset);
@@ -40,7 +40,7 @@ namespace SomeGame.Main.Services
 
         private void DrawSprite(SpriteBatch spriteBatch, Sprite sprite)
         {
-            var tileSet = _gameSystem.GetTileSet(sprite.Palette);
+            var tileSet = _gameSystem.GetTileSet();
             DrawWrappingTileMap(spriteBatch, sprite.TileMap, tileSet, sprite.ScrollX, sprite.ScrollY, sprite.TileOffset, sprite.Flip);
         }
 

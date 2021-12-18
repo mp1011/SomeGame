@@ -26,30 +26,31 @@ namespace SomeGame.Main.Services
 
         public Grid<Tile> CreateTileMapFromImageAndTileset(IndexedImage image, TileSet tileSet)
         {
-            var imageTiles = image.Image.Split(8);
+            throw new System.NotImplementedException();
+            //var imageTiles = image.Image.Split(8);
 
-            var tileSetIndexedImage = tileSet.Texture
-                                             .ToIndexedImage(image.Palette)
-                                             .Image
-                                             .Split(8);
+            //var tileSetIndexedImage = tileSet.Texture
+            //                                 .ToIndexedImage(image.Palette)
+            //                                 .Image
+            //                                 .Split(8);
 
-            return imageTiles.Map((x, y, imageTile) =>
-            {
-                for (int i = 0; i < tileSetIndexedImage.Size; i++)
-                {
-                    var tilesetTile = tileSetIndexedImage[i];
-                    if (tilesetTile.Equals(imageTile))
-                        return new Tile(i, TileFlags.None);
-                    else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.H)))
-                        return new Tile(i, TileFlags.FlipH);
-                    else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.V)))
-                        return new Tile(i, TileFlags.FlipV);
-                    else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.Both)))
-                        return new Tile(i, TileFlags.FlipH | TileFlags.FlipV);
-                }
+            //return imageTiles.Map((x, y, imageTile) =>
+            //{
+            //    for (int i = 0; i < tileSetIndexedImage.Size; i++)
+            //    {
+            //        var tilesetTile = tileSetIndexedImage[i];
+            //        if (tilesetTile.Equals(imageTile))
+            //            return new Tile(i, TileFlags.None);
+            //        else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.H)))
+            //            return new Tile(i, TileFlags.FlipH);
+            //        else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.V)))
+            //            return new Tile(i, TileFlags.FlipV);
+            //        else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.Both)))
+            //            return new Tile(i, TileFlags.FlipH | TileFlags.FlipV);
+            //    }
 
-                throw new Exception("Unable to match image tile with a tileSet tile");
-            });
+            //    throw new Exception("Unable to match image tile with a tileSet tile");
+            //});
         }
 
         public Tile[] GetMatchingTiles(EditorTileSet editorTileSet, string theme, TileMap tileMap, 

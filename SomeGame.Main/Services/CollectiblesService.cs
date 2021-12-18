@@ -29,11 +29,11 @@ namespace SomeGame.Main.Services
 
         public void CreateCollectedItemActors(ActorFactory actorFactory)
         {
-            _coins = actorFactory.CreatePool(ActorId.Coin, 3);
-            _gems = actorFactory.CreatePool(ActorId.Gem, 2);
-            _apples = actorFactory.CreatePool(ActorId.Apple, 2);
-            _meat = actorFactory.CreatePool(ActorId.Meat, 2);
-            _keys = actorFactory.CreatePool(ActorId.Key, 2);
+            _coins = actorFactory.CreatePool(ActorId.Coin, 3, PaletteIndex.P2);
+            _gems = actorFactory.CreatePool(ActorId.Gem, 2, PaletteIndex.P2);
+            _apples = actorFactory.CreatePool(ActorId.Apple, 2, PaletteIndex.P2);
+            _meat = actorFactory.CreatePool(ActorId.Meat, 2, PaletteIndex.P2);
+            _keys = actorFactory.CreatePool(ActorId.Key, 2, PaletteIndex.P2);
         }
 
         public void AddCollectible(CollectibleId collectibleId, Point position, TileMap collectiblesLayer)

@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Models;
+using SomeGame.Main.RasterInterrupts;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -19,15 +22,33 @@ namespace SomeGame.Main.Services
         private int _rasterY;
         private Color[] _screenData;
         private int _dataIndex;
-        private Palette _currentPalette;
+        private RamPalette _currentPalette;
         private PaletteIndex _currentPaletteIndex;
-        
+        private List<IRasterInterrupt> _rasterInterrupts = new List<IRasterInterrupt>();
+
         public RasterBasedRenderService(GameSystem gameSystem, GraphicsDevice graphicsDevice)
         {
             _gameSystem = gameSystem;
             _spriteSize = _gameSystem.TileSize * 2;
             _canvas = new Texture2D(graphicsDevice, _gameSystem.Screen.Width, _gameSystem.Screen.Height);
             _screenData = new Color[_gameSystem.Screen.Width * _gameSystem.Screen.Height];
+        }
+
+        public void ClearInterrupts()
+        {
+            _rasterInterrupts.Clear();
+        }
+
+        public void AddInterrupt(IRasterInterrupt rasterInterrupt)
+        {
+            if(_rasterInterrupts.Any())
+            {
+                var previousLine = _rasterInterrupts.Last().VerticalLine;
+                if (previousLine >= rasterInterrupt.VerticalLine)
+                    throw new Exception("Illegal scanline for interrupt");
+            }
+
+            _rasterInterrupts.Add(rasterInterrupt);
         }
 
         public void DrawFrame(SpriteBatch spriteBatch)
@@ -45,8 +66,16 @@ namespace SomeGame.Main.Services
             var backSprites = _gameSystem.GetBackSprites().ToArray();
             var frontSprites = _gameSystem.GetFrontSprites().ToArray();
 
+            int nextInterruptIndex = 0;
+
             for (_rasterY = 0; _rasterY < _gameSystem.Screen.Height; _rasterY++)
             {
+                if(nextInterruptIndex < _rasterInterrupts.Count && _rasterY == _rasterInterrupts[nextInterruptIndex].VerticalLine)
+                {
+                    _rasterInterrupts[nextInterruptIndex].Handle();
+                    nextInterruptIndex++;
+                }
+
                 for (_rasterX = 0; _rasterX < _gameSystem.Screen.Width; _rasterX++)
                 {
                     if (DrawLayerPixel(interfaceLayer))
@@ -60,7 +89,7 @@ namespace SomeGame.Main.Services
                     if (DrawSpritePixel(backSprites))
                         continue;
 
-                    DrawPixel(PaletteIndex.P1, 0);
+                    DrawPixel(PaletteIndex.P1, _gameSystem.BackgroundColorIndex);
                 }
             }
 
@@ -125,7 +154,7 @@ namespace SomeGame.Main.Services
                 flipY = true;
 
 
-            var tileSet = _gameSystem.GetTileSet(sprite.Palette);
+            var tileSet = _gameSystem.GetTileSet();
 
             var tileSrcRec = tileSet.GetSrcRec(sprite.TileOffset + tile.Index);
 
@@ -162,7 +191,7 @@ namespace SomeGame.Main.Services
             if (tile == null || tile.Index == -1)
                 return false;
 
-            var tileSet = _gameSystem.GetTileSet(layer.Palette);
+            var tileSet = _gameSystem.GetTileSet();
 
             var tileSrcRec = tileSet.GetSrcRec(layer.TileOffset + tile.Index);
 

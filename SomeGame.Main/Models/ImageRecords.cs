@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace SomeGame.Main.Models
 {
-    public record PaletteKeys(ImageContentKey P1, ImageContentKey P2, ImageContentKey P3, ImageContentKey P4);
     public record IndexedTilesetImage(TilesetContentKey Key, Grid<byte> Image, Palette Palette) : IndexedImage(Image,Palette);
     public record IndexedImage(Grid<byte> Image, Palette Palette);
     public record Tile(int Index, TileFlags Flags)
@@ -30,6 +29,6 @@ namespace SomeGame.Main.Models
         }
     }
 
-    public record VramData(Grid<byte> ImageData, Dictionary<TilesetContentKey,int> Offsets);
+    internal record VramData(Grid<byte> ImageData, Dictionary<TilesetContentKey,int> Offsets, TileSet TileSet);
 
 }

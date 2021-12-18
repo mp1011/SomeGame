@@ -59,15 +59,10 @@ namespace SomeGame.Main.Modules
             _audioService.StartMusic();
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-            using var fontImage = resourceLoader.LoadTexture(TilesetContentKey.Font);
-            return new IndexedTilesetImage[] { fontImage.ToIndexedTilesetImage() };
-        }
-
-        protected override void Update()
+        protected override bool Update()
         {
             _audioService.UpdateMusic();
+            return true;
         }
     }
 }

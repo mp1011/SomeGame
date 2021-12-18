@@ -11,6 +11,9 @@
     <StartupObject>SomeGame.Main.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Services\TextureBasedRenderService.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Content\Levels\TestLevel.bin" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />

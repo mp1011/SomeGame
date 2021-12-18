@@ -11,29 +11,29 @@ namespace SomeGame.Main.Modules
         protected EditorModule(GameStartup startup)
             : base(startup) { }
 
-        protected virtual PaletteKeys PaletteKeys => new PaletteKeys(ImageContentKey.Palette1, ImageContentKey.Palette2, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);
-
         protected abstract void InitializeLayer(LayerIndex index, Layer layer);
 
-        protected abstract IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader);
+        protected TilesetContentKey[] VramImagesP1 { get; private set; } = new TilesetContentKey[] { };
+        protected TilesetContentKey[] VramImagesP2 { get; private set; } = new TilesetContentKey[] { };
+        protected TilesetContentKey[] VramImagesP3 { get; private set; } = new TilesetContentKey[] { };
+        protected TilesetContentKey[] VramImagesP4 { get; private set; } = new TilesetContentKey[] { };
+
+        protected void SetVram(TilesetContentKey[] p1, TilesetContentKey[] p2, TilesetContentKey[] p3, TilesetContentKey[] p4)
+        {
+            VramImagesP1 = p1;
+            VramImagesP2 = p2;
+            VramImagesP3 = p3;
+            VramImagesP4 = p4;
+        }
 
         protected virtual void AfterInitialize()
         {
         }
 
-        public override void Initialize()
+        protected override void OnInitialize()
         {
             GameSystem.Input.Initialize(GameSystem.Screen);
-
-            GameSystem.SetPalettes(
-               ResourceLoader.LoadTexture(PaletteKeys.P1).ToIndexedTilesetImage().Palette,
-               ResourceLoader.LoadTexture(PaletteKeys.P2).ToIndexedTilesetImage().Palette,
-               ResourceLoader.LoadTexture(PaletteKeys.P3).ToIndexedTilesetImage().Palette,
-               ResourceLoader.LoadTexture(PaletteKeys.P4).ToIndexedTilesetImage().Palette);
-
-            var vramImages = LoadVramImages(ResourceLoader);
-
-            GameSystem.SetVram(GraphicsDevice, vramImages);
+            GameSystem.SetVram(VramImagesP1, VramImagesP2, VramImagesP3, VramImagesP4);
 
             InitializeLayer(LayerIndex.BG, GameSystem.GetLayer(LayerIndex.BG));
             InitializeLayer(LayerIndex.FG, GameSystem.GetLayer(LayerIndex.FG));

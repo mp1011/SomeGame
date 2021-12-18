@@ -80,6 +80,8 @@ namespace SomeGame.Main.Services
         {
             _bgLayer.Initialize();
             _fgLayer.Initialize();
+            Camera.X = 0;
+            Camera.Y = 0;
         }
 
         public void Update()

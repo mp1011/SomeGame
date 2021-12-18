@@ -8,8 +8,7 @@ using System.Linq;
 
 namespace SomeGame.Main.Models
 {
-    record TilesetWithPalette(TilesetContentKey TileSet, PaletteIndex Palette);
-    record ActorStart(ActorId ActorId, PixelPoint Position);
+    record ActorStart(ActorId ActorId, PixelPoint Position, PaletteIndex Palette);
     record CollectiblePlacement(CollectibleId Id, Point Position);
     record LayerInfo(LevelContentKey Key, PaletteIndex Palette, byte ScrollFactor);
     record SoundInfo(SoundContentKey Key, byte MaxOccurences);
@@ -38,9 +37,11 @@ namespace SomeGame.Main.Models
         InterfaceType InterfaceType,
         MusicContentKey Song,
         Rectangle Bounds,
-        PaletteKeys PaletteKeys, 
         byte BackgroundColor,
-        TilesetWithPalette[] VramImages,
+        TilesetContentKey[] VramImagesP1,
+        TilesetContentKey[] VramImagesP2,
+        TilesetContentKey[] VramImagesP3,
+        TilesetContentKey[] VramImagesP4,
         SoundInfo[] Sounds,
         ActorStart[] Actors,
         CollectiblePlacement[] CollectiblePlacements,
@@ -49,7 +50,9 @@ namespace SomeGame.Main.Models
 
         public SceneInfo SetActorsAndCollectibles(IEnumerable<ActorStart> actors, IEnumerable<CollectiblePlacement> collectibles)
         {
-            return new SceneInfo(BgMap, FgMap,  InterfaceType, Song, Bounds, PaletteKeys, BackgroundColor, VramImages, Sounds, 
+            return new SceneInfo(BgMap, FgMap,  InterfaceType, Song, Bounds, BackgroundColor, 
+                VramImagesP1, VramImagesP2, VramImagesP3, VramImagesP4,
+                Sounds, 
                 actors.ToArray(),
                 collectibles.ToArray(), 
                 Transitions);

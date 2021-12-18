@@ -16,8 +16,9 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        protected override void Update()
+        protected override bool Update()
         {
+            return true;
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
@@ -28,11 +29,11 @@ namespace SomeGame.Main.Modules
                 font.WriteToLayer("HALLO WORLD", layer, new Point(0, 0));
             }
         }
-
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-            using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
-            return new IndexedTilesetImage[] { font.ToIndexedTilesetImage() };
-        }
+       
+        //protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
+        //{
+        //    using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
+        //    return new IndexedTilesetImage[] { font.ToIndexedTilesetImage() };
+        //}
     }
 }

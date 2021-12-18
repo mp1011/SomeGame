@@ -62,5 +62,13 @@ namespace RamConsole
             
            Console.Write(value.ToString("X2"));
         }
+
+        public void Initialize(RAM ram)
+        {
+        }
+
+        public void BeforeFrame()
+        {
+        }
     }
 }

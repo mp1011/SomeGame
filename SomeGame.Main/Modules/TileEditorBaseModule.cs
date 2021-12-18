@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
-using SomeGame.Main.Services;
 namespace SomeGame.Main.Modules
 {
     abstract class TileEditorBaseModule : EditorModule

@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Modules;
+using SomeGame.Main.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SomeGame.Main
@@ -13,38 +15,54 @@ namespace SomeGame.Main
         [STAThread]
         public static void Main()
         {
-            StartGame();
+            StartGame(new RAMManipulator());
         }
 
         public static void StartGame(IRamViewer ramViewer=null)
         {
-            using (var game = new GameEngine(CreateModule, ramViewer))
+            RunGame(CreateSceneDefinitionModule, ramViewer);
+            RunGame(CreateSceneModule, ramViewer);
+           // RunGame(CreateEditorModule, ramViewer);
+
+        }
+
+        private static void RunGame(Func<GameStartup, IGameModule> createModule, IRamViewer ramViewer)
+        {
+            using (var game = new GameEngine(createModule, ramViewer))
             {
                 game.Run();
             }
         }
 
-        private static IGameModule CreateModule(GameStartup startup)
-        {
-         //  return new SceneDefinitionModule();
-         //return new LevelEditorModule(SceneContentKey.Test3, LayerIndex.FG, cm, gd);
+        private static IGameModule CreateSceneDefinitionModule(GameStartup gameStartup) => 
+            new SceneDefinitionModule(gameStartup);
 
-           // return new MusicEditorModule(cm, gd);
+        private static IGameModule CreateSceneModule(GameStartup gameStartup) =>
+            new SceneModule(SceneContentKey.Level1, gameStartup);
+        private static IGameModule CreateEditorModule(GameStartup gameStartup) =>
+           new LevelEditorModule(SceneContentKey.Level1, LayerIndex.FG, gameStartup);
 
-          //  return new SpriteEditorModule(TilesetContentKey.Bullet2, cm, gd);
-          //   return new AnimationDefinitionModule();
-          return new SceneModule(SceneContentKey.Level1TitleCard, startup);
-           // return new TextureCreatorModule(cm, gd, ImageContentKey.Mountains);
-            // ImageContentKey.Bullet3, ImageContentKey.Clouds, ImageContentKey.Ghost, ImageContentKey.Mountains);
-         //  return new ThemeDefinerModule(ImageContentKey.Tiles1, TilesetContentKey.Tiles1, cm, gd);
+        //private static IEnumerable<IGameModule> CreateModules(GameStartup startup)
+        //{
+        // return new SceneDefinitionModule(startup);
+        // return new LevelEditorModule(SceneContentKey.Level1, LayerIndex.FG, startup);
+
+        // return new MusicEditorModule(cm, gd);
+
+        //  return new SpriteEditorModule(TilesetContentKey.Bullet2, cm, gd);
+        //   return new AnimationDefinitionModule();
+        // return new SceneModule(SceneContentKey.Level1TitleCard, startup);
+        // return new TextureCreatorModule(cm, gd, ImageContentKey.Mountains);
+        // ImageContentKey.Bullet3, ImageContentKey.Clouds, ImageContentKey.Ghost, ImageContentKey.Mountains);
+        //  return new ThemeDefinerModule(ImageContentKey.Tiles1, TilesetContentKey.Tiles1, cm, gd);
 
 
-           //   return new PaletteCreatorModule(cm,gd);
-            // var module = new GameSystemTestModule();
-            //var module = new FontTestModule();
-            //   var module = new LevelEditorModule(LevelContentKey.TestLevelBG);
-            //  var module = new SceneModule();
-            // var module = new TileNeighborModule(new TileSetService());
-        }
+        //  return new PaletteCreatorModule(startup);
+        // var module = new GameSystemTestModule();
+        //var module = new FontTestModule();
+        //   var module = new LevelEditorModule(LevelContentKey.TestLevelBG);
+        //  var module = new SceneModule();
+        // var module = new TileNeighborModule(new TileSetService());
+        //  }
     }
 }

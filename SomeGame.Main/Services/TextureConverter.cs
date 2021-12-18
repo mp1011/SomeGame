@@ -42,6 +42,11 @@ namespace SomeGame.Main.Services
             return new IndexedTilesetImage(key, grid, palette);
         }
 
+        internal static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, RamPalette palette)
+        {
+            throw new System.NotImplementedException();
+        }
+        
         public static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, Palette palette)
         {
             var pixels = ToColorData(texture);
@@ -73,11 +78,34 @@ namespace SomeGame.Main.Services
             return texture;
         }
 
+        internal static Texture2D ToTexture2D(this VramData vram, RamPalette palette, GraphicsDevice graphicsDevice)
+        {
+            var texture = new Texture2D(graphicsDevice, vram.ImageData.Width, vram.ImageData.Height);
+            var colors = vram.ImageData
+                                .Map(ix => palette[ix])
+                                .ToArray();
+            texture.SetData(colors);
+
+            return texture;
+        }
+
+
         public static Texture2D ToTexture2D(this Palette palette, GraphicsDevice graphicsDevice)
         {
             var texture = new Texture2D(graphicsDevice, palette.Count(),1);
             texture.SetData(palette.ToArray());
             return texture;
+        }
+
+        internal static IndexedTilesetImage MapToPalette(this IndexedTilesetImage image, RamPalette palette)
+        {
+            var newImage = image.Image.Map(b =>
+            {
+                var color = image.Palette[b];
+                return palette.GetIndex(color);
+            });
+
+            return new IndexedTilesetImage(image.Key, newImage, null);
         }
     }
 }

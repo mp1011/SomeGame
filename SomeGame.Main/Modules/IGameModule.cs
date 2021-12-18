@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 
@@ -9,7 +10,7 @@ namespace SomeGame.Main.Modules
     interface IGameModule
     {
         void Initialize();
-        void Update(GameTime gameTime);
+        bool Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
         void OnWindowSizeChanged(Viewport viewport);
         Rectangle Screen { get; }
@@ -33,7 +34,7 @@ namespace SomeGame.Main.Modules
 
         public GameModuleBase(GameStartup startup)
         {
-            GameSystem = new GameSystem(startup.RamViewer);
+            GameSystem = new GameSystem(startup);
             RenderService= new RasterBasedRenderService(GameSystem, startup.GraphicsDevice);
             InputManager = new InputManager(GameSystem);
             DataSerializer = new DataSerializer();
@@ -46,7 +47,12 @@ namespace SomeGame.Main.Modules
             RenderService.DrawFrame(spriteBatch);
         }
 
-        public abstract void Initialize();
+        public void Initialize()
+        {
+            OnInitialize();
+        }
+
+        protected abstract void OnInitialize();
        // {
             //GameSystem.Input.Initialize(GameSystem.Screen);
             //CollectiblesService = new CollectiblesService(GameSystem, GameSystem.GetLayer(LayerIndex.FG));
@@ -91,15 +97,13 @@ namespace SomeGame.Main.Modules
        // }
 
 
-        public void Update(GameTime gameTime)
+        public bool Update(GameTime gameTime)
         {
             InputManager.Update();
-            //SceneManager.Update();
-           // ActorManager.Update(SceneManager.CurrentScene);
-            Update();
+            return Update();
         }
 
-        protected abstract void Update();
+        protected abstract bool Update();
 
         public void OnWindowSizeChanged(Viewport viewport)
         {

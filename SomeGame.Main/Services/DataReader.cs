@@ -92,15 +92,16 @@ namespace SomeGame.Main.Services
                 InterfaceType: ReadEnum<InterfaceType>(),
                 Song: ReadEnum<MusicContentKey>(),
                 Bounds: ReadRectangle(),
-                PaletteKeys: ReadPaletteKeys(),
                 BackgroundColor: _reader.ReadByte(),
-                VramImages: ReadEnumerable<TilesetWithPalette>(),
+                VramImagesP1: ReadEnumerable<TilesetContentKey>(),
+                VramImagesP2: ReadEnumerable<TilesetContentKey>(),
+                VramImagesP3: ReadEnumerable<TilesetContentKey>(),
+                VramImagesP4: ReadEnumerable<TilesetContentKey>(),
                 Sounds: ReadEnumerable<SoundInfo>(),
                 Actors: ReadEnumerable<ActorStart>(),
                 CollectiblePlacements: ReadEnumerable<CollectiblePlacement>(),
                 Transitions: ReadSceneTransitions());
         }
-
         public SceneTransitions ReadSceneTransitions() => new SceneTransitions(
             ReadEnum<SceneContentKey>(),
             ReadEnum<SceneContentKey>(),
@@ -108,6 +109,8 @@ namespace SomeGame.Main.Services
             ReadEnum<SceneContentKey>(),
             ReadEnum<SceneContentKey>(),
             ReadEnum<SceneContentKey>());
+
+        public TilesetContentKey ReadTileSetContentKey() => ReadEnum<TilesetContentKey>();
 
         public LayerInfo ReadLayerInfo() => new LayerInfo(ReadEnum<LevelContentKey>(), ReadEnum<PaletteIndex>(), _reader.ReadByte());
 
@@ -117,21 +120,11 @@ namespace SomeGame.Main.Services
             _reader.ReadInt32(), 
             _reader.ReadInt32());
 
-        public PaletteKeys ReadPaletteKeys() => new PaletteKeys(
-            ReadEnum<ImageContentKey>(),
-            ReadEnum<ImageContentKey>(),
-            ReadEnum<ImageContentKey>(),
-            ReadEnum<ImageContentKey>());
-
-
-        public TilesetWithPalette ReadTilesetWithPalette() =>
-            new TilesetWithPalette(ReadEnum<TilesetContentKey>(), ReadEnum<PaletteIndex>());
-
         public SoundInfo ReadSoundInfo() =>
             new SoundInfo(ReadEnum<SoundContentKey>(), _reader.ReadByte());
 
         public ActorStart ReadActorStart() =>
-            new ActorStart(ReadEnum<ActorId>(), ReadPixelPoint());
+            new ActorStart(ReadEnum<ActorId>(), ReadPixelPoint(), ReadEnum<PaletteIndex>());
 
         public PixelPoint ReadPixelPoint() => new PixelPoint(ReadPixelValue(), ReadPixelValue());
 

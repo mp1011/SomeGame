@@ -27,15 +27,7 @@ namespace SomeGame.Main.Content
         Skeleton,
         Bullet,
         Hud,
-        Palette1,
-        Palette2,
-        Palette3,
-        Palette4,
-        Palette5,
-        Palette6,
-        Palette7,
-        Palette8,
-        Palette1Inverse,
+        SystemPalette,
         Items,
         Gizmos,
         Tiles1,
@@ -89,10 +81,7 @@ namespace SomeGame.Main.Content
     public enum SceneContentKey : byte
     {
         None,
-        Test1,
-        Test2,
-        Test3,
-        LongMapTest,
+        Level1,
         LevelTitleCard,
         Level1TitleCard,
         GameOver
@@ -104,7 +93,7 @@ namespace SomeGame.Main.Content
         {
             switch(sceneContentKey)
             {
-                case SceneContentKey.Level1TitleCard: return SceneContentKey.Test3;
+                case SceneContentKey.Level1TitleCard: return SceneContentKey.Level1;
                 case SceneContentKey.GameOver: return SceneContentKey.Level1TitleCard;
                 default: return SceneContentKey.None;
             }
@@ -114,7 +103,7 @@ namespace SomeGame.Main.Content
         {
             switch (sceneContentKey)
             {
-                case SceneContentKey.Test3: return SceneContentKey.Level1TitleCard;
+                case SceneContentKey.Level1: return SceneContentKey.Level1TitleCard;
                 default: return SceneContentKey.None;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Content;
 using SomeGame.Main.Models;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,7 @@ namespace SomeGame.Main.Services
             _writer.Write(section.Channel2Index);
         }
 
+        public void Write(TilesetContentKey key) => _writer.Write((byte)key);
         public void Write<T>(Grid<T> grid)
         {
             _writer.Write(grid.Width);
@@ -116,9 +118,11 @@ namespace SomeGame.Main.Services
             _writer.Write((byte)scene.InterfaceType);
             _writer.Write((byte)scene.Song);
             Write(scene.Bounds);
-            Write(scene.PaletteKeys);
             _writer.Write(scene.BackgroundColor);
-            WriteEnumerable(scene.VramImages);
+            WriteEnumerable(scene.VramImagesP1);
+            WriteEnumerable(scene.VramImagesP2);
+            WriteEnumerable(scene.VramImagesP3);
+            WriteEnumerable(scene.VramImagesP4);
             WriteEnumerable(scene.Sounds);
             WriteEnumerable(scene.Actors);
             WriteEnumerable(scene.CollectiblePlacements);
@@ -139,6 +143,7 @@ namespace SomeGame.Main.Services
         {
             _writer.Write((byte)actorStart.ActorId);
             Write(actorStart.Position);
+            _writer.Write((byte)actorStart.Palette);
         }
 
         public void Write(CollectiblePlacement collectiblePlacement)
@@ -173,20 +178,6 @@ namespace SomeGame.Main.Services
             _writer.Write((byte)layerInfo.Key);
             _writer.Write((byte)layerInfo.Palette);
             _writer.Write((byte)layerInfo.ScrollFactor);
-        }
-
-        public void Write(PaletteKeys paletteKeys)
-        {
-            _writer.Write((byte)paletteKeys.P1);
-            _writer.Write((byte)paletteKeys.P2);
-            _writer.Write((byte)paletteKeys.P3);
-            _writer.Write((byte)paletteKeys.P4);
-        }
-
-        public void Write(TilesetWithPalette tilesetWithPalette)
-        {
-            _writer.Write((byte)tilesetWithPalette.TileSet);
-            _writer.Write((byte)tilesetWithPalette.Palette);
         }
 
         public void Write(SoundInfo soundInfo)

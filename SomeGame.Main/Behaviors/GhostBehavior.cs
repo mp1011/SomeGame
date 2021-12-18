@@ -107,9 +107,12 @@ namespace SomeGame.Main.Behaviors
         {
             _bulletAngle.Inc();
 
-            _bulletDisplayIndex.Inc();
-            if (_bulletDisplayIndex == 4)
-                _bulletDisplayIndex.Set(0);
+            if (_timer % 2 == 0)
+            {
+                _bulletDisplayIndex.Inc();
+                if (_bulletDisplayIndex == 4)
+                    _bulletDisplayIndex.Set(0);
+            }
 
             var displayAngle = (Angle)(_bulletAngle + (byte)(64 * _bulletDisplayIndex));
             _bullet.WorldPosition.Center = actor.WorldPosition.Center.Offset(displayAngle, 30);

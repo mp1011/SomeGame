@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using System.Collections.Generic;
 
@@ -7,17 +6,15 @@ namespace SomeGame.Main.Models
 {
     class TileSet
     {
-        public Texture2D Texture { get; }
         private readonly Grid<Rectangle> _cells;
         private Dictionary<TilesetContentKey, int> _offsets = new Dictionary<TilesetContentKey, int>();
 
         public int TotalTiles => _cells.Size;
 
-        public TileSet(Texture2D texture, Dictionary<TilesetContentKey,int> offsets, int tileSize)
+        public TileSet(Dictionary<TilesetContentKey,int> offsets, int tileSize, int width, int height)
         {
             _offsets = offsets;
-            Texture = texture;
-            _cells = new Grid<Rectangle>(texture.Width / tileSize, texture.Height / tileSize,
+            _cells = new Grid<Rectangle>(width / tileSize, height / tileSize,
                 (x, y) => new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize));
         }
 

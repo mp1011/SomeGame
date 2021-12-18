@@ -107,6 +107,17 @@ namespace SomeGame.Main.Models
         P4
     }
 
+    public static class PaletteIndexExtensions
+    {
+        public static PaletteIndex Next(this PaletteIndex p)
+        {
+            if (p == PaletteIndex.P4)
+                return PaletteIndex.P1;
+            else
+                return p + 1;
+        }
+    }
+
     public enum LayerIndex : byte
     {
         BG,

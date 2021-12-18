@@ -148,8 +148,9 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        public void Update(GameTime gameTime)
+        public bool Update(GameTime gameTime)
         {
+            return false;
         }
     }
 }

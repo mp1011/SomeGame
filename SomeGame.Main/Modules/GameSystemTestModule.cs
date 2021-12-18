@@ -15,7 +15,7 @@ namespace SomeGame.Main.Modules
         {
         }
 
-        protected override void Update()
+        protected override bool Update()
         {
             var layer = GameSystem.GetLayer(LayerIndex.FG);
 
@@ -27,6 +27,8 @@ namespace SomeGame.Main.Modules
                 layer.ScrollY -= 2;
             if (Input.Down.IsDown())
                 layer.ScrollY += 2;
+
+            return true;
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
@@ -77,13 +79,12 @@ namespace SomeGame.Main.Modules
 
             }
         }
+        //protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
+        //{
+        //    using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
+        //    using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-            using var image = resourceLoader.LoadTexture(TilesetContentKey.Tiles);
-            using var font = resourceLoader.LoadTexture(TilesetContentKey.Font);
-
-            return new IndexedTilesetImage[] { image.ToIndexedTilesetImage(), font.ToIndexedTilesetImage() };
-        }
+        //    return new IndexedTilesetImage[] { image.ToIndexedTilesetImage(), font.ToIndexedTilesetImage() };
+        //}
     }
 }

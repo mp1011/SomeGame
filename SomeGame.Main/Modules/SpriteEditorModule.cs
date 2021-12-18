@@ -27,7 +27,7 @@ namespace SomeGame.Main.Modules
         {
             if(index == LayerIndex.Interface)
             {
-                var spriteTiles = GameSystem.GetTileSet(PaletteIndex.P1);
+                var spriteTiles = GameSystem.GetTileSet();
 
                 int i = 0;
                 layer.TileMap.SetEach(0, 30, 0, 4, (x, y) =>
@@ -67,16 +67,16 @@ namespace SomeGame.Main.Modules
             PreviewSprite();
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-            using var image = resourceLoader.LoadTexture(_spriteKey);
-            var tileset = image.ToIndexedTilesetImage();
+        //protected override IndexedTilesetImage[] LoadVramImages()
+        //{
+        //    using var image = resourceLoader.LoadTexture(_spriteKey);
+        //    var tileset = image.ToIndexedTilesetImage();
 
-            using var fontImage = resourceLoader.LoadTexture(TilesetContentKey.Font);
-            return new IndexedTilesetImage[] { image.ToIndexedTilesetImage(), fontImage.ToIndexedTilesetImage() };
-        }
+        //    using var fontImage = resourceLoader.LoadTexture(TilesetContentKey.Font);
+        //    return new IndexedTilesetImage[] { image.ToIndexedTilesetImage(), fontImage.ToIndexedTilesetImage() };
+        //}
 
-        protected override void Update()
+        protected override bool Update()
         {
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
             if (_save.Update(layer, Input) == UIButtonState.Pressed)
@@ -90,6 +90,8 @@ namespace SomeGame.Main.Modules
 
                 PreviewSprite();
             }
+
+            return true;
         }
 
         private void HandleFlip()

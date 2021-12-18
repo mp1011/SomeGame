@@ -15,7 +15,7 @@ namespace SomeGame.Main.Tests
     {
         private Scroller CreateScroller()
         {
-            var gameSystem = new GameSystem(new EmptyRamViewer());
+            var gameSystem = new GameSystem(null);
             var scroller = new Scroller(gameSystem);
 
             scroller.SetTileMaps(new TileMap(LevelContentKey.None, gameSystem.LayerTileWidth * 2, gameSystem.LayerTileHeight * 2),
@@ -32,7 +32,7 @@ namespace SomeGame.Main.Tests
 
         public void TestSpriteScreenPosition(int actorWorldX, int cameraX, int? expectedActorLayerX)
         {
-            var gameSystem = new GameSystem(new EmptyRamViewer());
+            var gameSystem = new GameSystem(null);
             var actor = new Actor(gameSystem, ActorType.Character, TilesetContentKey.None, null, null, null, new Rectangle(0, 0, 16, 16), null);
             actor.WorldPosition.X.Set(actorWorldX);
 

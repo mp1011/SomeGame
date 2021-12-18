@@ -82,7 +82,7 @@ namespace SomeGame.Main.Modules
         {
             if(index == LayerIndex.BG)
             {
-                var grid = _tileSetService.CreateTileMapFromImageAndTileset(_image, GameSystem.GetTileSet(PaletteIndex.P1));
+                var grid = _tileSetService.CreateTileMapFromImageAndTileset(_image, GameSystem.GetTileSet());
                 layer.TileMap.SetEach(0,grid.Width,1, grid.Height+1, (x, y) => grid[x, y-1]);
             }
             else if(index == LayerIndex.FG)
@@ -91,26 +91,24 @@ namespace SomeGame.Main.Modules
             }
         }
 
-        protected override PaletteKeys PaletteKeys => new PaletteKeys(_imageKey, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse, ImageContentKey.Palette1Inverse);
+        //protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
+        //{
+        //    _image = resourceLoader.LoadTexture(_imageKey)
+        //        .ToIndexedImage();
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-            _image = resourceLoader.LoadTexture(_imageKey)
-                .ToIndexedImage();
-
-            return new IndexedTilesetImage[] 
-            { 
-                resourceLoader.LoadTexture(_tileSetKey).ToIndexedTilesetImage(_image.Palette),
-                resourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage()
-            };
-        }
+        //    return new IndexedTilesetImage[] 
+        //    { 
+        //        resourceLoader.LoadTexture(_tileSetKey).ToIndexedTilesetImage(_image.Palette),
+        //        resourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage()
+        //    };
+        //}
 
 
 
         private Point _mouseTile;
         private Point _lastMouseTile;
 
-        protected override void Update()
+        protected override bool Update()
         {
             _themeSelector.Update(GameSystem.GetLayer(LayerIndex.Interface), Input);
 
@@ -133,6 +131,8 @@ namespace SomeGame.Main.Modules
 
             if(_save.Update(GameSystem.GetLayer(LayerIndex.Interface), Input) == UIButtonState.Pressed)
                 _dataSerializer.Save(_editorTileset);
+
+            return true;
         }
 
         private void AssignTheme(Point start, Point end)

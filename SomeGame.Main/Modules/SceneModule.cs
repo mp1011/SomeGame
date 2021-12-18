@@ -36,17 +36,18 @@ namespace SomeGame.Main.Modules
             _actorFactory = new ActorFactory(_actorManager, GameSystem, DataSerializer, InputManager, 
                 _sceneManager, _scroller, _playerStateManager, _audioService, _collectiblesService);
             _sceneLoader = new SceneLoader(ResourceLoader, GraphicsDevice, DataSerializer, _actorFactory, 
-                _audioService, _collectiblesService, _scroller, GameSystem, _playerStateManager, _actorManager, InputManager, _sceneManager);
+                _audioService, _collectiblesService, _scroller, GameSystem, _playerStateManager, _actorManager, 
+                InputManager, _sceneManager, RenderService as RasterBasedRenderService);
             GameSystem.RAM.AddLabel("End Scene");
         }
 
-        public override void Initialize()
+        protected override void OnInitialize()
         {
             GameSystem.Input.Initialize(GameSystem.Screen);
             _sceneManager.QueueNextScene(_initialScene);
         }
 
-        protected override void Update()
+        protected override bool Update()
         {
             var sceneUpdate = _sceneManager.Update(_sceneLoader);
             if(sceneUpdate.NewScene)
@@ -61,6 +62,7 @@ namespace SomeGame.Main.Modules
             _audioService.UpdateMusic();
             _sceneController.Update();
 
+            return true;
         }
     }
 }

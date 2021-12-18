@@ -44,10 +44,34 @@ namespace SomeGame.Main.Modules
             _font.WriteToLayer("PAL ", GameSystem.GetLayer(LayerIndex.Interface), new Point(0, 0));
             _font.WriteToLayer("IMG ", GameSystem.GetLayer(LayerIndex.Interface), new Point(0, 1));
 
-            //var images = Enum.GetValues<TilesetContentKey>()
-            //    .Where(t => t != TilesetContentKey.None)
-            //    .Select(t => ResourceLoader.LoadTexture(t).ToIndexedTilesetImage())
-            //    .ToDictionary(k=>k.Key,v=>v);
+            var images = new TilesetContentKey[] {
+                                TilesetContentKey.Font,
+                                TilesetContentKey.Hero,
+                                TilesetContentKey.Skeleton,
+                                TilesetContentKey.Bullet,
+                                TilesetContentKey.Bullet2,
+                                TilesetContentKey.Bullet3,
+                                TilesetContentKey.Hud,
+                                TilesetContentKey.Items,
+                                TilesetContentKey.Gizmos,
+                                TilesetContentKey.Tiles1,
+                                TilesetContentKey.Bat,
+                                TilesetContentKey.Mountains }
+                .Select(t => ResourceLoader.LoadTexture(t).ToIndexedTilesetImage())
+                .ToArray();
+
+            var allColors = images
+                .SelectMany(p => p.Palette)
+                .Distinct()
+                .ToArray();
+
+            //var superPalette = new Palette(allColors);
+            //var bites = Enumerable.Range(0, allColors.Length).Select(p => (byte)p).ToArray();
+            //int b = 0;
+            //var indexedImage = new IndexedTilesetImage(TilesetContentKey.None, 
+            //    new Grid<byte>(bites.Length,1, (x,y)=> bites[b++]), superPalette);
+            //DataSerializer.SaveImage(ImageContentKey.SystemPalette, indexedImage.ToTexture2D(GraphicsDevice));
+
 
             //FitToPalette(images, TilesetContentKey.Tiles, TilesetContentKey.Items, graphicsDevice);
 
@@ -92,15 +116,15 @@ namespace SomeGame.Main.Modules
             DataSerializer.SaveImage(key, indexedImage.ToTexture2D(graphicsDevice));
         }
 
-        protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        {
-             return new IndexedTilesetImage[]
-             {
-                ResourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage()
-             };
-        }
+        //protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
+        //{
+        //     return new IndexedTilesetImage[]
+        //     {
+        //        ResourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage()
+        //     };
+        //}
 
-        protected override void Update()
+        protected override bool Update()
         {
             var layer = GameSystem.GetLayer(LayerIndex.Interface);
 
@@ -132,26 +156,29 @@ namespace SomeGame.Main.Modules
                 _paletteSelector.Decrement(layer);
                 UpdateImage();
             }
+
+            return false;
         }
 
         private void AddToPalette()
         {
-            var currentColors = GameSystem
-                .GetPalette(PaletteIndex.P1)
-                .ToArray();
+            throw new System.NotImplementedException();
+            //var currentColors = GameSystem
+            //    .GetPalette(PaletteIndex.P1)
+            //    .ToArray();
 
-            if (_constructedPalette == null)
-            {
-                _constructedPalette = new Palette(currentColors);
-                return;
-            }
+            //if (_constructedPalette == null)
+            //{
+            //    _constructedPalette = new Palette(currentColors);
+            //    return;
+            //}
 
 
-            _constructedPalette = new Palette(_constructedPalette
-                                                .Union(currentColors)
-                                                .Distinct());
+            //_constructedPalette = new Palette(_constructedPalette
+            //                                    .Union(currentColors)
+            //                                    .Distinct());
 
-            UpdateImage(_constructedPalette);
+            //UpdateImage(_constructedPalette);
         }
 
         private void SavePalette()
@@ -191,12 +218,12 @@ namespace SomeGame.Main.Modules
 
             image = FitToPalette(image, palette);
 
-            GameSystem.SetPalettes(palette, palette, palette, palette);
-            GameSystem.SetVram(GraphicsDevice, new IndexedTilesetImage[]
-            {
-                ResourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage(),
-                image
-            });
+            throw new System.NotImplementedException();
+            //GameSystem.SetVram(GraphicsDevice, new IndexedTilesetImage[]
+            //{
+            //    ResourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage(),
+            //    image
+            //});
 
             var bg = GameSystem.GetLayer(LayerIndex.BG);
             int i = 0;
