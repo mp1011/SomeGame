@@ -98,7 +98,7 @@ namespace SomeGame.Main.Services
             switch(scene.SceneInfo.InterfaceType)
             {
                 case InterfaceType.PlayerStatus:
-                    return new PlayerStatusInterface(_playerStateManager, _gameSystem, _renderService);
+                    return new PlayerStatusInterface(_playerStateManager, _gameSystem, _renderService, _scroller);
                 case InterfaceType.TitleCard:
                     return new TitleCardInterface(_gameSystem, scene.Key);
                 default:

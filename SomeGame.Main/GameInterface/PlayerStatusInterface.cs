@@ -13,7 +13,8 @@ namespace SomeGame.Main.GameInterface
         private readonly Font _font;
         private const int _sectionsPerHeart = 4;
 
-        public PlayerStatusInterface(PlayerStateManager playerStateManager, GameSystem gameSystem, RasterBasedRenderService renderService)
+        public PlayerStatusInterface(PlayerStateManager playerStateManager, GameSystem gameSystem, 
+            RasterBasedRenderService renderService, Scroller scroller)
         {
             _gameSystem = gameSystem;
             _playerStateManager = playerStateManager;
@@ -22,7 +23,7 @@ namespace SomeGame.Main.GameInterface
             var interfaceLayer = _gameSystem.GetLayer(LayerIndex.Interface);
             interfaceLayer.TileMap.SetEach((x, y) => new Tile(-1, TileFlags.None));
 
-            interfaceLayer.Palette = PaletteIndex.P2;
+            interfaceLayer.Palette = PaletteIndex.P4;
             interfaceLayer.TileOffset = _gameSystem.GetTileOffset(TilesetContentKey.Hud);
 
             interfaceLayer.TileMap.SetTile(0, 0, new Tile(6, TileFlags.FlipH));
@@ -42,9 +43,12 @@ namespace SomeGame.Main.GameInterface
             _font.WriteToLayer("LIVES", interfaceLayer, new Point(20, 1));
 
             var bgColor = _gameSystem.BackgroundColorIndex;
-            renderService.AddInterrupt(new ChangeBackgroundColor(_gameSystem, 12, 0));
+            renderService.AddInterrupt(new ChangeBackgroundColor(_gameSystem, 3, 0));
             renderService.AddInterrupt(new ChangeBackgroundColor(_gameSystem, bgColor, 24));
 
+            var bgXScroll = _gameSystem.RAM.DeclareInt();
+            renderService.AddInterrupt(new SetBgXAutoScroll(_gameSystem, -5, 25, bgXScroll));
+            renderService.AddInterrupt(new SetBgXAutoScroll(_gameSystem, 0, 96, bgXScroll));
         }
 
         public void Update()

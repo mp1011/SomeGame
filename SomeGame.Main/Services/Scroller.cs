@@ -106,8 +106,5 @@ namespace SomeGame.Main.Services
             sprite.ScrollX = actorScreenX - actor.LocalHitbox.X;
             sprite.ScrollY = actorScreenY - actor.LocalHitbox.Y;
         }
-
-        
-
     }
 }

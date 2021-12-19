@@ -25,6 +25,7 @@ namespace SomeGame.Main.Services
         private RamPalette _currentPalette;
         private PaletteIndex _currentPaletteIndex;
         private List<IRasterInterrupt> _rasterInterrupts = new List<IRasterInterrupt>();
+        private int _drawFrame;
 
         public RasterBasedRenderService(GameSystem gameSystem, GraphicsDevice graphicsDevice)
         {
@@ -72,7 +73,7 @@ namespace SomeGame.Main.Services
             {
                 if(nextInterruptIndex < _rasterInterrupts.Count && _rasterY == _rasterInterrupts[nextInterruptIndex].VerticalLine)
                 {
-                    _rasterInterrupts[nextInterruptIndex].Handle();
+                    _rasterInterrupts[nextInterruptIndex].Handle(_drawFrame);
                     nextInterruptIndex++;
                 }
 
@@ -105,6 +106,8 @@ namespace SomeGame.Main.Services
                 _timingTrials = 0;
                 _totalDrawTime = 0;
             }
+
+            _drawFrame++;
         }
 
         private bool DrawSpritePixel(Sprite[] sprites)
@@ -185,6 +188,7 @@ namespace SomeGame.Main.Services
         {
             int screenX = _rasterX;
             int screenY = _rasterY;
+
             var tileLocation = layer.TilePointFromScreenPixelPoint(screenX, screenY);
             var tile = layer.TileMap.GetTile(tileLocation);
 

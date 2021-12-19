@@ -15,7 +15,7 @@ namespace SomeGame.Main.RasterInterrupts
             VerticalLine = verticalLine;
         }
 
-        public void Handle()
+        public void Handle(int frameNumber)
         {
             _gameSystem.BackgroundColorIndex.Set(_colorIndex);
         }

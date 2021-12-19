@@ -16,8 +16,7 @@ namespace SomeGame.Main.Models
         private readonly ResourceLoader _resourceLoader;
         private readonly GraphicsDevice _graphicsDevice;
         public RAM RAM { get; }
-
-        
+ 
         private VramData _vram;
         private RamPalette[] _palettes;
         private Layer[] _layers;
