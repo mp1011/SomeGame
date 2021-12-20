@@ -331,6 +331,12 @@
 /processorParam:Quality=Best
 /build:Sounds/Jump.wav
 
+#begin Sounds/PlayerLose.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/PlayerLose.wav
+
 #begin Sounds/Shoot.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

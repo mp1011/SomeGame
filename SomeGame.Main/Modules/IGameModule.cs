@@ -24,7 +24,7 @@ namespace SomeGame.Main.Modules
         protected ResourceLoader ResourceLoader { get; }
         protected DataSerializer DataSerializer { get; }
         protected GameSystem GameSystem { get; }
-        protected IRenderService RenderService { get; }
+        protected RasterBasedRenderService RenderService { get; }
         protected InputManager InputManager { get; } 
         protected InputModel Input => InputManager.Input;
 

@@ -19,10 +19,11 @@ namespace SomeGame.Main.Services
         private readonly AudioService _audioService;
         private readonly CollectiblesService _collectiblesService;
         private readonly PlayerFinder _playerFinder;
+        private readonly RasterBasedRenderService _renderService;
 
         public ActorFactory(ActorManager actorManager, GameSystem gameSystem, DataSerializer dataSerializer, 
             InputManager inputManager, SceneManager sceneManager, Scroller scroller, PlayerStateManager playerStateManager,
-            AudioService audioService, CollectiblesService collectiblesService)
+            AudioService audioService, CollectiblesService collectiblesService, RasterBasedRenderService renderService)
         {
             _actorManager = actorManager;
             _gameSystem = gameSystem;
@@ -34,6 +35,7 @@ namespace SomeGame.Main.Services
             _collectiblesService = collectiblesService;
             _scroller = scroller;
             _playerFinder = new PlayerFinder(actorManager);
+            _renderService = renderService;
         }
 
         public Actor CreateActor(
@@ -129,7 +131,7 @@ namespace SomeGame.Main.Services
                                 _sceneManager,
                                 _audioService,
                                 transitionInfo),
-                destroyedBehavior: new PlayerDeathBehavior(_gameSystem, _sceneManager, _playerStateManager),
+                destroyedBehavior: new PlayerDeathBehavior(_gameSystem, _sceneManager, _playerStateManager,_audioService,_renderService),
                 collisionDetector: new PlayerCollisionDetector(
                                             new BgCollisionDetector(_gameSystem, _scroller.GetTilemap(LayerIndex.FG), _actorManager),
                                             new CollectiblesCollectionDetector(_collectiblesService)),

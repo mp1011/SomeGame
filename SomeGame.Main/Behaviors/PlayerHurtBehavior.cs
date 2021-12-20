@@ -68,7 +68,7 @@ namespace SomeGame.Main.Behaviors
             if (_hurtTimer == 0)
             {
                 _audioService.Play(SoundContentKey.Hurt);
-                _playerStateManager.CurrentState.Health.Subtract(5);
+                _playerStateManager.CurrentState.Health.Subtract(50);
                 if (_playerStateManager.CurrentState.Health == 0)
                     actor.Destroy();
                 _hurtTimer.Set(1);

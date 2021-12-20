@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Models;
+using SomeGame.Main.RasterEffects;
 using SomeGame.Main.RasterInterrupts;
 using System;
 using System.Collections.Generic;
@@ -26,13 +27,18 @@ namespace SomeGame.Main.Services
         private PaletteIndex _currentPaletteIndex;
         private List<IRasterInterrupt> _rasterInterrupts = new List<IRasterInterrupt>();
         private int _drawFrame;
-
+        private IRasterEffect _currentEffect;
         public RasterBasedRenderService(GameSystem gameSystem, GraphicsDevice graphicsDevice)
         {
             _gameSystem = gameSystem;
             _spriteSize = _gameSystem.TileSize * 2;
             _canvas = new Texture2D(graphicsDevice, _gameSystem.Screen.Width, _gameSystem.Screen.Height);
             _screenData = new Color[_gameSystem.Screen.Width * _gameSystem.Screen.Height];
+        }
+
+        public void SetEffect(IRasterEffect rasterEffect)
+        {
+            _currentEffect = rasterEffect;
         }
 
         public void ClearInterrupts()
@@ -69,16 +75,27 @@ namespace SomeGame.Main.Services
 
             int nextInterruptIndex = 0;
 
-            for (_rasterY = 0; _rasterY < _gameSystem.Screen.Height; _rasterY++)
+            for (int rasterY = 0; rasterY < _gameSystem.Screen.Height; rasterY++)
             {
-                if(nextInterruptIndex < _rasterInterrupts.Count && _rasterY == _rasterInterrupts[nextInterruptIndex].VerticalLine)
+                if(nextInterruptIndex < _rasterInterrupts.Count && rasterY == _rasterInterrupts[nextInterruptIndex].VerticalLine)
                 {
                     _rasterInterrupts[nextInterruptIndex].Handle(_drawFrame);
                     nextInterruptIndex++;
                 }
 
-                for (_rasterX = 0; _rasterX < _gameSystem.Screen.Width; _rasterX++)
+                for (int rasterX = 0; rasterX < _gameSystem.Screen.Width; rasterX++)
                 {
+                    if (_currentEffect == null)
+                    {
+                        _rasterX = rasterX;
+                        _rasterY = rasterY;
+                    }
+                    else
+                    {
+                        _rasterX = _currentEffect.AdjustX(rasterX, rasterY, _drawFrame);
+                        _rasterY = _currentEffect.AdjustY(rasterX, rasterY, _drawFrame);
+                    }
+
                     if (DrawLayerPixel(interfaceLayer))
                         continue;
                     if (DrawSpritePixel(frontSprites))

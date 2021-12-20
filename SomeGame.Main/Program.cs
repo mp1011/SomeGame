@@ -38,7 +38,7 @@ namespace SomeGame.Main
             new SceneDefinitionModule(gameStartup);
 
         private static IGameModule CreateSceneModule(GameStartup gameStartup) =>
-            new SceneModule(SceneContentKey.Level1, gameStartup);
+            new SceneModule(SceneContentKey.Level1TitleCard, gameStartup);
         private static IGameModule CreateEditorModule(GameStartup gameStartup) =>
            new LevelEditorModule(SceneContentKey.Level1, LayerIndex.FG, gameStartup);
 

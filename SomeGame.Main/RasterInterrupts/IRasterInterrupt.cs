@@ -6,7 +6,5 @@ namespace SomeGame.Main.RasterInterrupts
     {
         int VerticalLine { get; }
         void Handle(int frameNumber);
-    }
-
-   
+    } 
 }

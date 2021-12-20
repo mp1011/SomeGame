@@ -163,6 +163,7 @@ namespace SomeGame.Main.Services
             _collectiblesService.Reset();
             _gameSystem.RAM.ResetSceneData();
             _renderService.ClearInterrupts();
+            _renderService.SetEffect(null);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace SomeGame.Main.Modules
                },
                VramImagesP2: new TilesetContentKey[] 
                {
-                    TilesetContentKey.Bullet
+                    TilesetContentKey.Hero,
                },
                VramImagesP3: new TilesetContentKey[] { },
                VramImagesP4: new TilesetContentKey[] { },
@@ -117,6 +117,7 @@ namespace SomeGame.Main.Modules
                     new SoundInfo(SoundContentKey.Destroy, 2),
                     new SoundInfo(SoundContentKey.Jump, 1),
                     new SoundInfo(SoundContentKey.Hurt, 1),
+                    new SoundInfo(SoundContentKey.PlayerLose, 1),
                },
                Actors: previousSaved?.Actors ?? new ActorStart[] { },
                CollectiblePlacements: previousSaved?.CollectiblePlacements ?? new CollectiblePlacement[] { },

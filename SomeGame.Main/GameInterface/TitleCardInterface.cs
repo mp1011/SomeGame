@@ -47,7 +47,7 @@ namespace SomeGame.Main.GameInterface
                 _timer.Set(0);
                 var layer = _gameSystem.GetLayer(LayerIndex.Interface);
                 if (layer.Palette == PaletteIndex.P1)
-                    layer.Palette = PaletteIndex.P3;
+                    layer.Palette = PaletteIndex.P2;
                 else
                     layer.Palette = PaletteIndex.P1;
             }

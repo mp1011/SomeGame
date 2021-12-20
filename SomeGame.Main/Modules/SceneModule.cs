@@ -34,10 +34,10 @@ namespace SomeGame.Main.Modules
             _sceneManager = new SceneManager();            
             _actorManager = new ActorManager(GameSystem, _scroller);
             _actorFactory = new ActorFactory(_actorManager, GameSystem, DataSerializer, InputManager, 
-                _sceneManager, _scroller, _playerStateManager, _audioService, _collectiblesService);
+                _sceneManager, _scroller, _playerStateManager, _audioService, _collectiblesService, RenderService);
             _sceneLoader = new SceneLoader(ResourceLoader, GraphicsDevice, DataSerializer, _actorFactory, 
                 _audioService, _collectiblesService, _scroller, GameSystem, _playerStateManager, _actorManager, 
-                InputManager, _sceneManager, RenderService as RasterBasedRenderService);
+                InputManager, _sceneManager, RenderService);
             GameSystem.RAM.AddLabel("End Scene");
         }
 

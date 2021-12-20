@@ -9,7 +9,8 @@ namespace SomeGame.Main.Content
         Destroy,
         Hurt,
         Jump,
-        Shoot
+        Shoot,
+        PlayerLose
     }
 
     public enum MusicContentKey : byte
