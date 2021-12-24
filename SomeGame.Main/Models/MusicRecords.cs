@@ -18,6 +18,8 @@ namespace SomeGame.Main.Models
         public bool IsPlaying => _currentStem != null && _currentStem.State == SoundState.Playing;
         public bool IsFinished => !IsPlaying;
 
+        public bool IsPaused { get; private set; }
+
         public void Play(SoundEffectInstance stem)
         {
             if (_currentStem != null)
@@ -29,5 +31,23 @@ namespace SomeGame.Main.Models
         }
 
         public void Repeat() => _currentStem?.Play();
+
+        public void Pause()
+        {
+            if (_currentStem == null)
+                return;
+
+            _currentStem.Pause();
+            IsPaused = true;
+        }
+
+        public void Resume()
+        {
+            if (_currentStem == null)
+                return;
+
+            _currentStem.Resume();
+            IsPaused = false;
+        }
     }
 }

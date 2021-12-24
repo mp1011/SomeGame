@@ -34,6 +34,17 @@ namespace SomeGame.Main.Models
 
         public RamByte BackgroundColorIndex { get; }
 
+        //todo, replace with a bit
+        private RamByte _isPaused;
+        public bool Paused
+        {
+            get => _isPaused == 1;
+            set
+            {
+                _isPaused.Set(value ? 1 : 0);
+            }
+        }
+
         public Color BackgroundColor => _palettes[0][BackgroundColorIndex];
 
         public IUserInputSource Input { get; }
@@ -51,6 +62,7 @@ namespace SomeGame.Main.Models
             RAM = new RAM(this, startup.RamViewer ?? new EmptyRamViewer());
 
             BackgroundColorIndex = RAM.DeclareByte();
+            _isPaused = RAM.DeclareByte();
 
             _layers = new Layer[]
             {

@@ -12,6 +12,8 @@ namespace SomeGame.Main.Services
         private readonly GameSystem _gameSystem;
         private List<ActorWithSprite> _actors = new List<ActorWithSprite>();
 
+
+
         public ActorManager(GameSystem gameSystem, Scroller scroller)
         {
             _scroller = scroller;
@@ -67,6 +69,9 @@ namespace SomeGame.Main.Services
 
         public void Update(Scene currentScene)
         {
+            if (_gameSystem.Paused)
+                return;
+
             var extraSprite = _gameSystem.GetSprite(SpriteIndex.LastIndex);
             extraSprite.Enabled = false;
 

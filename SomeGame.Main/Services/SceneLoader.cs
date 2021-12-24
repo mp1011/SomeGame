@@ -108,10 +108,15 @@ namespace SomeGame.Main.Services
 
         public ISceneController CreateSceneController(SceneInfo sceneInfo)
         {
-            if (sceneInfo.InterfaceType == InterfaceType.TitleCard)
-                return new TitleCardSceneController(sceneInfo.Transitions.Right, _inputManager, _sceneManager);
-            else
-                return new EmptySceneController();
+            switch(sceneInfo.InterfaceType)
+            {
+                case InterfaceType.TitleCard:
+                    return new TitleCardSceneController(sceneInfo.Transitions.Right, _inputManager, _sceneManager);
+                case InterfaceType.PlayerStatus:
+                    return new PlayableSceneController(_gameSystem,_inputManager,_audioService);
+                default:
+                    return new EmptySceneController();
+            }
         }
 
         private TileMap InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex, TilesetContentKey tilesetKey)

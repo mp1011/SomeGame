@@ -52,33 +52,47 @@ namespace SomeGame.Main.GameInterface
         }
 
         public void Update()
-            {
-                var playerState = _playerStateManager.CurrentState;
+        {
+            var playerState = _playerStateManager.CurrentState;
 
-                var interfaceLayer = _gameSystem.GetLayer(LayerIndex.Interface);
-                _font.WriteToLayer(playerState.Score.ToString("00000000"), interfaceLayer, new Point(7, 1));
+            var interfaceLayer = _gameSystem.GetLayer(LayerIndex.Interface);
+            _font.WriteToLayer(playerState.Score.ToString("00000000"), interfaceLayer, new Point(7, 1));
 
-                _font.WriteToLayer(playerState.Lives.ToString(), interfaceLayer, new Point(26, 1));
+            _font.WriteToLayer(playerState.Lives.ToString(), interfaceLayer, new Point(26, 1));
 
-                int heartX = 39 - (playerState.Health.Max / _sectionsPerHeart);
-                interfaceLayer.TileMap.SetEach(heartX, heartX + playerState.Health.Max / _sectionsPerHeart, 1, 2,
-                    (x, y) =>
+            int heartX = 39 - (playerState.Health.Max / _sectionsPerHeart);
+            interfaceLayer.TileMap.SetEach(heartX, heartX + playerState.Health.Max / _sectionsPerHeart, 1, 2,
+                (x, y) =>
+                {
+                    int heartIndex = x - heartX;
+                    int fullHealthValue = (heartIndex + 1) * _sectionsPerHeart;
+                    int emptyHealthValue = heartIndex * _sectionsPerHeart;
+
+                    if (playerState.Health <= emptyHealthValue)
+                        return new Tile(0, TileFlags.None);
+                    else if (playerState.Health >= fullHealthValue)
+                        return new Tile(1, TileFlags.None);
+                    else
                     {
-                        int heartIndex = x - heartX;
-                        int fullHealthValue = (heartIndex + 1) * _sectionsPerHeart;
-                        int emptyHealthValue = heartIndex * _sectionsPerHeart;
+                        int partialValue = playerState.Health - emptyHealthValue;
+                        return new Tile(5 - partialValue, TileFlags.None);
+                    }
+                });
 
-                        if (playerState.Health <= emptyHealthValue)
-                            return new Tile(0, TileFlags.None);
-                        else if (playerState.Health >= fullHealthValue)
-                            return new Tile(1, TileFlags.None);
-                        else
-                        {
-                            int partialValue = playerState.Health - emptyHealthValue;
-                            return new Tile(5 - partialValue, TileFlags.None);
-                        }
-                    });
+            if (_gameSystem.Paused)
+            {
+                string label = "PAUSED";
+                int textX = ((_gameSystem.Screen.Width / _gameSystem.TileSize) - label.Length) / 2;
+                _font.WriteToLayer(label, interfaceLayer, new Point(textX, 10));
             }
+            else
+            {
+                //hack
+                string label = "      ";
+                int textX = ((_gameSystem.Screen.Width / _gameSystem.TileSize) - label.Length) / 2;
+                _font.WriteToLayer(label, interfaceLayer, new Point(textX, 10));
+            }
+        }
         
     }
 }

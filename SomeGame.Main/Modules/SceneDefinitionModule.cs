@@ -118,6 +118,7 @@ namespace SomeGame.Main.Modules
                     new SoundInfo(SoundContentKey.Jump, 1),
                     new SoundInfo(SoundContentKey.Hurt, 1),
                     new SoundInfo(SoundContentKey.PlayerLose, 1),
+                    new SoundInfo(SoundContentKey.Pause, 1),
                },
                Actors: previousSaved?.Actors ?? new ActorStart[] { },
                CollectiblePlacements: previousSaved?.CollectiblePlacements ?? new CollectiblePlacement[] { },

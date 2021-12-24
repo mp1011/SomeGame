@@ -8,7 +8,7 @@ namespace SomeGame.Main.Services
 {
     class AudioService
     {
-        private bool _muted = true;
+        private bool _muted = false;
 
         private readonly ResourceLoader _resourceLoader;
         private Dictionary<SoundContentKey, SoundEffectPool> _sounds = new Dictionary<SoundContentKey, SoundEffectPool>();
@@ -63,12 +63,28 @@ namespace SomeGame.Main.Services
             _waitChannel = null;
         }
 
+        public void PauseMusic()
+        {
+            _songChannel1.Pause();
+            _songChannel2.Pause();
+        }
+
+        public void ResumeMusic()
+        {
+            _songChannel1.Resume();
+            _songChannel2.Resume();
+        }
 
         public void UpdateMusic()
         {
             if (_muted)
                 return;
 
+            if (_songChannel1 != null && _songChannel1.IsPaused)
+                return;
+
+            if (_songChannel2 != null && _songChannel2.IsPaused)
+                return;
 
             if (_waitChannel == null)
             {
