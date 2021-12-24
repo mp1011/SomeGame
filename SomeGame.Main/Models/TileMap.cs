@@ -56,6 +56,5 @@ namespace SomeGame.Main.Models
 
         public void SetEach(Point upperLeft, Point bottomRight, Func<int, int, Tile> createTile) => 
             _tiles.SetEach(upperLeft.X, bottomRight.X, upperLeft.Y, bottomRight.Y, createTile);
-
     }
 }

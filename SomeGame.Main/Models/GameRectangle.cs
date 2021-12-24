@@ -106,6 +106,8 @@ namespace SomeGame.Main.Models
         {
             XPixel = x;
             YPixel = y;
+            Width = width;
+            Height = height;
         }
 
         public GameRectangleWithSubpixels Copy() => new GameRectangleWithSubpixels(0, 0, Width, Height)
@@ -221,6 +223,11 @@ namespace SomeGame.Main.Models
         public static implicit operator Rectangle(RamGameRectangle r)
         {
             return new Rectangle(r.X.Pixel, r.Y.Pixel, r.Width, r.Height);
+        }
+
+        public static implicit operator GameRectangleWithSubpixels(RamGameRectangle r)
+        {
+            return new GameRectangleWithSubpixels(r.LeftPixel, r.TopPixel, r.Width, r.Height);
         }
 
         public PixelPoint GetDirectionTo(RamGameRectangle other)

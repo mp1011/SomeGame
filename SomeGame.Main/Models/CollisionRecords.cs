@@ -22,4 +22,11 @@
             return $"{groundOrAir} X={XCorrection} Y={YCorrection}";
         }
     }
+
+    class CollisionCorrection
+    {
+        public PixelValue X { get; set; }
+        public PixelValue Y { get; set; }
+        public RamPixelPoint CarryMotion { get; set; }
+    }
 }

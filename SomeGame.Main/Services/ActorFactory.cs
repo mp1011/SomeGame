@@ -257,7 +257,7 @@ namespace SomeGame.Main.Services
 
         public Actor CreateMovingPlatform(PixelPoint position, PaletteIndex palette)
         {
-            var bullet = CreateActor(
+            var platform = CreateActor(
                actorId: ActorId.MovingPlatform,
                actorType: ActorType.Gizmo,
                behavior: new MovingPlatformBehavior(),
@@ -268,8 +268,8 @@ namespace SomeGame.Main.Services
                position: position
             );
 
-            bullet.CurrentAnimation = AnimationKey.Moving;
-            return bullet;
+            platform.CurrentAnimation = AnimationKey.Moving;
+            return platform;
         }
 
         private SpriteAnimator CreateAnimator(ActorId actorId, TilesetContentKey tileset)
