@@ -92,13 +92,15 @@ namespace SomeGame.Main.Services
 
         public void ScrollActor(Actor actor, Sprite sprite)
         {
-            if(!_fgLayer.IsInBounds(actor.WorldPosition))
-            {
-                actor.Visible = false;
-                return;
-            }
+            //todo, need to rework this
 
-            actor.Visible = true;
+            //if(!_fgLayer.IsInBounds(actor.WorldPosition))
+            //{
+            //    actor.Visible = false;
+            //    return;
+            //}
+
+            //actor.Visible = true;
 
             var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X.Pixel - Camera.X);
             var actorScreenY = sprite.ScrollY.Set(actor.WorldPosition.Y.Pixel - Camera.Y);

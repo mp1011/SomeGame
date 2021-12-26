@@ -74,6 +74,23 @@ namespace SomeGame.Main.Models
             return rec.ToXNARec().Intersects(other.ToXNARec());
         }
 
+        public static bool IntersectsWithOrTouches(this RamGameRectangle rec, RamGameRectangle other)
+        {
+            if (rec.BottomPixel < other.TopPixel)
+                return false;
+
+            if (other.BottomPixel < rec.TopPixel)
+                return false;
+
+            if (rec.RightPixel < other.LeftPixel)
+                return false;
+
+            if (other.RightPixel < rec.LeftPixel)
+                return false;
+
+            return true;
+        }
+
         public static Direction GetHorizontalDirectionTo(this IGameRectangle rec, IGameRectangle other)
         {
             if (other.Center.X < rec.Center.X)

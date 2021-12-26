@@ -11,7 +11,8 @@ namespace SomeGame.Main.Content
         Jump,
         Shoot,
         PlayerLose,
-        Pause
+        Pause,
+        Bounce
     }
 
     public enum MusicContentKey : byte

@@ -128,6 +128,9 @@ namespace SomeGame.Main.Models
             images.AddRange(SetVram(vramImagesP3, PaletteIndex.P3));
             images.AddRange(SetVram(vramImagesP4, PaletteIndex.P4));
 
+            if (images.Count == 0)
+                return;
+
              _vram = CreateVramImage(images);
 
             SaveVramSnapshot(PaletteIndex.P1);
@@ -139,8 +142,9 @@ namespace SomeGame.Main.Models
         private IndexedTilesetImage[] SetVram(TilesetContentKey[] vramImages, PaletteIndex paletteIndex)
         {
             var textures = vramImages
-               .Select(v => _resourceLoader.LoadTexture(v).ToIndexedTilesetImage(_systemPalette))
-               .ToArray();
+                .Where(v=>v != TilesetContentKey.None)
+                .Select(v => _resourceLoader.LoadTexture(v).ToIndexedTilesetImage(_systemPalette))
+                .ToArray();
 
             List<byte> colors = new List<byte>();
             colors.Add(0);

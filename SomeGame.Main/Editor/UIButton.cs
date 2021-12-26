@@ -33,6 +33,8 @@ namespace SomeGame.Main.Editor
 
             if (input.A.IsPressed())
                 return UIButtonState.Pressed;
+            else if (input.B.IsPressed())
+                return UIButtonState.Pressed2;
             else
                 return UIButtonState.MouseOver;
         }

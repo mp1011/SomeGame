@@ -307,6 +307,12 @@
 /processorParam:Quality=Best
 /build:Music/Song1/Song1C2.wav;Music/Song1/C2.wav
 
+#begin Sounds/Bounce.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Bounce.wav
+
 #begin Sounds/Collect.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

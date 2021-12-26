@@ -17,10 +17,15 @@ namespace SomeGame.Main.Modules
         private UIButton _save;        
         private Point _previewSpriteTile = new Point(0, 4);
 
-        public SpriteEditorModule(TilesetContentKey spriteKey, GameStartup gameStartup) 
+        public SpriteEditorModule(TilesetContentKey spriteKey, GameStartup gameStartup)
             : base(gameStartup)
         {
             _spriteKey = spriteKey;
+
+            SetVram(new TilesetContentKey[] { spriteKey },
+                new TilesetContentKey[] { TilesetContentKey.Font },
+                new TilesetContentKey[] { },
+                new TilesetContentKey[] { });
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)

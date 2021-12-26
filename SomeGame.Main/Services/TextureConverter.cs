@@ -41,11 +41,6 @@ namespace SomeGame.Main.Services
 
             return new IndexedTilesetImage(key, grid, palette);
         }
-
-        internal static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, RamPalette palette)
-        {
-            throw new System.NotImplementedException();
-        }
         
         public static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, Palette palette)
         {

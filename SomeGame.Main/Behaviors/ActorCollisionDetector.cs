@@ -18,7 +18,7 @@ namespace SomeGame.Main.Behaviors
         {
             foreach(var otherActor in _actorManager.GetActors(_collidesWith))
             {
-                if (otherActor.WorldPosition.IntersectsWith(actor.WorldPosition))
+                if (otherActor.WorldPosition.IntersectsWithOrTouches(actor.WorldPosition))
                 {
                     otherActor.Behavior.HandleCollision(otherActor, actor);
                     return new CollisionInfo(Actor:otherActor);

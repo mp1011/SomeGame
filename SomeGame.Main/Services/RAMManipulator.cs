@@ -26,6 +26,17 @@ namespace SomeGame.Main.Services
             _ram = ram;
         }
 
+        private void DecBytes()
+        {
+            for (Cursor = 2; Cursor < 20; Cursor++)
+                DecByte();
+        }
+
+        private void IncBytes()
+        {
+            for (Cursor = 2; Cursor < 20; Cursor++)
+                IncByte();
+        }
 
         public void BeforeFrame()
         {
@@ -35,7 +46,7 @@ namespace SomeGame.Main.Services
                 if(!_isKeyDown)
                 {
                     _isKeyDown = true;
-                    DecByte();
+                    DecBytes();
                 }
             }
             else if (keyState.IsKeyDown(Keys.Add))
@@ -43,7 +54,7 @@ namespace SomeGame.Main.Services
                 if (!_isKeyDown)
                 {
                     _isKeyDown = true;
-                    IncByte();
+                    IncBytes();
                 }
             }
             else

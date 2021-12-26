@@ -20,10 +20,12 @@ namespace SomeGame.Main
 
         public static void StartGame(IRamViewer ramViewer=null)
         {
+         //   RunGame(CreatePaletteEditorModule, ramViewer);
+          //  RunGame(CreateSpriteEditorModule, ramViewer);
+          //  RunGame(CreateAnimationDefinitionModule, ramViewer);
             RunGame(CreateSceneDefinitionModule, ramViewer);
             RunGame(CreateSceneModule, ramViewer);
            // RunGame(CreateEditorModule, ramViewer);
-
         }
 
         private static void RunGame(Func<GameStartup, IGameModule> createModule, IRamViewer ramViewer)
@@ -41,6 +43,15 @@ namespace SomeGame.Main
             new SceneModule(SceneContentKey.Level1TitleCard, gameStartup);
         private static IGameModule CreateEditorModule(GameStartup gameStartup) =>
            new LevelEditorModule(SceneContentKey.Level1, LayerIndex.FG, gameStartup);
+
+        private static IGameModule CreateSpriteEditorModule(GameStartup gameStartup) =>
+            new SpriteEditorModule(TilesetContentKey.Gizmos, gameStartup);
+
+        private static IGameModule CreateAnimationDefinitionModule(GameStartup gameStartup) =>
+             new AnimationDefinitionModule();
+
+        private static IGameModule CreatePaletteEditorModule(GameStartup gameStartup) =>
+            new PaletteCreatorModule(gameStartup);
 
         //private static IEnumerable<IGameModule> CreateModules(GameStartup startup)
         //{

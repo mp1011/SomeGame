@@ -51,7 +51,7 @@ namespace SomeGame.Main.Services
             var tileset = GetTileset(actorId);
             var actor = new Actor(_gameSystem, actorType, tileset, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
             actor.Palette = palette;
-            actor.WorldPosition = _gameSystem.RAM.DeclareGameRectangleWithSubpixels(position.X,position.Y, (byte)hitBox.Width, (byte)hitBox.Height);
+            actor.WorldPosition = _gameSystem.RAM.DeclareGameRectangleWithSubpixels(position.X,position.Y + hitBox.Top, (byte)hitBox.Width, (byte)hitBox.Height);
             _actorManager.AddActor(actor);                
             return actor;
         }
@@ -73,6 +73,7 @@ namespace SomeGame.Main.Services
                 case ActorId.Skull: return CreateSkull(palette);
                 case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone(palette);
                 case ActorId.MovingPlatform: return CreateMovingPlatform(position, palette);
+                case ActorId.Spring: return CreateSpring(position, palette);
                 case ActorId.Bat: return CreateBat(position, palette);
                 case ActorId.Ghost: return CreateGhost(position, palette);
 
@@ -272,6 +273,22 @@ namespace SomeGame.Main.Services
             return platform;
         }
 
+        public Actor CreateSpring(PixelPoint position, PaletteIndex palette)
+        {
+            var spring = CreateActor(
+               actorId: ActorId.Spring,
+               actorType: ActorType.Gizmo,
+               behavior: new SpringBehavior(_gameSystem,_audioService),
+               destroyedBehavior: new EmptyDestroyedBehavior(),
+               collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Character),
+               hitBox: new Rectangle(0, 8, 16, 8),
+               palette: palette,
+               position: position
+            );
+
+            return spring;
+        }
+
         private SpriteAnimator CreateAnimator(ActorId actorId, TilesetContentKey tileset)
         {
             return new SpriteAnimator(_gameSystem,
@@ -289,6 +306,7 @@ namespace SomeGame.Main.Services
                 case ActorId.Gem: return TilesetContentKey.Items;
                 case ActorId.Key: return TilesetContentKey.Items;
                 case ActorId.Meat: return TilesetContentKey.Items;
+                case ActorId.Spring: return TilesetContentKey.Gizmos;
                 case ActorId.MovingPlatform: return TilesetContentKey.Gizmos;
                 case ActorId.Player: return TilesetContentKey.Hero;
                 case ActorId.PlayerBullet: return TilesetContentKey.Bullet;

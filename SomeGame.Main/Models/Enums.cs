@@ -164,7 +164,8 @@ namespace SomeGame.Main.Models
     {
         None,
         MouseOver,
-        Pressed
+        Pressed,
+        Pressed2
     }
 
     public enum LevelEditorMode : byte
@@ -221,7 +222,8 @@ namespace SomeGame.Main.Models
         MovingPlatform,
         Bat,
         Ghost,
-        GhostBullet
+        GhostBullet,
+        Spring
     }
 
     public enum CollectibleId : byte

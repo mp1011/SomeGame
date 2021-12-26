@@ -72,6 +72,13 @@ namespace SomeGame.Main.Editor
                 return true;
             }
 
+            if (_text.Update(interfaceLayer, input) == UIButtonState.Pressed2)
+            {
+                _selectedIndex--;
+                _text = RefreshText(interfaceLayer);
+                return true;
+            }
+
             return false;
         }
     }

@@ -477,6 +477,11 @@ namespace SomeGame.Main.Models
             return 0;
         }
 
+        public void Set(Palette colors)
+        {
+            Set(colors.Select(c => _systemPalette.GetIndex(c)));
+        }
+
         public void Set(IEnumerable<byte> data)
         {
             int i = 0;
@@ -485,6 +490,12 @@ namespace SomeGame.Main.Models
         }
 
         public Color this[byte index] => (index < Colors.Length) ? _systemPalette[Colors[index]] : Color.Black;
+    
+        public static implicit operator Palette(RamPalette ramPalette)
+        {
+            return new Palette(Enumerable.Range(0, ramPalette.Colors.Length)
+                .Select(i => ramPalette[(byte)i]));
+        }
     }
 
     class RamRectangle : IGameRectangle

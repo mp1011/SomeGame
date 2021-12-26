@@ -97,6 +97,9 @@ namespace SomeGame.Main.Modules
 
             SaveAnimations(ActorId.MovingPlatform, AnimationKey.Moving, new Animation(SpriteFrameIndex: 0, Duration: 5));
 
+            SaveAnimations(ActorId.Spring, AnimationKey.Idle, new Animation(SpriteFrameIndex: 4, Duration: 5));
+
+
             SaveAnimations(ActorId.Bat,
                 idle: new Animation(
                         new AnimationFrame(SpriteFrameIndex: 0, Duration: 30),

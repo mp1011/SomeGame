@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SomeGame.Main.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,6 +24,18 @@ namespace SomeGame.Main.Models
         public byte GetIndex(Color color)
         {
             return (byte)Array.IndexOf(_colors, color);
+        }
+
+        public byte GetClosestIndex(Color color)
+        {
+            if (color.A == 0)
+                return 0;
+
+            var closestColor = _colors
+                                .OrderBy(c => c.DistanceTo(color))
+                                .First();
+
+            return GetIndex(closestColor);
         }
 
         public byte? GetIndexOrDefault(Color color)

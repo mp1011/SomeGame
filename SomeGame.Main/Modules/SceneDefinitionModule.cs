@@ -94,6 +94,7 @@ namespace SomeGame.Main.Modules
                { 
                     TilesetContentKey.Tiles1,
                     TilesetContentKey.Items,
+                    TilesetContentKey.Gizmos
                },
                VramImagesP3: new TilesetContentKey[]
                {
@@ -103,7 +104,6 @@ namespace SomeGame.Main.Modules
                     TilesetContentKey.Ghost,
                     TilesetContentKey.Bullet2,
                     TilesetContentKey.Bullet,
-                    TilesetContentKey.Gizmos
                },
                VramImagesP4: new TilesetContentKey[]
                {
@@ -119,6 +119,7 @@ namespace SomeGame.Main.Modules
                     new SoundInfo(SoundContentKey.Hurt, 1),
                     new SoundInfo(SoundContentKey.PlayerLose, 1),
                     new SoundInfo(SoundContentKey.Pause, 1),
+                    new SoundInfo(SoundContentKey.Bounce, 1),
                },
                Actors: previousSaved?.Actors ?? new ActorStart[] { },
                CollectiblePlacements: previousSaved?.CollectiblePlacements ?? new CollectiblePlacement[] { },
