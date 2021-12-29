@@ -13,9 +13,8 @@ namespace SomeGame.Main.Tests
 {
     class ScrollerTests
     {
-        private Scroller CreateScroller()
+        private Scroller CreateScroller(GameSystem gameSystem)
         {
-            var gameSystem = new GameSystem(null);
             var scroller = new Scroller(gameSystem);
 
             scroller.SetTileMaps(new TileMap(LevelContentKey.None, gameSystem.LayerTileWidth * 2, gameSystem.LayerTileHeight * 2),
@@ -27,29 +26,21 @@ namespace SomeGame.Main.Tests
         [TestCase(100,0,100)]
         [TestCase(100, 10, 90)]
         [TestCase(-8, 0, 632)]
-        [TestCase(-32, 0, null)]
-        [TestCase(3000, 0, null)]
 
-        public void TestSpriteScreenPosition(int actorWorldX, int cameraX, int? expectedActorLayerX)
+        public void TestSpriteScreenPosition(int actorWorldX, int cameraX, int expectedActorLayerX)
         {
-            var gameSystem = new GameSystem(null);
+            var gameSystem = new GameSystem(new GameStartup(null,null,null));
             var actor = new Actor(gameSystem, ActorType.Character, TilesetContentKey.None, null, null, null, new Rectangle(0, 0, 16, 16), null);
             actor.WorldPosition.X.Set(actorWorldX);
 
-            var scroller = CreateScroller();
+            var scroller = CreateScroller(gameSystem);
             var sprite = new Sprite(gameSystem, 640, 480, 8);
 
             scroller.Camera.X = cameraX;
-            scroller.ScrollActor(actor, sprite);
+            scroller.ScrollActorSprite(actor, sprite);
 
-            if (expectedActorLayerX == null)
-                Assert.IsFalse(actor.Visible);
-            else
-            {
-                Assert.IsTrue(actor.Visible);
-                Assert.AreEqual(expectedActorLayerX.Value, (int)sprite.ScrollX);
-            }
-
+            Assert.IsTrue(actor.Visible);
+            Assert.AreEqual(expectedActorLayerX, (int)sprite.ScrollX);
         }
     }
 }

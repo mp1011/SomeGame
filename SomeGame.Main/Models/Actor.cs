@@ -11,6 +11,15 @@ namespace SomeGame.Main.Models
         private readonly RamEnum<PaletteIndex> _palette;
         private readonly RamEnum<AnimationKey> _animation;
 
+        private readonly RamEnum<ActorState> _state;
+        private readonly RamEnum<SpriteIndex> _sprite;
+
+        public ActorState State
+        {
+            get => _state;
+            set => _state.Set(value);
+        }
+
         public RamEnum<ActorType> ActorType { get; }
         public Behavior Behavior { get; }
         public IDestroyedBehavior DestroyedBehavior { get; }
@@ -49,11 +58,7 @@ namespace SomeGame.Main.Models
             }
         }
 
-        public bool Enabled
-        {
-            get => (_flags & ActorFlags.Enabled) > 0;
-            set => _flags.SetFlag(ActorFlags.Enabled, value);
-        }
+        public bool Enabled => State == ActorState.Active || State == ActorState.Destroying;
 
         public AnimationKey CurrentAnimation
         {
@@ -67,16 +72,16 @@ namespace SomeGame.Main.Models
             set => _flags.SetFlag(ActorFlags.IsAnimationFinished, value);
         }
 
-        public bool HasBeenActivated
+        public bool NeedsSprite
         {
-            get => (_flags & ActorFlags.HasBeenActivated) > 0;
-            set => _flags.SetFlag(ActorFlags.HasBeenActivated, value);
+            get => (_flags & ActorFlags.SpriteRequired) > 0;
+            set => _flags.SetFlag(ActorFlags.SpriteRequired, value);
         }
 
         public bool Destroying
         {
-            get => (_flags & ActorFlags.Destroying) > 0;
-            set => _flags.SetFlag(ActorFlags.Destroying, value);
+            get => State == ActorState.Destroying;
+            set => State = ActorState.Destroying;
         }
 
         public bool Visible
@@ -107,7 +112,8 @@ namespace SomeGame.Main.Models
                      Rectangle localHitbox,
                      SpriteAnimator animator)
         {
-
+            _sprite = gameSystem.RAM.DeclareEnum(SpriteIndex.Sprite1);
+            _state = gameSystem.RAM.DeclareEnum(ActorState.WaitingForActivation);            
             _flags = gameSystem.RAM.DeclareEnum(ActorFlags.Visible);
             _palette = gameSystem.RAM.DeclareEnum(PaletteIndex.P1);
             _animation = gameSystem.RAM.DeclareEnum(AnimationKey.Idle);
@@ -124,8 +130,6 @@ namespace SomeGame.Main.Models
 
         public void Destroy()
         {
-            Enabled = false;
-
             if (DestroyedBehavior == null)
                 return;
                            
@@ -133,26 +137,13 @@ namespace SomeGame.Main.Models
             DestroyedBehavior.OnDestroyed(this);            
         }
 
-        public void OnBeingDestroyed()
-        {
-            if (DestroyedBehavior.Update(this) == DestroyedState.Destroyed)
-                Destroying = false;
-        }
-
         public void Create()
         {
-            HasBeenActivated = true;
-            Destroying = false;
+            State = ActorState.Active;
             Behavior.OnCreated(this);
-            Enabled = true;
+            NeedsSprite = true;
         }
 
-        public override string ToString()
-        {
-            if (Enabled)
-                return $"{ActorType}";
-            else
-                return $"{ActorType} (disabled)";
-        }
+        public override string ToString() => $"{ActorType} ({State})";
     }
 }

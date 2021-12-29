@@ -12,6 +12,13 @@ namespace SomeGame.Main.Services
             return choices[index];
         }
 
+        public static T RandomEnumValue<T>()
+            where T:struct, Enum
+        {
+            var values = Enum.GetValues<T>();
+            return RandomItem(values);
+        }
+
         public static bool RandomBit()
         {
             return _random.Next(0, 2) == 0;

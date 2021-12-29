@@ -28,6 +28,8 @@ namespace SomeGame.Main.Behaviors
         private void AddBone(int initialX, Actor actor)
         {
             var bone = _bones.ActivateNext();
+            if (bone == null)
+                return;
             bone.WorldPosition.Center = actor.WorldPosition.Center;
             bone.MotionVector.Set(new PixelPoint(initialX, -2));
         }

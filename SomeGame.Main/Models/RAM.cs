@@ -192,12 +192,12 @@ namespace SomeGame.Main.Models
 
     public abstract class RamValue
     {
-        protected readonly int Index;
+        public readonly int Address;
         protected readonly RAM Memory;
 
         public RamValue(int index, RAM ram)
         {
-            Index = index;
+            Address = index;
             Memory = ram;
         }
     }
@@ -208,48 +208,48 @@ namespace SomeGame.Main.Models
 
         public static RamByte operator ++(RamByte r)
         {
-            r.Memory[r.Index]++;
+            r.Memory[r.Address]++;
             return r;
         }
 
         public RamByte Inc()
         {
-            Memory[Index]++;
+            Memory[Address]++;
             return this;
         }
 
         public RamByte Dec()
         {
-            Memory[Index]--;
+            Memory[Address]--;
             return this;
         }
 
         public void Add(int value) => Set(this + value);
         public void Subtract(int value) => Set(this - value);
 
-        public static implicit operator byte(RamByte r)=> r.Memory[r.Index];
+        public static implicit operator byte(RamByte r)=> r.Memory[r.Address];
 
         public RamByte Set(byte newValue)
         {
-            Memory[Index] = newValue;
+            Memory[Address] = newValue;
             return this;
         }
         public RamByte Set(int newValue) => Set((byte)newValue);
 
-        public static bool operator ==(RamByte r, byte value) => r.Memory[r.Index] == value;
-        public static bool operator !=(RamByte r, byte value) => r.Memory[r.Index] != value;
+        public static bool operator ==(RamByte r, byte value) => r.Memory[r.Address] == value;
+        public static bool operator !=(RamByte r, byte value) => r.Memory[r.Address] != value;
 
         public override bool Equals(object obj)
         {
             if (obj is RamByte r)
-                return Memory[Index] == r.Memory[r.Index];
+                return Memory[Address] == r.Memory[r.Address];
             else
                 return false;
         }
 
         public override int GetHashCode()
         {
-            return Memory[Index];
+            return Memory[Address];
         }
 
         public override string ToString()
@@ -269,7 +269,7 @@ namespace SomeGame.Main.Models
         public bool GetFlag(T flag)
         {
             var flagByte = (byte)(object)flag;
-            var thisByte = Memory[Index];
+            var thisByte = Memory[Address];
             return (thisByte & flagByte) > 0;
 
         }
@@ -277,12 +277,12 @@ namespace SomeGame.Main.Models
         public RamByte SetFlag(T flag, bool on)
         {
             var flagByte = (byte)(object)flag;
-            var thisByte = Memory[Index];
+            var thisByte = Memory[Address];
 
             if (on)
-                Memory[Index] = (byte)(thisByte | flagByte);
+                Memory[Address] = (byte)(thisByte | flagByte);
             else
-                Memory[Index] = (byte)(thisByte & ~flagByte);
+                Memory[Address] = (byte)(thisByte & ~flagByte);
 
             return this;
         }
@@ -293,22 +293,22 @@ namespace SomeGame.Main.Models
             return e.ToString();
         }
 
-        public static bool operator ==(RamEnum<T> r, T value) => r.Memory[r.Index] == (byte)(object)value;
-        public static bool operator !=(RamEnum<T> r, T value) => r.Memory[r.Index] != (byte)(object)value;
+        public static bool operator ==(RamEnum<T> r, T value) => r.Memory[r.Address] == (byte)(object)value;
+        public static bool operator !=(RamEnum<T> r, T value) => r.Memory[r.Address] != (byte)(object)value;
 
-        public static implicit operator T (RamEnum<T> ramEnum) => (T)Enum.ToObject(typeof(T), ramEnum.Memory[ramEnum.Index]);
+        public static implicit operator T (RamEnum<T> ramEnum) => (T)Enum.ToObject(typeof(T), ramEnum.Memory[ramEnum.Address]);
 
         public override bool Equals(object obj)
         {
             if (obj is RamEnum<T> r)
-                return Memory[Index] == r.Memory[r.Index];
+                return Memory[Address] == r.Memory[r.Address];
             else
                 return false;
         }
 
         public override int GetHashCode()
         {
-            return Memory[Index];
+            return Memory[Address];
         }
     }
 
@@ -326,13 +326,13 @@ namespace SomeGame.Main.Models
                 value = 127;
 
             value += 128;
-            Memory[Index] = (byte)value;
+            Memory[Address] = (byte)value;
             return this;
         }
 
         public static implicit operator int(RamSignedByte r)
         {
-            var value = (int)r.Memory[r.Index];
+            var value = (int)r.Memory[r.Address];
             return value - 128;
         }
 
@@ -353,15 +353,15 @@ namespace SomeGame.Main.Models
             value = value + 32768;
 
             //only lower 2 bytes used
-            Memory[Index] = (byte)value;
-            Memory[Index+1] = (byte)(value>>8);
+            Memory[Address] = (byte)value;
+            Memory[Address+1] = (byte)(value>>8);
             return this;
         }
 
         public static implicit operator int(RamInt r)
         {
-            var low = (int)r.Memory[r.Index];
-            var high = (int)r.Memory[r.Index + 1];
+            var low = (int)r.Memory[r.Address];
+            var high = (int)r.Memory[r.Address + 1];
 
             var unsigned = (high << 8) + low;
 

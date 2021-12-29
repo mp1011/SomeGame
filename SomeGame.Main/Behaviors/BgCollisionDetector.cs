@@ -180,10 +180,13 @@ namespace SomeGame.Main.Behaviors
             }
 
             if (checkAbove)
-                collisionInfo += CheckTouchingGround(actor, bounds, correction.Y);
+            {
+                var groundCollision = CheckTouchingGround(actor, bounds, correction.Y);
+                collisionInfo += groundCollision;
 
-            if (collisionInfo.IsOnGround && (!leftSolid || !rightSolid))
-                collisionInfo += CheckOnLedge(actor, bounds, leftSolid, rightSolid);
+                if (groundCollision.IsOnGround && (!leftSolid || !rightSolid))
+                    collisionInfo += CheckOnLedge(actor, bounds, leftSolid, rightSolid);
+            }
 
             return collisionInfo;
         }

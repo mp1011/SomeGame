@@ -76,17 +76,22 @@ namespace SomeGame.Main.Models
         Priority=8
     }
 
+    public enum ActorState : byte
+    {
+        WaitingForActivation,
+        Active,
+        Destroying,
+        Destroyed
+    }
+
     public enum ActorFlags : byte
     {
         None=0,
         FlipH=1,
         FlipV=2,
-        Both=3,
-        Enabled=4,
-        Visible=16,
-        IsAnimationFinished=32,
-        HasBeenActivated=64,
-        Destroying=128
+        Visible=4,
+        IsAnimationFinished=8,
+        SpriteRequired=16,
     }
 
     public enum TileFlags : byte
@@ -134,8 +139,7 @@ namespace SomeGame.Main.Models
         Sprite5,
         Sprite6,
         Sprite7,
-        Sprite8,
-        LastIndex=Sprite8
+        Sprite8
     }
 
     public enum AnimationKey : byte

@@ -90,18 +90,8 @@ namespace SomeGame.Main.Services
             _fgLayer.ScrollLayer(Camera);
         }
 
-        public void ScrollActor(Actor actor, Sprite sprite)
+        public void ScrollActorSprite(Actor actor, Sprite sprite)
         {
-            //todo, need to rework this
-
-            //if(!_fgLayer.IsInBounds(actor.WorldPosition))
-            //{
-            //    actor.Visible = false;
-            //    return;
-            //}
-
-            //actor.Visible = true;
-
             var actorScreenX = sprite.ScrollX.Set(actor.WorldPosition.X.Pixel - Camera.X);
             var actorScreenY = sprite.ScrollY.Set(actor.WorldPosition.Y.Pixel - Camera.Y);
 

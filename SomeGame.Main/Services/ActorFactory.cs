@@ -154,6 +154,7 @@ namespace SomeGame.Main.Services
             ); 
 
             bullet.CurrentAnimation = AnimationKey.Moving;
+            bullet.State = ActorState.Destroyed; 
             return bullet;
         }
 
@@ -188,6 +189,7 @@ namespace SomeGame.Main.Services
                position: new PixelPoint(-100, -100));
 
             enemyProjectile.CurrentAnimation = AnimationKey.Moving;
+            enemyProjectile.State = ActorState.Destroyed;
             return enemyProjectile;
         }
 
@@ -204,6 +206,7 @@ namespace SomeGame.Main.Services
                position: new PixelPoint(-100, -100));
 
             enemyProjectile.CurrentAnimation = AnimationKey.Moving;
+            enemyProjectile.State = ActorState.Destroyed;
             return enemyProjectile;
         }
 
@@ -223,7 +226,7 @@ namespace SomeGame.Main.Services
         {
             var bullet = CreateGhostBullet(palette);
 
-            return CreateActor(
+            var ghost = CreateActor(
                  actorId: ActorId.Ghost,
                  actorType: ActorType.Enemy | ActorType.Character,
                  palette: palette,
@@ -232,6 +235,10 @@ namespace SomeGame.Main.Services
                  collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Player | ActorType.Character),
                  hitBox: new Rectangle(4, 4, 8, 16),
                  position: position);
+
+            ghost.CurrentAnimation = AnimationKey.Moving;
+
+            return ghost;
         }
 
         public Actor CreateSkull(PaletteIndex palette) => 
@@ -253,6 +260,7 @@ namespace SomeGame.Main.Services
                position: new PixelPoint(-100, -100));
 
             debris.CurrentAnimation = AnimationKey.Moving;
+            debris.State = ActorState.Destroyed;
             return debris;
         }
 

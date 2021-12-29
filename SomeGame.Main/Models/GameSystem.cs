@@ -53,10 +53,12 @@ namespace SomeGame.Main.Models
         {
             _graphicsDevice = startup.GraphicsDevice;
             _resourceLoader = new ResourceLoader(startup.ContentManager);
-            _systemPalette = _resourceLoader
-                                    .LoadTexture(ImageContentKey.SystemPalette)
-                                    .ToIndexedTilesetImage()
-                                    .Palette;
+
+            if(startup.ContentManager != null)
+                _systemPalette = _resourceLoader
+                                        .LoadTexture(ImageContentKey.SystemPalette)
+                                        .ToIndexedTilesetImage()
+                                        .Palette;
 
             DebugService.GameSystem = this;
             RAM = new RAM(this, startup.RamViewer ?? new EmptyRamViewer());
@@ -97,15 +99,6 @@ namespace SomeGame.Main.Models
         public Layer GetLayer(LayerIndex layerIndex) =>_layers[(int)layerIndex];
 
         public Sprite GetSprite(SpriteIndex spriteIndex) => _sprites[(int)spriteIndex];
-
-        public SpriteIndex? GetFreeSpriteIndex()
-        {
-            var index = Array.FindIndex(_sprites, p => !p.Enabled);
-            if (index < 0)
-                return null;
-            else
-                return (SpriteIndex)index;
-        }
 
         public IEnumerable<Sprite> GetBackSprites() => _sprites.Where(p => p.Enabled && !p.Priority);
         public IEnumerable<Sprite> GetFrontSprites() => _sprites.Where(p => p.Enabled && p.Priority);

@@ -10,61 +10,27 @@ namespace SomeGame.Main.Services
     {
         private readonly Scroller _scroller;
         private readonly GameSystem _gameSystem;
-        private List<ActorWithSprite> _actors = new List<ActorWithSprite>();
+        private List<Actor> _actors = new List<Actor>();
 
-
+        private Actor[] _actorSpriteSlots;
 
         public ActorManager(GameSystem gameSystem, Scroller scroller)
         {
             _scroller = scroller;
             _gameSystem = gameSystem;
+            _actorSpriteSlots = new Actor[Enum.GetValues<SpriteIndex>().Length];
         }
 
         public IEnumerable<Actor> GetActors(ActorType actorType)
         {
             return _actors
-                .Select(a=>a.Actor)
-                .Where(a => a != null && a.Enabled && (a.ActorType & actorType) == actorType);
+                .Where(a => a.Enabled && (a.ActorType & actorType) == actorType);
         }
 
         public IEnumerable<Actor> GetActors()
         {
             return _actors
-                .Select(a => a.Actor)
-                .Where(a => a != null && a.Enabled);
-        }
-
-        public void UnloadAll()
-        {
-            foreach (var actor in _actors)
-                _gameSystem.GetSprite(actor.SpriteIndex).Enabled = false;
-
-            _actors.Clear();
-        }
-
-        public void AddActor(Actor actor)
-        {
-            _actors.Add(new ActorWithSprite(actor, SpriteIndex.LastIndex));
-            DebugService.Actors.Add(actor);
-        }
-
-        private void TryAssignSprite(ActorWithSprite actorWithSprite)
-        {
-            var spriteIndex = _gameSystem.GetFreeSpriteIndex() ?? SpriteIndex.LastIndex;
-
-            if(spriteIndex == SpriteIndex.LastIndex)
-            {
-                if (RandomUtil.RandomBit())
-                    return;
-            }
-
-            var sprite = _gameSystem.GetSprite(spriteIndex);
-            sprite.TileOffset = _gameSystem.GetTileOffset(actorWithSprite.Actor.Tileset);
-            sprite.Priority = true;
-            sprite.Palette = actorWithSprite.Actor.Palette;
-            sprite.Enabled = actorWithSprite.Actor.Enabled;
-            actorWithSprite.SpriteIndex = spriteIndex;
-            actorWithSprite.NeedsSprite = false;            
+                .Where(a => a.Enabled);
         }
 
         public void Update(Scene currentScene)
@@ -72,89 +38,134 @@ namespace SomeGame.Main.Services
             if (_gameSystem.Paused)
                 return;
 
-            var extraSprite = _gameSystem.GetSprite(SpriteIndex.LastIndex);
-            extraSprite.Enabled = false;
+            foreach (var actor in _actors)
+                Update(actor, currentScene);
 
-            foreach (var actorWithSprite in _actors)
+            foreach (var spriteIndex in Enum.GetValues<SpriteIndex>())
             {
-                if (ShouldActivate(actorWithSprite.Actor))
-                    actorWithSprite.Actor.Create();
+                var sprite = _gameSystem.GetSprite(spriteIndex);
+                var actor = _actorSpriteSlots[(int)spriteIndex];
 
-                if (actorWithSprite.SpriteIndex == SpriteIndex.LastIndex)
-                    actorWithSprite.NeedsSprite = true;
+                sprite.Enabled = actor != null && actor.Enabled && actor.Visible;
 
-                if (actorWithSprite.Actor.Enabled && actorWithSprite.Actor.Visible && actorWithSprite.NeedsSprite)
-                    TryAssignSprite(actorWithSprite);
-                else if (!actorWithSprite.Actor.Visible)
-                    actorWithSprite.NeedsSprite = true;
-                
-                var spriteIndex = actorWithSprite.SpriteIndex;
-                if (actorWithSprite.NeedsSprite && actorWithSprite.Actor.Visible)
+                if (sprite.Enabled)
                 {
-                    var actor = actorWithSprite.Actor;
-                    if (actor.Enabled || actor.Destroying)                    
-                        UpdateActor(actor, spriteIndex, currentScene, actorWithSprite.NeedsSprite);                    
-                    else
-                        actorWithSprite.NeedsSprite = true;
+                    _scroller.ScrollActorSprite(actor, sprite);                    
+                    sprite.Palette = actor.Palette;
+                    sprite.Flip = actor.Flip;
+                    actor.Animator.ApplyToSprite(sprite, actor.CurrentAnimation);
                 }
                 else
                 {
-                    var actor = actorWithSprite.Actor;
-
-                    var sprite = _gameSystem.GetSprite(spriteIndex);
-                    sprite.Enabled = actor.Visible && (actor.Enabled || actor.Destroying);
-
-                    if (!actor.Visible && spriteIndex < SpriteIndex.LastIndex)
-                        actorWithSprite.SpriteIndex = SpriteIndex.LastIndex;
-
-                    if (actor.Enabled || actor.Destroying)
-                    {
-                        UpdateActor(actor, spriteIndex, currentScene, actorWithSprite.NeedsSprite);
-                        sprite.Flip = actor.Flip;
-                    }
-                    else
-                        actorWithSprite.NeedsSprite = true;
+                    _actorSpriteSlots[(int)spriteIndex] = null;
+                    if (actor != null)
+                        actor.NeedsSprite = true;
                 }
             }
         }
 
-        private bool ShouldActivate(Actor a)
+        public void UnloadAll()
         {
-            if (a.HasBeenActivated)
+            foreach(var spriteIndex in Enum.GetValues<SpriteIndex>())
+                _gameSystem.GetSprite(spriteIndex).Enabled = false;
+
+            _actors.Clear();
+        }
+
+        public void AddActor(Actor actor)
+        {
+            _actors.Add(actor);
+            DebugService.Actors.Add(actor);
+        }
+
+        
+        private void Update(Actor actor, Scene currentScene)
+        {
+            if (actor.State == ActorState.Destroyed)
+                return;
+
+            if (actor.State == ActorState.WaitingForActivation
+                && IsNearScreen(actor))
+            {
+                actor.Create();
+            }
+
+            if (actor.Visible && actor.NeedsSprite)
+                AssignSprite(actor);
+
+            UpdateActorBehavior(actor);
+            UpdateAnimation(actor);
+
+            if (actor.State == ActorState.Active && !IsNearScreen(actor))
+                actor.State = ActorState.WaitingForActivation;
+        }
+
+        private void UpdateAnimation(Actor actor)
+        {
+            var animationState = actor.Animator.Update(actor.CurrentAnimation);
+            actor.IsAnimationFinished = animationState == AnimationState.Finished;
+        }
+
+        private void AssignSprite(Actor actor)
+        {
+            foreach(var spriteIndex in Enum.GetValues<SpriteIndex>())
+            {
+                if(AssignSprite(actor, spriteIndex))              
+                    return;              
+            }
+
+            //steal a random sprite
+            var stealIndex = RandomUtil.RandomEnumValue<SpriteIndex>();
+            var stealActor = _actorSpriteSlots[(int)stealIndex];
+            if (stealActor != null)
+                stealActor.NeedsSprite = true;
+
+            _actorSpriteSlots[(int)stealIndex] = null;
+            AssignSprite(actor, stealIndex);
+        }
+
+        private bool AssignSprite(Actor actor, SpriteIndex spriteIndex)
+        {
+            var sprite = _gameSystem.GetSprite(spriteIndex);
+            if (sprite.Enabled && _actorSpriteSlots[(int)spriteIndex] != null)
                 return false;
 
+            sprite.Enabled = true;
+            sprite.Priority = true;
+            sprite.TileOffset = _gameSystem.GetTileOffset(actor.Tileset);
+            _actorSpriteSlots[(int)spriteIndex] = actor;
+            actor.NeedsSprite = false;
+
+            return true;
+        }
+
+        private void StealRandomSprite(Actor actor)
+        {
+
+        }
+
+        private void UpdateActorBehavior(Actor actor)
+        {
+            actor.WorldPosition.X.Add(actor.MotionVector.X);
+            actor.WorldPosition.Y.Add(actor.MotionVector.Y);
+           
+            var collisionInfo = actor.CollisionDetector.DetectCollisions(actor);
+
+            if (actor.Destroying)
+            {
+                if (actor.DestroyedBehavior == null || actor.DestroyedBehavior.Update(actor) == DestroyedState.Destroyed)
+                    actor.State = ActorState.Destroyed;
+            }
+            else
+                actor.Behavior.Update(actor, collisionInfo);
+
+        }
+        private bool IsNearScreen(Actor a)
+        {
             //todo, Y axis
             int padding = _gameSystem.Screen.Width / 4;
             return (a.WorldPosition.Right() > _scroller.Camera.Left() - padding)
                 && (a.WorldPosition.Left() < _scroller.Camera.Right() + padding);
         }
-
-        private void UpdateActor(Actor actor, SpriteIndex spriteIndex, Scene scene, bool needsSprite)
-        {
-            var sprite = _gameSystem.GetSprite(spriteIndex);
-
-            if (actor.Visible && !needsSprite)
-                sprite.Palette = actor.Palette;
-
-            if (actor.MotionVector.X.Pixel == 1)
-                DebugService.NoOp();
-
-            actor.WorldPosition.X.Add(actor.MotionVector.X);
-            actor.WorldPosition.Y.Add(actor.MotionVector.Y);
-
-            var animationState = actor.Animator.Update(spriteIndex, actor.CurrentAnimation, needsSprite);
-            actor.IsAnimationFinished = animationState == AnimationState.Finished;
-
-            var collisionInfo = actor.CollisionDetector.DetectCollisions(actor);
-
-            if(actor.Destroying)
-                actor.OnBeingDestroyed();
-            else 
-                actor.Behavior.Update(actor, collisionInfo);
-
-            if(!needsSprite || !actor.Visible)
-                _scroller.ScrollActor(actor, sprite);
-        }
-
     }
 }

@@ -143,9 +143,15 @@ namespace SomeGame.Main.Services
             int screenX = _rasterX;
             int screenY = _rasterY;
 
-            if (screenX < sprite.ScrollX
-                || screenX >= sprite.ScrollX + _spriteSize
-                || screenY < sprite.ScrollY
+            if (sprite.ScrollX + _spriteSize > sprite.ScrollX
+                && screenX < sprite.ScrollX)
+                return false;
+
+            if (sprite.ScrollY + _spriteSize > sprite.ScrollY
+                && screenY < sprite.ScrollY)
+                return false;
+
+            if (screenX >= sprite.ScrollX + _spriteSize
                 || screenY >= sprite.ScrollY + _spriteSize)
                 return false;
 
@@ -178,19 +184,26 @@ namespace SomeGame.Main.Services
 
             var tileSrcRec = tileSet.GetSrcRec(sprite.TileOffset + tile.Index);
 
-            var tileScreenLocation = new Point(sprite.ScrollX + tileLocation.X * _gameSystem.TileSize,
-                                               sprite.ScrollY + tileLocation.Y * _gameSystem.TileSize);
+            int tileScreenX = sprite.ScrollX + tileLocation.X * _gameSystem.TileSize;
+            int tileScreenY = sprite.ScrollY + tileLocation.Y * _gameSystem.TileSize;
+
+            if (tileScreenX + _gameSystem.TileSize >= _gameSystem.LayerPixelWidth)
+                tileScreenX -= _gameSystem.LayerPixelWidth;
+
+            if (tileScreenY + _gameSystem.TileSize >= _gameSystem.LayerPixelHeight)
+                tileScreenY -= _gameSystem.LayerPixelHeight;
+
             int tileSrcX; int tileSrcY;
 
             if (flipX)
-                tileSrcX = tileSrcRec.Right - (screenX - tileScreenLocation.X)-1;
+                tileSrcX = tileSrcRec.Right - (screenX - tileScreenX) -1;
             else
-                tileSrcX = tileSrcRec.X + (screenX - tileScreenLocation.X);
+                tileSrcX = tileSrcRec.X + (screenX - tileScreenX);
 
             if (flipY)
-                tileSrcY = tileSrcRec.Bottom - (screenY - tileScreenLocation.Y)-1;
+                tileSrcY = tileSrcRec.Bottom - (screenY - tileScreenY) -1;
             else
-                tileSrcY = tileSrcRec.Y + (screenY - tileScreenLocation.Y);
+                tileSrcY = tileSrcRec.Y + (screenY - tileScreenY);
 
 
             var colorByte = _gameSystem.GetVramData(new Point(tileSrcX, tileSrcY));
