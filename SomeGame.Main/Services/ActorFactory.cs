@@ -74,6 +74,7 @@ namespace SomeGame.Main.Services
                 case ActorId.DeadSkeletonBone: return CreateDeadSkeletonBone(palette);
                 case ActorId.MovingPlatform: return CreateMovingPlatform(position, palette);
                 case ActorId.Spring: return CreateSpring(position, palette);
+                case ActorId.TouchVanishingBlock: return CreateTouchVanishingBlock(position, palette);
                 case ActorId.Bat: return CreateBat(position, palette);
                 case ActorId.Ghost: return CreateGhost(position, palette);
 
@@ -297,6 +298,22 @@ namespace SomeGame.Main.Services
             return spring;
         }
 
+        public Actor CreateTouchVanishingBlock(PixelPoint position, PaletteIndex palette)
+        {
+            var block = CreateActor(
+              actorId: ActorId.TouchVanishingBlock,
+              actorType: ActorType.Gizmo,
+              behavior: new TouchVanishingBlockBehavior(_gameSystem, _audioService),
+              destroyedBehavior: new EmptyDestroyedBehavior(),
+              collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Character),
+              hitBox: new Rectangle(0, 0, 16, 16),
+              palette: palette,
+              position: position
+           );
+
+            return block;
+        }
+
         private SpriteAnimator CreateAnimator(ActorId actorId, TilesetContentKey tileset)
         {
             return new SpriteAnimator(_gameSystem,
@@ -315,6 +332,7 @@ namespace SomeGame.Main.Services
                 case ActorId.Key: return TilesetContentKey.Items;
                 case ActorId.Meat: return TilesetContentKey.Items;
                 case ActorId.Spring: return TilesetContentKey.Gizmos;
+                case ActorId.TouchVanishingBlock: return TilesetContentKey.Gizmos;
                 case ActorId.MovingPlatform: return TilesetContentKey.Gizmos;
                 case ActorId.Player: return TilesetContentKey.Hero;
                 case ActorId.PlayerBullet: return TilesetContentKey.Bullet;

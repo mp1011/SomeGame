@@ -227,7 +227,12 @@ namespace SomeGame.Main.Models
         Bat,
         Ghost,
         GhostBullet,
-        Spring
+        Spring,
+        TouchVanishingBlock,
+        TimedVanishingBlock,
+        SpikeBlock,
+        Spike,
+        Lock
     }
 
     public enum CollectibleId : byte

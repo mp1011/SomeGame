@@ -54,12 +54,16 @@ namespace SomeGame.Main.Services
                 return AnimationState.Playing;
         }
 
-        public void ApplyToSprite(Sprite sprite, AnimationKey animationKey)
+        public SpriteFrame GetCurrentFrame(AnimationKey animationKey)
         {
             var animation = _animations[animationKey];
             var animationFrame = animation.Frames[_spriteAnimation.CurrentIndex];
-            var spriteFrame = _spriteFrames[animationFrame.SpriteFrameIndex];
+            return _spriteFrames[animationFrame.SpriteFrameIndex];
+        }
 
+        public void ApplyToSprite(Sprite sprite, AnimationKey animationKey)
+        {
+            var spriteFrame = GetCurrentFrame(animationKey);
             sprite.SetTiles(
                 topLeft: spriteFrame.TopLeft,
                 topRight: spriteFrame.TopRight,

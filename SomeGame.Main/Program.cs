@@ -21,8 +21,8 @@ namespace SomeGame.Main
         public static void StartGame(IRamViewer ramViewer=null)
         {
          //   RunGame(CreatePaletteEditorModule, ramViewer);
-          //  RunGame(CreateSpriteEditorModule, ramViewer);
-          //  RunGame(CreateAnimationDefinitionModule, ramViewer);
+         // RunGame(CreateSpriteEditorModule, ramViewer);
+        //    RunGame(CreateAnimationDefinitionModule, ramViewer);
             RunGame(CreateSceneDefinitionModule, ramViewer);
             RunGame(CreateSceneModule, ramViewer);
          // RunGame(CreateEditorModule, ramViewer);
