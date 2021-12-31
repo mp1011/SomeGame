@@ -54,6 +54,9 @@ namespace SomeGame.Main.Behaviors
 
             foreach (var block in _actorManager.GetActors(ActorType.Gizmo))
             {
+                if (!block.Visible)
+                    continue;
+
                 bool checkLeftCollision = actor.MotionVector.X > 0;
                 bool checkRightCollision = actor.MotionVector.X < 0;
                 CheckCollisionCorrectionX(actor, correction, block.WorldPosition, checkLeftCollision, checkRightCollision);
@@ -88,6 +91,9 @@ namespace SomeGame.Main.Behaviors
 
             foreach (var block in _actorManager.GetActors(ActorType.Gizmo))
             {
+                if (!block.Visible)
+                    continue;
+
                 bool checkAbove = actor.MotionVector.Y >= 0;
                 bool checkBelow = actor.MotionVector.Y < 0;
 

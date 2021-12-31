@@ -22,10 +22,10 @@ namespace SomeGame.Main
         {
          //   RunGame(CreatePaletteEditorModule, ramViewer);
          // RunGame(CreateSpriteEditorModule, ramViewer);
-        //    RunGame(CreateAnimationDefinitionModule, ramViewer);
+            RunGame(CreateAnimationDefinitionModule, ramViewer);
             RunGame(CreateSceneDefinitionModule, ramViewer);
             RunGame(CreateSceneModule, ramViewer);
-         // RunGame(CreateEditorModule, ramViewer);
+           // RunGame(CreateEditorModule, ramViewer);
         }
 
         private static void RunGame(Func<GameStartup, IGameModule> createModule, IRamViewer ramViewer)

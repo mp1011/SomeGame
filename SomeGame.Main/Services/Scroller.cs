@@ -98,5 +98,24 @@ namespace SomeGame.Main.Services
             sprite.ScrollX = actorScreenX - actor.LocalHitbox.X;
             sprite.ScrollY = actorScreenY - actor.LocalHitbox.Y;
         }
+
+        public void SetTile(LayerIndex layerIndex, int x, int y, Tile newTile)
+        {
+            if(layerIndex == LayerIndex.FG)
+            {
+                SetTile(_fgLayer.TileMap, Point.Zero, new Point(x, y), newTile);
+                SetTile(_gameSystem.GetLayer(layerIndex).TileMap, _fgLayer.TopLeftTile, new Point(x, y), newTile);
+            }
+            else if(layerIndex == LayerIndex.BG)
+            {
+                SetTile(_bgLayer.TileMap, Point.Zero, new Point(x, y), newTile);
+                SetTile(_gameSystem.GetLayer(layerIndex).TileMap, _bgLayer.TopLeftTile, new Point(x, y), newTile);
+            }
+        }
+        private void SetTile(TileMap layer, Point topLeftTile, Point tileLocation, Tile newTile)
+        {
+            var layerLocation = tileLocation - topLeftTile;
+            layer.SetTile(layerLocation.X, layerLocation.Y, newTile);
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace SomeGame.Main.Services
 {
     class AudioService
     {
-        private bool _muted = false;
+        private bool _muted = true;
 
         private readonly ResourceLoader _resourceLoader;
         private Dictionary<SoundContentKey, SoundEffectPool> _sounds = new Dictionary<SoundContentKey, SoundEffectPool>();

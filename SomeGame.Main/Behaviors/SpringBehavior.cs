@@ -11,13 +11,15 @@ namespace SomeGame.Main.Behaviors
         private readonly RamByte _springTimer;
         private readonly RamInt _originalY;
         private readonly AudioService _audioService;
+        private readonly Scroller _scroller;
 
-        public SpringBehavior(GameSystem gameSystem, AudioService audioService)
+        public SpringBehavior(GameSystem gameSystem, AudioService audioService, Scroller scroller)
         {
             _gameSystem = gameSystem;
             _springTimer = gameSystem.RAM.DeclareByte();
             _originalY = gameSystem.RAM.DeclareInt();
             _audioService = audioService;
+            _scroller = scroller;
         }
 
         public override void OnCreated(Actor actor)
@@ -37,8 +39,8 @@ namespace SomeGame.Main.Behaviors
 
             int tileIndex = offset + (springActive ? 8 : 1);
 
-            layer.TileMap.SetTile(tileX, tileY, new Tile(tileIndex, TileFlags.Solid));
-            layer.TileMap.SetTile(tileX + 1, tileY, new Tile(tileIndex + 1, TileFlags.Solid));
+            _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tileIndex, TileFlags.Solid));
+            _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, new Tile(tileIndex + 1, TileFlags.Solid));
         }
 
         public override void Update(Actor actor, CollisionInfo collisionInfo)

@@ -100,6 +100,7 @@ namespace SomeGame.Main.Modules
             SaveAnimations(ActorId.Spring, AnimationKey.Idle, new Animation(SpriteFrameIndex: 4, Duration: 5));
 
             SaveAnimations(ActorId.TouchVanishingBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
+            SaveAnimations(ActorId.TimedVanishingBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
 
 
             SaveAnimations(ActorId.Bat,
