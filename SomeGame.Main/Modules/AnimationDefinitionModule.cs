@@ -101,6 +101,37 @@ namespace SomeGame.Main.Modules
 
             SaveAnimations(ActorId.TouchVanishingBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
             SaveAnimations(ActorId.TimedVanishingBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
+            SaveAnimations(ActorId.SpikeBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
+
+            SaveAnimations(ActorId.SpikeV,
+               idle:
+                   new Animation(SpriteFrameIndex: 6, Duration: 0),
+               disappearing:
+                   new Animation(
+                            new AnimationFrame(SpriteFrameIndex: 7, Duration: 4),
+                            new AnimationFrame(SpriteFrameIndex: 8, Duration: 4),
+                            new AnimationFrame(SpriteFrameIndex: 9, Duration: 4)),
+               appearing:
+                    new Animation(
+                           new AnimationFrame(SpriteFrameIndex: 9, Duration: 4),
+                            new AnimationFrame(SpriteFrameIndex: 8, Duration: 4),
+                            new AnimationFrame(SpriteFrameIndex: 7, Duration: 4)));
+
+            SaveAnimations(ActorId.SpikeH,
+              idle:
+                  new Animation(SpriteFrameIndex: 10, Duration: 0),
+              disappearing:
+                  new Animation(
+                           new AnimationFrame(SpriteFrameIndex: 11, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 12, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 13, Duration: 4)),
+              appearing:
+                   new Animation(
+                          new AnimationFrame(SpriteFrameIndex: 13, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 12, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 11, Duration: 4)));
+
+
 
 
             SaveAnimations(ActorId.Bat,
@@ -128,7 +159,7 @@ namespace SomeGame.Main.Modules
         }
 
         private void SaveAnimations(ActorId actorId, Animation idle = null, Animation attacking = null, 
-            Animation hurt = null, Animation jumping = null, Animation moving=null)
+            Animation hurt = null, Animation jumping = null, Animation moving=null, Animation appearing=null, Animation disappearing=null)
         {
             var d = new Dictionary<AnimationKey, Animation>();
             if(idle != null)
@@ -141,6 +172,10 @@ namespace SomeGame.Main.Modules
                 d.Add(AnimationKey.Jumping, jumping);
             if (moving != null)
                 d.Add(AnimationKey.Moving, moving);
+            if (appearing != null)
+                d.Add(AnimationKey.Appearing, appearing);
+            if (disappearing != null)
+                d.Add(AnimationKey.Disappearing, disappearing);
 
             SaveAnimations(actorId, d);
         }

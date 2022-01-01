@@ -16,10 +16,10 @@ namespace SomeGame.Main.Behaviors
             _gameSystem = gameSystem;
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
-            _scroller.Camera.X = actor.WorldPosition.X.Pixel - (_gameSystem.Screen.Width / 2);
-            _scroller.Camera.Y = actor.WorldPosition.Y.Pixel - (_gameSystem.Screen.Height / 2);
+            _scroller.Camera.X = Actor.WorldPosition.X.Pixel - (_gameSystem.Screen.Width / 2);
+            _scroller.Camera.Y = Actor.WorldPosition.Y.Pixel - (_gameSystem.Screen.Height / 2);
         }
     }
 }

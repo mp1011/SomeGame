@@ -3,7 +3,7 @@ using SomeGame.Main.Services;
 
 namespace SomeGame.Main.Behaviors
 {
-    class DestroyOnFall
+    class DestroyOnFall : Behavior
     {
         private readonly SceneManager _sceneManager;
 
@@ -12,10 +12,10 @@ namespace SomeGame.Main.Behaviors
             _sceneManager = sceneManager;
         }
 
-        public void Update(Actor a)
+        protected override void DoUpdate()
         {
-            if (a.WorldPosition.Top() > _sceneManager.CurrentScene.Bounds.Bottom)
-                a.Destroy();
+            if (Actor.WorldPosition.Top() > _sceneManager.CurrentScene.Bounds.Bottom)
+                Actor.Destroy();
         }
     }
 }

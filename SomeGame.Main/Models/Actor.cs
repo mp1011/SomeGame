@@ -10,9 +10,7 @@ namespace SomeGame.Main.Models
         private readonly RamEnum<ActorFlags> _flags;
         private readonly RamEnum<PaletteIndex> _palette;
         private readonly RamEnum<AnimationKey> _animation;
-
         private readonly RamEnum<ActorState> _state;
-        private readonly RamEnum<SpriteIndex> _sprite;
 
         public ActorState State
         {
@@ -112,7 +110,6 @@ namespace SomeGame.Main.Models
                      Rectangle localHitbox,
                      SpriteAnimator animator)
         {
-            _sprite = gameSystem.RAM.DeclareEnum(SpriteIndex.Sprite1);
             _state = gameSystem.RAM.DeclareEnum(ActorState.WaitingForActivation);            
             _flags = gameSystem.RAM.DeclareEnum(ActorFlags.Visible);
             _palette = gameSystem.RAM.DeclareEnum(PaletteIndex.P1);

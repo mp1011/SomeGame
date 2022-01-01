@@ -16,14 +16,14 @@ namespace SomeGame.Main.Behaviors
             SetTiles(actor, show: true);
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             _timer.Inc();
 
             if(_timer == 128)
             {
-                bool visible = IsBlockVisible(actor);
-                SetTiles(actor, !visible);
+                bool visible = IsBlockVisible(Actor);
+                SetTiles(Actor, !visible);
                 _timer.Set(0);
             }
         }

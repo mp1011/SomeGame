@@ -28,28 +28,32 @@ namespace SomeGame.Main.Behaviors
             _inputQueue = inputQueue;
         }
 
-        public override void Update(Actor actor, CollisionInfo backgroundCollisionInfo)
+        protected override void DoUpdate()
         {
-            if (actor.CurrentAnimation == AnimationKey.Attacking && !actor.IsAnimationFinished)
+        }
+
+        protected override void OnCollision(CollisionInfo backgroundCollisionInfo)
+        {
+            if (Actor.CurrentAnimation == AnimationKey.Attacking && !Actor.IsAnimationFinished)
             {
                 if (_inputManger.Input.A.IsPressed() && backgroundCollisionInfo.IsOnGround)
                     _jumpQueued = true;
 
-                actor.MotionVector.X.Set(0);
+                Actor.MotionVector.X.Set(0);
                 return;
             }
 
             if (backgroundCollisionInfo.XCorrection != 0)
-                actor.MotionVector.X.Set(0);
+                Actor.MotionVector.X.Set(0);
 
             if (backgroundCollisionInfo.YCorrection != 0)
-                actor.MotionVector.Y.Set(0);
+                Actor.MotionVector.Y.Set(0);
 
             if ((_jumpQueued || _inputManger.Input.A.IsPressed()) && backgroundCollisionInfo.IsOnGround)
             {
                 _audioService.Play(SoundContentKey.Jump);
                 _jumpQueued = false;
-                actor.MotionVector.Y.Set(new PixelValue(-2, 0));
+                Actor.MotionVector.Y.Set(new PixelValue(-2, 0));
                 _exJumpCounter.Set(15);
             }
 
@@ -58,30 +62,30 @@ namespace SomeGame.Main.Behaviors
             else if(_exJumpCounter > 0)
             {
                 _exJumpCounter.Dec();
-                actor.MotionVector.Y.Set(new PixelValue(-2, 0));
+                Actor.MotionVector.Y.Set(new PixelValue(-2, 0));
             }
 
             bool isMoving = false;
 
             if (_inputManger.Input.Left.IsDown())
             {
-                actor.MotionVector.X.Set(-1);
-                actor.Flip = Flip.FlipH;
+                Actor.MotionVector.X.Set(-1);
+                Actor.Flip = Flip.FlipH;
                 isMoving = true;
             }
             else if (_inputManger.Input.Right.IsDown())
             {
-                actor.MotionVector.X.Set(1);
-                actor.Flip = Flip.None;
+                Actor.MotionVector.X.Set(1);
+                Actor.Flip = Flip.None;
                 isMoving = true;
             }
             else
             {
-                actor.MotionVector.X.Set(0);
+                Actor.MotionVector.X.Set(0);
             }
 
-            if(actor.CurrentAnimation != AnimationKey.Attacking && actor.CurrentAnimation != AnimationKey.Hurt)
-                actor.CurrentAnimation = GetAnimation(isMoving, backgroundCollisionInfo.IsOnGround);
+            if(Actor.CurrentAnimation != AnimationKey.Attacking && Actor.CurrentAnimation != AnimationKey.Hurt)
+                Actor.CurrentAnimation = GetAnimation(isMoving, backgroundCollisionInfo.IsOnGround);
         }
 
         private AnimationKey GetAnimation(bool isMoving, bool isOnGround)

@@ -101,7 +101,8 @@ namespace SomeGame.Main.Models
         FlipV=2,
         FlipHV=3,
         Solid=4,
-        Collectible=8
+        Collectible=8,
+        Harmful=16
     }
 
     public enum PaletteIndex : byte
@@ -148,7 +149,9 @@ namespace SomeGame.Main.Models
         Moving,
         Jumping,
         Attacking,
-        Hurt
+        Hurt,
+        Appearing,
+        Disappearing
     }
 
     public enum Orientation : byte
@@ -231,7 +234,8 @@ namespace SomeGame.Main.Models
         TouchVanishingBlock,
         TimedVanishingBlock,
         SpikeBlock,
-        Spike,
+        SpikeV,
+        SpikeH,
         Lock
     }
 

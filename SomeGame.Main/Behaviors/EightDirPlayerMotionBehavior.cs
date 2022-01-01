@@ -14,14 +14,14 @@ namespace SomeGame.Main.Behaviors
             _inputManger = inputManger;
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
-            actor.MotionVector.Set(GetVectorFromInput(_inputManger.Input));
+            Actor.MotionVector.Set(GetVectorFromInput(_inputManger.Input));
 
-            if (actor.MotionVector.X == 0 && actor.MotionVector.Y == 0)
-                actor.CurrentAnimation = AnimationKey.Idle;
+            if (Actor.MotionVector.X == 0 && Actor.MotionVector.Y == 0)
+                Actor.CurrentAnimation = AnimationKey.Idle;
             else
-                actor.CurrentAnimation = AnimationKey.Moving;
+                Actor.CurrentAnimation = AnimationKey.Moving;
         }
 
         private PixelPoint GetVectorFromInput(InputModel input)

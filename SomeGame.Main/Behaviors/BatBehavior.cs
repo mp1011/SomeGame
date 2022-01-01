@@ -14,7 +14,8 @@ namespace SomeGame.Main.Behaviors
         private readonly PixelValue _speed = new PixelValue(1, 0);
         private readonly PixelValue _riseSpeed = new PixelValue(0, -50);
         
-        public BatBehavior(GameSystem gameSystem, EnemyBaseBehavior baseBehavior, PlayerFinder playerFinder)
+        public BatBehavior(GameSystem gameSystem, EnemyBaseBehavior baseBehavior, PlayerFinder playerFinder) 
+            : base(baseBehavior)
         {
             _baseBehavior = baseBehavior;
             _playerFinder = playerFinder;
@@ -22,40 +23,40 @@ namespace SomeGame.Main.Behaviors
             _riseHeight = gameSystem.RAM.DeclareByte();
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
             ResetTimer();
         }
 
         private void ResetTimer() => _timer.Set(RandomUtil.RandomItem<byte>(60, 120, 120, 120, 240));
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             if (_baseBehavior.CurrentState == StandardEnemyState.Idle)
             {
-                if (actor.WorldPosition.Y < _riseHeight)
-                    actor.MotionVector.Set(new PixelPoint(0, 0));
+                if (Actor.WorldPosition.Y < _riseHeight)
+                    Actor.MotionVector.Set(new PixelPoint(0, 0));
 
                 var player = _playerFinder.FindActor();
                 if (player == null)
                     return;
 
-                actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
+                Actor.FacingDirection = Actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
 
                 if (_timer.Dec() <= 0)
                 {
                     ResetTimer();
 
-                    if (actor.WorldPosition.GetAbsoluteXDistance(player.WorldPosition) <= _minDistance)
-                        _baseBehavior.SetMoving(actor, actor.WorldPosition.GetDirectionTo(player.WorldPosition), _speed);
+                    if (Actor.WorldPosition.GetAbsoluteXDistance(player.WorldPosition) <= _minDistance)
+                        _baseBehavior.SetMoving(Actor, Actor.WorldPosition.GetDirectionTo(player.WorldPosition), _speed);
                 }
             }
             else if (_baseBehavior.CurrentState == StandardEnemyState.Moving)
             {
                 if (_timer.Dec() <= 0)
                 {
-                    _baseBehavior.SetIdle(actor, stopMotion:false);
-                    actor.MotionVector.Set(new PixelPoint(new PixelValue(0, 0), _riseSpeed));
+                    _baseBehavior.SetIdle(Actor, stopMotion:false);
+                    Actor.MotionVector.Set(new PixelPoint(new PixelValue(0, 0), _riseSpeed));
                     var player = _playerFinder.FindActor();
                     if(player != null)
                         _riseHeight.Set(player.WorldPosition.Y.Pixel - 50);
@@ -64,10 +65,10 @@ namespace SomeGame.Main.Behaviors
             }
         }
 
-        public override void HandleCollision(Actor actor, Actor other)
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
-            if (other.ActorType == (ActorType.Player | ActorType.Bullet))
-                actor.Destroy();
+            if (collisionInfo.Actor != null && collisionInfo.Actor.ActorType == (ActorType.Player | ActorType.Bullet))
+                Actor.Destroy();
         }
     }
 }

@@ -22,10 +22,10 @@ namespace SomeGame.Main.Behaviors
             _scroller = scroller;
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
-            SetTiles(actor,false);
-            _originalY.Set(actor.WorldPosition.Y.Pixel);
+            SetTiles(Actor,false);
+            _originalY.Set(Actor.WorldPosition.Y.Pixel);
         }
 
         private void SetTiles(Actor actor, bool springActive)
@@ -43,33 +43,38 @@ namespace SomeGame.Main.Behaviors
             _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, new Tile(tileIndex + 1, TileFlags.Solid));
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
-            if (_springTimer == 0)
-                actor.Visible = false;
-
-            if(collisionInfo.Actor != null && _springTimer == 0)
+            if (collisionInfo.Actor != null && _springTimer == 0)
             {
                 collisionInfo.Actor.MotionVector.Y.Set(-4);
                 _springTimer.Inc();
-                SetTiles(actor, true);
-                actor.Visible = true;
+                SetTiles(Actor, true);
+                Actor.Visible = true;
                 _audioService.Play(SoundContentKey.Bounce);
             }
-            else if(_springTimer > 0)
+        }
+
+        protected override void DoUpdate()
+        {
+            if (_springTimer == 0)
+                Actor.Visible = false;
+
+          
+            if(_springTimer > 0)
             {
                 _springTimer.Inc();
 
                 int yAdjust = _springTimer % 16;
                 if (yAdjust >= 8)
                     yAdjust = 16 - yAdjust;
-                actor.WorldPosition.Y.Set(_originalY - yAdjust);
+                Actor.WorldPosition.Y.Set(_originalY - yAdjust);
 
                 if (_springTimer == 60)
                 {
                     _springTimer.Set(0);
-                    actor.WorldPosition.Y.Set(_originalY);
-                    SetTiles(actor, false);                    
+                    Actor.WorldPosition.Y.Set(_originalY);
+                    SetTiles(Actor, false);                    
                 }
             }
          

@@ -56,6 +56,9 @@ namespace SomeGame.Main.Services
 
         public SpriteFrame GetCurrentFrame(AnimationKey animationKey)
         {
+            if (_spriteAnimation.Key != animationKey)
+                return _spriteFrames[0]; //check this
+
             var animation = _animations[animationKey];
             var animationFrame = animation.Frames[_spriteAnimation.CurrentIndex];
             return _spriteFrames[animationFrame.SpriteFrameIndex];

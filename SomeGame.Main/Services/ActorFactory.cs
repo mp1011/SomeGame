@@ -76,6 +76,7 @@ namespace SomeGame.Main.Services
                 case ActorId.Spring: return CreateSpring(position, palette);
                 case ActorId.TouchVanishingBlock: return CreateTouchVanishingBlock(position, palette);
                 case ActorId.TimedVanishingBlock: return CreateTimedVanishingBlock(position, palette);
+                case ActorId.SpikeBlock: return CreateSpikeBlock(position, palette);
                 case ActorId.Bat: return CreateBat(position, palette);
                 case ActorId.Ghost: return CreateGhost(position, palette);
 
@@ -331,6 +332,58 @@ namespace SomeGame.Main.Services
             return block;
         }
 
+        public Actor CreateSpikeBlock(PixelPoint position, PaletteIndex palette)
+        {
+            var spikes = new Actor[]
+            {
+                CreateVSpike(position,palette),
+                CreateHSpike(position,palette),
+                CreateVSpike(position,palette),
+                CreateHSpike(position,palette),
+            };
+
+            var block = CreateActor(
+              actorId: ActorId.SpikeBlock,
+              actorType: ActorType.Gizmo,
+              behavior: new SpikeBlockBehavior(_gameSystem, _scroller, _audioService, spikes),
+              destroyedBehavior: new EmptyDestroyedBehavior(),
+              collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Character),
+              hitBox: new Rectangle(0, 0, 16, 16),
+              palette: palette,
+              position: position
+           );
+
+            return block;
+        }
+
+        public Actor CreateVSpike(PixelPoint position, PaletteIndex palette)
+        {
+            return CreateActor(
+              actorId: ActorId.SpikeV,
+              actorType: ActorType.Gizmo,
+              behavior: new EmptyBehavior(),
+              destroyedBehavior: new EmptyDestroyedBehavior(),
+              collisionDetector: new EmptyCollisionDetector(),
+              hitBox: new Rectangle(0, 8, 16, 8),
+              palette: palette,
+              position: position
+           );
+        }
+
+        public Actor CreateHSpike(PixelPoint position, PaletteIndex palette)
+        {
+            return CreateActor(
+              actorId: ActorId.SpikeH,
+              actorType: ActorType.Gizmo,
+              behavior: new EmptyBehavior(),
+              destroyedBehavior: new EmptyDestroyedBehavior(),
+              collisionDetector: new EmptyCollisionDetector(),
+              hitBox: new Rectangle(0, 8, 16, 8),
+              palette: palette,
+              position: position
+           );
+        }
+
         private SpriteAnimator CreateAnimator(ActorId actorId, TilesetContentKey tileset)
         {
             return new SpriteAnimator(_gameSystem,
@@ -351,6 +404,9 @@ namespace SomeGame.Main.Services
                 case ActorId.Spring: return TilesetContentKey.Gizmos;
                 case ActorId.TouchVanishingBlock: return TilesetContentKey.Gizmos;
                 case ActorId.TimedVanishingBlock: return TilesetContentKey.Gizmos;
+                case ActorId.SpikeBlock: return TilesetContentKey.Gizmos;
+                case ActorId.SpikeV: return TilesetContentKey.Gizmos;
+                case ActorId.SpikeH: return TilesetContentKey.Gizmos;
                 case ActorId.MovingPlatform: return TilesetContentKey.Gizmos;
                 case ActorId.Player: return TilesetContentKey.Hero;
                 case ActorId.PlayerBullet: return TilesetContentKey.Bullet;

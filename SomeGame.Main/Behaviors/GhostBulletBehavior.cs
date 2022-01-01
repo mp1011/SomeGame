@@ -8,14 +8,13 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
-            actor.CurrentAnimation = AnimationKey.Moving;           
+            Actor.CurrentAnimation = AnimationKey.Moving;           
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
-          
         }
     }
 }

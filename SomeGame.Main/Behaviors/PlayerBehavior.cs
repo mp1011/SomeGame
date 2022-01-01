@@ -31,7 +31,8 @@ namespace SomeGame.Main.Behaviors
 
         public PlayerBehavior(GameSystem gameSystem, RamEnum<InputQueue> inputQueue, PlatformerPlayerMotionBehavior motionBehavior, PlayerHurtBehavior playerHurtBehavior, 
             CameraBehavior cameraBehavior, Gravity gravity, InputManager inputManager, ActorPool bullets,  
-            DestroyOnFall destroyOnFall, SceneManager sceneManager, AudioService audioService, TransitionInfo incomingTransition)
+            DestroyOnFall destroyOnFall, SceneManager sceneManager, AudioService audioService, TransitionInfo incomingTransition) 
+            :base(motionBehavior, playerHurtBehavior,cameraBehavior,gravity,destroyOnFall)
         {
             _destroyOnFall = destroyOnFall;
             _motionBehavior = motionBehavior;
@@ -47,9 +48,9 @@ namespace SomeGame.Main.Behaviors
             _inputQueue = inputQueue;
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
-            _playerHurtBehavior.OnCreated(actor);
+            _playerHurtBehavior.OnCreated(Actor);
 
             if (_incomingTransition.ExitSide.Width == 0)
                 return;
@@ -67,49 +68,41 @@ namespace SomeGame.Main.Behaviors
             switch(_incomingTransition.Direction)
             {
                 case Direction.Left:
-                    relativeEnterPosition = new Point(enterSide.Left - actor.WorldPosition.Width - 5, relativeEnterPosition.Y);
+                    relativeEnterPosition = new Point(enterSide.Left - Actor.WorldPosition.Width - 5, relativeEnterPosition.Y);
                     break;
                 case Direction.Right:
-                    relativeEnterPosition = new Point(enterSide.Right + actor.WorldPosition.Width + 5, relativeEnterPosition.Y);
+                    relativeEnterPosition = new Point(enterSide.Right + Actor.WorldPosition.Width + 5, relativeEnterPosition.Y);
                     break;
                 case Direction.Up:
-                    relativeEnterPosition = new Point(relativeEnterPosition.X, enterSide.Top - actor.WorldPosition.Height - 5);
+                    relativeEnterPosition = new Point(relativeEnterPosition.X, enterSide.Top - Actor.WorldPosition.Height - 5);
                     break;
                 case Direction.Down:
-                    relativeEnterPosition = new Point(relativeEnterPosition.X, enterSide.Bottom + actor.WorldPosition.Height + 5);
+                    relativeEnterPosition = new Point(relativeEnterPosition.X, enterSide.Bottom + Actor.WorldPosition.Height + 5);
                     break;
             }
 
-            actor.WorldPosition.Center = relativeEnterPosition;
+            Actor.WorldPosition.Center = relativeEnterPosition;
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
-            if (actor.CurrentAnimation == AnimationKey.Attacking && actor.IsAnimationFinished)
+            if (Actor.CurrentAnimation == AnimationKey.Attacking && Actor.IsAnimationFinished)
             {
-                actor.CurrentAnimation = AnimationKey.Idle;
+                Actor.CurrentAnimation = AnimationKey.Idle;
                 var bullet = _bullets.ActivateNext();
                 if (bullet != null)
                 {
-                    bullet.WorldPosition.Center = actor.WorldPosition.Center
-                        .GetRelativePosition(8, 4, actor.Flip);
+                    bullet.WorldPosition.Center = Actor.WorldPosition.Center
+                        .GetRelativePosition(8, 4, Actor.Flip);
 
-                    bullet.Flip = actor.Flip;
+                    bullet.Flip = Actor.Flip;
                 }
             }
-
-
-            _destroyOnFall.Update(actor);
-            _playerHurtBehavior.Update(actor, collisionInfo);
-            _motionBehavior.Update(actor, collisionInfo);
-            _gravity.Update(actor, collisionInfo);
-            _cameraBehavior.Update(actor, collisionInfo);
-
 
             if(_attackCooldown == 0 && (_queueAttack || _inputManager.Input.B.IsPressed()))
             {
                 _queueAttack = false;
-                actor.CurrentAnimation = AnimationKey.Attacking;
+                Actor.CurrentAnimation = AnimationKey.Attacking;
                 _attackCooldown.Set(15);
                 _audioService.Play(SoundContentKey.Shoot);
             }
@@ -121,12 +114,12 @@ namespace SomeGame.Main.Behaviors
             if (_attackCooldown > 0)
                 _attackCooldown.Dec();
 
-            _sceneManager.CheckLevelTransitions(actor);
+            _sceneManager.CheckLevelTransitions(Actor);
         }
 
-        public override void HandleCollision(Actor actor, Actor other)
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
-            _playerHurtBehavior.HandleCollision(actor, other);            
+            _playerHurtBehavior.HandleCollision(collisionInfo);            
         }
     }
 }

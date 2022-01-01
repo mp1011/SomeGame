@@ -7,12 +7,12 @@ namespace SomeGame.Main.Behaviors
     {
         private int _counter = 0;
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             if(_counter==0)
-                actor.MotionVector.Set(new PixelPoint(2, 1));
+                Actor.MotionVector.Set(new PixelPoint(2, 1));
             if (_counter == 50)
-                actor.MotionVector.Set(new PixelPoint(-2, -1));
+                Actor.MotionVector.Set(new PixelPoint(-2, -1));
           
             _counter++;
             if (_counter == 100)

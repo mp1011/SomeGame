@@ -34,14 +34,14 @@ namespace SomeGame.Main.Behaviors
             _baseBehavior.WalkSpeed = new PixelValue(0, 50);
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             var player = _playerFinder.FindActor();
             if (player == null)
                 return;
 
             if(_bulletTravelTimer == 0)
-                PlaceOrbitingBullet(actor);
+                PlaceOrbitingBullet(Actor);
             else
             {
                 _bulletTravelTimer.Inc();
@@ -49,7 +49,7 @@ namespace SomeGame.Main.Behaviors
                 {
                     _bulletTravelTimer.Set(0);
                     _bullet.MotionVector.Set(new PixelPoint(0, 0));
-                    _baseBehavior.SetMoving(actor, Direction.Left);
+                    _baseBehavior.SetMoving(Actor, Direction.Left);
                 }
             }
 
@@ -61,9 +61,9 @@ namespace SomeGame.Main.Behaviors
                 if (_attackTimer == 255)
                 {
                     _attackTimer.Set(0);
-                    _baseBehavior.SetAttacking(actor);
-                    actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
-                    actor.MotionVector.Set(new PixelPoint(0, 0));
+                    _baseBehavior.SetAttacking(Actor);
+                    Actor.FacingDirection = Actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
+                    Actor.MotionVector.Set(new PixelPoint(0, 0));
 
                     return;
                 }
@@ -71,23 +71,23 @@ namespace SomeGame.Main.Behaviors
                 if (_timer.Inc() == 30)
                 {
                     _anchor.Set(player.WorldPosition.Center.Offset(0, -20));
-                    actor.FacingDirection = actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
+                    Actor.FacingDirection = Actor.WorldPosition.GetHorizontalDirectionTo(player.WorldPosition);
                     _timer.Set(0);
                 }
 
-                var targetAngle = actor.WorldPosition.Center.GetAngleTo(_anchor);
-                var currentAngle = actor.MotionVector.ToAngle();
+                var targetAngle = Actor.WorldPosition.Center.GetAngleTo(_anchor);
+                var currentAngle = Actor.MotionVector.ToAngle();
 
                 var newAngle = currentAngle.RotateToward(targetAngle, 4);
-                actor.MotionVector.Set(newAngle.ToPixelPoint(_baseBehavior.WalkSpeed));
+                Actor.MotionVector.Set(newAngle.ToPixelPoint(_baseBehavior.WalkSpeed));
             }
             else if(_baseBehavior.CurrentState == StandardEnemyState.Attacking)
             {
-                if(_bulletTravelTimer == 0 && actor.IsAnimationFinished)
+                if(_bulletTravelTimer == 0 && Actor.IsAnimationFinished)
                 {
-                    actor.CurrentAnimation = AnimationKey.Moving;
+                    Actor.CurrentAnimation = AnimationKey.Moving;
                     _bulletTravelTimer.Set(1);
-                    _bullet.WorldPosition.Center = actor.WorldPosition.Center;
+                    _bullet.WorldPosition.Center = Actor.WorldPosition.Center;
                     _bullet.MotionVector.Set(_bullet.WorldPosition.Center
                                                   .GetAngleTo(player.WorldPosition.Center)
                                                   .ToPixelPoint(new PixelValue(2, 0)));
@@ -95,12 +95,11 @@ namespace SomeGame.Main.Behaviors
             }
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
             _bullet.Create();
-            _anchor.Set(actor.WorldPosition.Center);
-
-            _baseBehavior.SetMoving(actor, Direction.Left);
+            _anchor.Set(Actor.WorldPosition.Center);
+            _baseBehavior.SetMoving(Actor, Direction.Left);
         }
 
         private void PlaceOrbitingBullet(Actor actor)
@@ -118,10 +117,10 @@ namespace SomeGame.Main.Behaviors
             _bullet.WorldPosition.Center = actor.WorldPosition.Center.Offset(displayAngle, 30);
         }
 
-        public override void HandleCollision(Actor actor, Actor other)
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
-            if (other.ActorType == (ActorType.Player | ActorType.Bullet))
-                actor.Destroy();
+            if (collisionInfo.Actor != null && collisionInfo.Actor.ActorType == (ActorType.Player | ActorType.Bullet))
+                Actor.Destroy();
         }
     }
 }

@@ -17,41 +17,59 @@ namespace SomeGame.Main.Behaviors
             _audioService = audioService;
             _scroller = scroller;
         }
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
             _timer.Set(0);
-            actor.Visible = false;
-            OnBlockCreated(actor);
+            Actor.Visible = false;
+            OnBlockCreated(Actor);
         }
 
         protected abstract void OnBlockCreated(Actor actor);
 
         protected void SetTiles(Actor actor, bool show)
         {
+            SetTiles(actor, show ? TileFlags.Solid : TileFlags.None);
+        }
+
+        protected void SetTiles(Actor actor, TileFlags flags)
+        {
             var layer = _gameSystem.GetLayer(LayerIndex.FG);
 
             var tileX = actor.WorldPosition.X.Pixel / _gameSystem.TileSize;
             var tileY = actor.WorldPosition.Y.Pixel / _gameSystem.TileSize;
 
-            if (show)
+            if (flags != TileFlags.None)
             {
-                actor.Animator.Update(AnimationKey.Idle);
-                var animationFrame = actor.Animator.GetCurrentFrame(AnimationKey.Idle);
+                actor.Animator.Update(actor.CurrentAnimation);
+                var animationFrame = actor.Animator.GetCurrentFrame(actor.CurrentAnimation);
 
                 int offset = _gameSystem.GetTileOffset(Content.TilesetContentKey.Gizmos) - layer.TileOffset;
 
-                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(animationFrame.TopLeft.Index + offset, TileFlags.Solid));
-                _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, new Tile(animationFrame.TopRight.Index + offset, TileFlags.Solid));
-                _scroller.SetTile(LayerIndex.FG, tileX, tileY + 1, new Tile(animationFrame.BottomLeft.Index + offset, TileFlags.Solid));
-                _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY + 1, new Tile(animationFrame.BottomRight.Index + offset, TileFlags.Solid));
+                if ((actor.Flip & Flip.FlipH) > 0)
+                    flags |= TileFlags.FlipH;
+                if ((actor.Flip & Flip.FlipV) > 0)
+                    flags |= TileFlags.FlipV;
+
+                SetTile(tileX, tileY,animationFrame.TopLeft.Index,offset, flags);
+                SetTile(tileX + 1, tileY,animationFrame.TopRight.Index,offset, flags);
+                SetTile(tileX, tileY + 1,animationFrame.BottomLeft.Index ,offset, flags);
+                SetTile(tileX + 1, tileY + 1,animationFrame.BottomRight.Index , offset, flags);
             }
             else
             {
-                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(-1, TileFlags.None));
-                _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, new Tile(-1, TileFlags.None));
-                _scroller.SetTile(LayerIndex.FG, tileX, tileY + 1, new Tile(-1, TileFlags.None));
-                _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY + 1, new Tile(-1, TileFlags.None));
+                SetTile(tileX, tileY, -1, 0, TileFlags.None);
+                SetTile(tileX + 1, tileY, -1, 0, TileFlags.None);
+                SetTile(tileX, tileY + 1, -1, 0, TileFlags.None);
+                SetTile(tileX + 1, tileY + 1, -1, 0, TileFlags.None);
             }
+        }
+
+        private void SetTile(int tileX, int tileY, int tileIndex, int offset, TileFlags flags)
+        {
+            if(tileIndex == -1)
+                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(-1, flags));
+            else
+                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tileIndex + offset, flags));
         }
 
         protected bool IsBlockVisible(Actor actor)

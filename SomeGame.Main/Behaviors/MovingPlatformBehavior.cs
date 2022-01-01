@@ -9,20 +9,20 @@ namespace SomeGame.Main.Behaviors
         private Point _origin;
         private readonly int _xSpan = 100;
         private const int _speed = 40;
-       // private readonly int _ySpan = 0;
+        // private readonly int _ySpan = 0;
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
-            if(actor.MotionVector.X < 0 && actor.WorldPosition.X < _origin.X)
-                actor.MotionVector.Set(new PixelPoint(new PixelValue(0, _speed), new PixelValue(0, 0)));
-            else if(actor.MotionVector.X > 0 && actor.WorldPosition.X > _origin.X + _xSpan)
-                actor.MotionVector.Set(new PixelPoint(new PixelValue(0, -_speed), new PixelValue(0, 0)));
+            if(Actor.MotionVector.X < 0 && Actor.WorldPosition.X < _origin.X)
+                Actor.MotionVector.Set(new PixelPoint(new PixelValue(0, _speed), new PixelValue(0, 0)));
+            else if(Actor.MotionVector.X > 0 && Actor.WorldPosition.X > _origin.X + _xSpan)
+                Actor.MotionVector.Set(new PixelPoint(new PixelValue(0, -_speed), new PixelValue(0, 0)));
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
-            _origin = actor.WorldPosition.Center;
-            actor.MotionVector.Set(new PixelPoint(new PixelValue(0, -_speed), new PixelValue(0, 0)));
+            _origin = Actor.WorldPosition.Center;
+            Actor.MotionVector.Set(new PixelPoint(new PixelValue(0, -_speed), new PixelValue(0, 0)));
         }
     }
 }

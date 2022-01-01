@@ -20,19 +20,19 @@ namespace SomeGame.Main.Behaviors
             _playerStateManager = playerStateManager;
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated( )
         {
             OnCollected(_playerStateManager.CurrentState);
             _audioService.Play(CollectSound);
-            actor.MotionVector.Set(new PixelPoint(0, -2));
+            Actor.MotionVector.Set(new PixelPoint(0, -2));
             _timer = 0;
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             _timer++;
             if (_timer >= 5)
-                actor.Destroy();
+                Actor.Destroy();
         }
     }
 

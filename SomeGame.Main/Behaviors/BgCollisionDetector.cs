@@ -50,6 +50,15 @@ namespace SomeGame.Main.Behaviors
 
                     CheckCollisionCorrectionX(actor, correction, tileBounds, checkLeftCollision, checkRightCollision);
                 }
+
+                if((t.Flags & TileFlags.Harmful) != 0)
+                {
+                    var tileBounds = new GameRectangleWithSubpixels(x * _gameSystem.TileSize, y * _gameSystem.TileSize,
+                        _gameSystem.TileSize, _gameSystem.TileSize);
+
+                    if (tileBounds.IntersectsWithRec(actor.WorldPosition))
+                        collisionInfo += new CollisionInfo(Harmful: true);
+                }
             });
 
             foreach (var block in _actorManager.GetActors(ActorType.Gizmo))

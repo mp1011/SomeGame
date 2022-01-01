@@ -6,12 +6,16 @@ namespace SomeGame.Main.Behaviors
     {
         private byte _acceleration = 15;
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
-            if (collisionInfo.IsOnGround)
+        }
+
+        protected override void OnCollision(CollisionInfo collisionInfo)
+        {
+            if (collisionInfo.IsOnGround || collisionInfo.Actor != null)
                 return;
 
-            actor.MotionVector.Offset(Orientation.Vertical, 0, _acceleration);
+            Actor.MotionVector.Offset(Orientation.Vertical, 0, _acceleration);
         }
     }
 }

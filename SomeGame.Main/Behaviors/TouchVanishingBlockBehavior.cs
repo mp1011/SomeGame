@@ -11,21 +11,25 @@ namespace SomeGame.Main.Behaviors
         {
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
             if (_timer == 0 && collisionInfo.Actor != null)
                 _timer.Inc();
-            else if (_timer > 0)
+        }
+
+        protected override void DoUpdate()
+        {            
+            if (_timer > 0)
             {
-                actor.Palette = _gameSystem.GetLayer(LayerIndex.FG).Palette.Next();
-                actor.Visible = (_timer % 4) <= 1;
+                Actor.Palette = _gameSystem.GetLayer(LayerIndex.FG).Palette.Next();
+                Actor.Visible = (_timer % 4) <= 1;
                 _timer.Inc();
             }
 
             if (_timer >= 20)
             {
-                SetTiles(actor, false);
-                actor.Destroy();
+                SetTiles(Actor, false);
+                Actor.Destroy();
             }
         }
 

@@ -17,28 +17,31 @@ namespace SomeGame.Main.Behaviors
             _speed = gameSystem.RAM.DeclarePixelValue(speed.Pixel,speed.SubPixel);
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
             _destroyTimer.Set(0);
-            actor.CurrentAnimation = AnimationKey.Moving;           
+            Actor.CurrentAnimation = AnimationKey.Moving;           
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             if(_destroyTimer == 0)
             {
-                var direction = actor.Flip == Flip.H ? Direction.Left : Direction.Right;
+                var direction = Actor.Flip == Flip.H ? Direction.Left : Direction.Right;
                 var pt = direction.ToPoint();
-                actor.MotionVector.X.Set((PixelValue)_speed * pt.X);
-                actor.MotionVector.Y.Set((PixelValue)_speed * pt.Y);
+                Actor.MotionVector.X.Set((PixelValue)_speed * pt.X);
+                Actor.MotionVector.Y.Set((PixelValue)_speed * pt.Y);
             }
 
             _destroyTimer++;
             if(_destroyTimer == _duration)
-                actor.Destroy();
-            
+                Actor.Destroy();
+        }
+
+        protected override void OnCollision(CollisionInfo collisionInfo)
+        {
             if (collisionInfo.Actor != null)
-                actor.Destroy();
+                Actor.Destroy();
         }
     }
 }

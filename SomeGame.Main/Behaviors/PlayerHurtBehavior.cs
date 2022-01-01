@@ -25,32 +25,32 @@ namespace SomeGame.Main.Behaviors
             _audioService = audioService;
         }
 
-        public override void OnCreated(Actor actor)
+        protected override void OnCreated()
         {
-            _normalPalette = actor.Palette;
+            _normalPalette = Actor.Palette;
             _flashPalette = PaletteIndex.P4;
         }
 
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
         {
             if (IsRecoiling)
             {
-                actor.MotionVector.X.Set(0);
-                actor.CurrentAnimation = AnimationKey.Hurt;
+                Actor.MotionVector.X.Set(0);
+                Actor.CurrentAnimation = AnimationKey.Hurt;
             }
             
             if(_hurtTimer >= _recoilTime)
             {
-                if (actor.CurrentAnimation == AnimationKey.Hurt)
-                    actor.CurrentAnimation = AnimationKey.Idle;
+                if (Actor.CurrentAnimation == AnimationKey.Hurt)
+                    Actor.CurrentAnimation = AnimationKey.Idle;
 
                 if ((_hurtTimer % 2) == 0)
-                    actor.Palette = _flashPalette;
+                    Actor.Palette = _flashPalette;
                 else
-                    actor.Palette = _normalPalette;
+                    Actor.Palette = _normalPalette;
             }
             else
-                actor.Palette = _normalPalette;
+                Actor.Palette = _normalPalette;
 
             if (_hurtTimer > 0)
                 _hurtTimer.Inc();
@@ -59,10 +59,15 @@ namespace SomeGame.Main.Behaviors
                 _hurtTimer.Set(0);
         }
 
-
-        public override void HandleCollision(Actor actor, Actor other)
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
-            if (IsInvulnerable || other == null || (other.ActorType & ActorType.Enemy) == 0)
+            if (IsInvulnerable)
+                return;
+
+            bool hitObject = collisionInfo.Actor != null
+                && (collisionInfo.Actor.ActorType & ActorType.Enemy) != 0;
+
+            if (!hitObject && !collisionInfo.Harmful)
                 return;
 
             if (_hurtTimer == 0)
@@ -70,7 +75,7 @@ namespace SomeGame.Main.Behaviors
                 _audioService.Play(SoundContentKey.Hurt);
                 _playerStateManager.CurrentState.Health.Subtract(1);
                 if (_playerStateManager.CurrentState.Health == 0)
-                    actor.Destroy();
+                    Actor.Destroy();
                 _hurtTimer.Set(1);
             }
         }

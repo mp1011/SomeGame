@@ -21,11 +21,11 @@ namespace SomeGame.Main
         public static void StartGame(IRamViewer ramViewer=null)
         {
          //   RunGame(CreatePaletteEditorModule, ramViewer);
-         // RunGame(CreateSpriteEditorModule, ramViewer);
+        //    RunGame(CreateSpriteEditorModule, ramViewer);
             RunGame(CreateAnimationDefinitionModule, ramViewer);
             RunGame(CreateSceneDefinitionModule, ramViewer);
-            RunGame(CreateSceneModule, ramViewer);
-           // RunGame(CreateEditorModule, ramViewer);
+           RunGame(CreateSceneModule, ramViewer);
+          //  RunGame(CreateEditorModule, ramViewer);
         }
 
         private static void RunGame(Func<GameStartup, IGameModule> createModule, IRamViewer ramViewer)

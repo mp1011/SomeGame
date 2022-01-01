@@ -93,8 +93,11 @@ namespace SomeGame.Main.Services
             if (actor.Visible && actor.NeedsSprite)
                 AssignSprite(actor);
 
-            UpdateActorBehavior(actor);
-            UpdateAnimation(actor);
+            if (actor.State != ActorState.WaitingForActivation)
+            {
+                UpdateActorBehavior(actor);
+                UpdateAnimation(actor);
+            }
 
             if (actor.State == ActorState.Active && !IsNearScreen(actor))
                 actor.State = ActorState.WaitingForActivation;
@@ -150,6 +153,7 @@ namespace SomeGame.Main.Services
             actor.WorldPosition.Y.Add(actor.MotionVector.Y);
            
             var collisionInfo = actor.CollisionDetector.DetectCollisions(actor);
+            actor.Behavior.HandleCollision(collisionInfo);
 
             if (actor.Destroying)
             {
@@ -157,7 +161,9 @@ namespace SomeGame.Main.Services
                     actor.State = ActorState.Destroyed;
             }
             else
-                actor.Behavior.Update(actor, collisionInfo);
+            {
+                actor.Behavior.Update();
+            }
 
         }
         private bool IsNearScreen(Actor a)

@@ -26,13 +26,17 @@ namespace SomeGame.Main.Behaviors
             _state = gameSystem.RAM.DeclareEnum(StandardEnemyState.Idle);
             _walkSpeed = gameSystem.RAM.DeclarePixelValue(0, 50);
         }
-        public override void Update(Actor actor, CollisionInfo collisionInfo)
+        protected override void DoUpdate()
+        {
+        }
+
+        protected override void OnCollision(CollisionInfo collisionInfo)
         {
             if (collisionInfo.XCorrection != 0)
-                actor.MotionVector.X.Set(0);
+                Actor.MotionVector.X.Set(0);
 
             if (collisionInfo.YCorrection != 0)
-                actor.MotionVector.Y.Set(0);
+                Actor.MotionVector.Y.Set(0);
         }
 
         public void SetIdle(Actor actor, bool stopMotion=true)
