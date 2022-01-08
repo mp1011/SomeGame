@@ -101,8 +101,10 @@ namespace SomeGame.Main.Modules
 
             SaveAnimations(ActorId.TouchVanishingBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
             SaveAnimations(ActorId.TimedVanishingBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
+            SaveAnimations(ActorId.LockBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
+            SaveAnimations(ActorId.Lock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 2, Duration: 5));
             SaveAnimations(ActorId.SpikeBlock, AnimationKey.Idle, new Animation(SpriteFrameIndex: 3, Duration: 5));
-
+           
             SaveAnimations(ActorId.SpikeV,
                idle:
                    new Animation(SpriteFrameIndex: 6, Duration: 0),

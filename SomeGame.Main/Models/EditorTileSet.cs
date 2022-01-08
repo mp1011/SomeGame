@@ -38,9 +38,15 @@ namespace SomeGame.Main.Models
     class EditorBlock
     {
         public string Theme { get; }
-        public Grid<Tile> Grid { get; }
+        public IGrid<Tile> Grid { get; }
 
-        public EditorBlock(string theme, Grid<Tile> grid)
+        public EditorBlock(string theme, IGrid<RamTile> grid)
+        {
+            Theme = theme;
+            Grid = grid.Map(rt => (Tile)rt);
+        }
+
+        public EditorBlock(string theme, IGrid<Tile> grid)
         {
             Theme = theme;
             Grid = grid;
@@ -49,7 +55,7 @@ namespace SomeGame.Main.Models
         public EditorBlock(string theme)
         {
             Theme = theme;
-            Grid = new Grid<Tile>(1, 1, (x, y) => new Tile(-1, TileFlags.None));
+            Grid = new MemoryGrid<Tile>(1, 1, (x, y) => new Tile(-1, TileFlags.None));
         }
     }
 }

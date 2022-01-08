@@ -2,10 +2,18 @@
 {
     class Layer : TiledObject
     {
-        public byte ScrollFactor { get; set; } = 100;
+        private RamByte _scrollFactor;
 
-        public Layer(TileMap tileMap, PaletteIndex palette, RotatingInt scrollX, RotatingInt scrollY, int tileSize) : base(tileMap, palette, scrollX, scrollY, tileSize)
+        public byte ScrollFactor
         {
+            get => _scrollFactor;
+            set => _scrollFactor.Set(value);
+        }
+
+        public Layer(GameSystem gameSystem,  TileMap tileMap, PaletteIndex palette, RotatingInt scrollX, RotatingInt scrollY, int tileSize) : 
+            base(tileMap, palette, scrollX, scrollY, tileSize)
+        {
+            _scrollFactor = gameSystem.RAM.DeclareByte(100);
         }
     }
 }

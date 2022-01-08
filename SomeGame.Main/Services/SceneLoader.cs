@@ -121,7 +121,7 @@ namespace SomeGame.Main.Services
 
         private TileMap InitializeLayer(LayerInfo layerInfo, LayerIndex layerIndex, TilesetContentKey tilesetKey)
         {
-            var tileMap = _dataSerializer.LoadTileMap(layerInfo.Key);
+            var tileMap = _dataSerializer.LoadTileMap(layerInfo.Key, _gameSystem);
             var layer = _gameSystem.GetLayer(layerIndex);
             layer.Palette = layerInfo.Palette;
             layer.TileOffset = _gameSystem.GetTileOffset(tilesetKey);

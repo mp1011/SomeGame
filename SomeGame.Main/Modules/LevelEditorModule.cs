@@ -444,11 +444,11 @@ namespace SomeGame.Main.Modules
             if (index == LayerIndex.BG)
             {
                 layer.Palette = _tilePalette;
-                _tileMap = DataSerializer.LoadTileMap(_levelKey);
-                if (_tileMap.GetGrid().Width == 0)
+                _tileMap = DataSerializer.LoadTileMap(_levelKey, GameSystem);
+                if (_tileMap.GetGrid().Width <= 1)
                     _tileMap = CreateNew(_levelKey);
 
-                _scroller.SetTileMaps(_tileMap, new TileMap(LevelContentKey.None, _tileMap.TilesX, _tileMap.TilesY));
+                _scroller.SetTileMaps(_tileMap, new TileMap(GameSystem, LevelContentKey.None, _tileMap.TilesX, _tileMap.TilesY));
                 _scroller.Initialize();
             }
             else if (index == LayerIndex.FG)
@@ -460,17 +460,17 @@ namespace SomeGame.Main.Modules
             switch(levelContentKey)
             {
                 case LevelContentKey.TestLevelBG:
-                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth, GameSystem.LayerTileHeight / 2);
+                    return new TileMap(GameSystem, levelContentKey, GameSystem.LayerTileWidth, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel:
-                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth*2, GameSystem.LayerTileHeight / 2);
+                    return new TileMap(GameSystem, levelContentKey, GameSystem.LayerTileWidth*2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel2:
-                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth/2, GameSystem.LayerTileHeight / 2);
+                    return new TileMap(GameSystem, levelContentKey, GameSystem.LayerTileWidth/2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel3:
-                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth * 2, GameSystem.LayerTileHeight / 2);
+                    return new TileMap(GameSystem, levelContentKey, GameSystem.LayerTileWidth * 2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.TestLevel3BG:
-                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth / 2, GameSystem.LayerTileHeight / 2);
+                    return new TileMap(GameSystem, levelContentKey, GameSystem.LayerTileWidth / 2, GameSystem.LayerTileHeight / 2);
                 case LevelContentKey.LongMapTest:
-                    return new TileMap(levelContentKey, GameSystem.LayerTileWidth * 4, GameSystem.LayerTileHeight / 2);
+                    return new TileMap(GameSystem, levelContentKey, GameSystem.LayerTileWidth * 4, GameSystem.LayerTileHeight / 2);
                 default:
                     throw new Exception($"No default set for level {levelContentKey}");
             }
@@ -506,12 +506,13 @@ namespace SomeGame.Main.Modules
 
         private void RelateBlockRange(Point start, Point end)
         {
-            var bg = GameSystem.GetLayer(LayerIndex.BG);
-            var block = new EditorBlock(_themeSelector.SelectedItem,
-                bg.TileMap.GetGrid().Extract(start, end));
+            throw new System.NotImplementedException();
+            //var bg = GameSystem.GetLayer(LayerIndex.BG);
+            //var block = new EditorBlock(_themeSelector.SelectedItem,
+            //    bg.TileMap.GetGrid().Extract(start, end));
 
-            _editorTileset.Blocks.Add(block);
-            DataSerializer.Save(_editorTileset);
+            //_editorTileset.Blocks.Add(block);
+            //DataSerializer.Save(_editorTileset);
         }
 
         private void MoveOrCopyBlockRange(Point start, Point end, bool isCopy)
@@ -600,12 +601,14 @@ namespace SomeGame.Main.Modules
             interfaceLayer.TileMap.SetEach(20, 38, 0, 2, (x, y) =>
             {
                 Tile tile;
-                if (i < themeTiles.Length)
+                if ((x % 2 == 0) && i < themeTiles.Length)
+                {
                     tile = themeTiles[i];
+                    i++;
+                }
                 else
                     tile = new Tile(-1, TileFlags.None);
 
-                i++;
                 return tile;
             });
         }

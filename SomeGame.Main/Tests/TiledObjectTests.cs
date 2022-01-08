@@ -17,7 +17,8 @@ namespace SomeGame.Main.Tests
         [OneTimeSetUp]
         public void TestSetup()
         {
-            _testLayer = new Layer(new TileMap(LevelContentKey.None, 100, 100), PaletteIndex.P1, 
+            var system = new GameSystem(null);
+            _testLayer = new Layer(system, new TileMap(system, LevelContentKey.None, 100, 100), PaletteIndex.P1, 
                 new RotatingInt(0, 800), 
                 new RotatingInt(0, 800), 8);
         }

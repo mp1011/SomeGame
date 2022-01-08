@@ -3,11 +3,48 @@ using System.Collections.Generic;
 
 namespace SomeGame.Main.Models
 {
-    public record IndexedTilesetImage(TilesetContentKey Key, Grid<byte> Image, Palette Palette) : IndexedImage(Image,Palette);
-    public record IndexedImage(Grid<byte> Image, Palette Palette);
-    public record Tile(int Index, TileFlags Flags)
+    public record IndexedTilesetImage(TilesetContentKey Key, MemoryGrid<byte> Image, Palette Palette) : IndexedImage(Image,Palette);
+    public record IndexedImage(MemoryGrid<byte> Image, Palette Palette);
+
+    public class RamTile
     {
-        public Tile() : this(-1, TileFlags.None) { }
+        private readonly RamByte _tileIndex;
+        private readonly RamEnum<TileFlags> _flags;
+
+        public byte Index => _tileIndex;
+        public TileFlags Flags => _flags;
+
+        public bool IsSolid => (Flags & TileFlags.Solid) != 0;
+        public bool IsCollectible => (Flags & TileFlags.Collectible) != 0;
+
+        public RamTile(RamByte tileIndex, RamEnum<TileFlags> flags)
+        {
+            _tileIndex = tileIndex;
+            _flags = flags;
+        }
+
+        public void Set(Tile tile)
+        {
+            if (tile != null)
+            {
+                _tileIndex.Set(tile.Index);
+                _flags.Set(tile.Flags);
+            }
+            else
+            {
+                _tileIndex.Set(255);
+                _flags.Set(TileFlags.None);
+            }
+        }
+
+        public static implicit operator Tile(RamTile rt) => new Tile(rt._tileIndex, rt._flags);
+    }
+
+    public record Tile(byte Index, TileFlags Flags)
+    {
+        public Tile(int Index, TileFlags flags) : this((byte)(Index < 0 ? 255 : Index), flags) { }
+
+        public Tile() : this(0, TileFlags.None) { }
 
         public bool IsSolid => (Flags & TileFlags.Solid) != 0;
         public bool IsCollectible => (Flags & TileFlags.Collectible) != 0;
@@ -28,7 +65,4 @@ namespace SomeGame.Main.Models
             }
         }
     }
-
-    internal record VramData(Grid<byte> ImageData, Dictionary<TilesetContentKey,int> Offsets, TileSet TileSet);
-
 }

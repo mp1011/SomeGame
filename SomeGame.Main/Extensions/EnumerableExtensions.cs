@@ -9,13 +9,13 @@ namespace SomeGame.Main.Extensions
 {
     public static class EnumerableExtensions
     { 
-        public static Grid<T> ToGrid<T>(this IEnumerable<T> list, int width)
+        public static MemoryGrid<T> ToGrid<T>(this IEnumerable<T> list, int width)
         {
             int height = list.Count() / width;
             return list.ToGrid(width, height);
         }
 
-        public static Grid<T> ToGrid<T>(this IEnumerable<T> list, int width, int height)
+        public static MemoryGrid<T> ToGrid<T>(this IEnumerable<T> list, int width, int height)
         {
             var grid = new T[width, height];
             int x = 0, y = 0;
@@ -41,7 +41,7 @@ namespace SomeGame.Main.Extensions
                 y++;
             }
 
-            return new Grid<T>(grid);
+            return new MemoryGrid<T>(grid);
         }
 
         internal static T GetItemAtRotatingIndex<T>(this IEnumerable<T> list, int rotatingIndex)

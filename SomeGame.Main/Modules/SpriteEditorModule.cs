@@ -31,18 +31,12 @@ namespace SomeGame.Main.Modules
         protected override void InitializeLayer(LayerIndex index, Layer layer)
         {
             if(index == LayerIndex.Interface)
-            {
-                var spriteTiles = GameSystem.GetTileSet();
-
+            {                
                 int i = 0;
                 layer.TileMap.SetEach(0, 30, 0, 4, (x, y) =>
                 {
-                    Tile tile;
-                    if (i < spriteTiles.TotalTiles)
-                        tile = new Tile(i, TileFlags.None);
-                    else
-                        tile = new Tile(-1, TileFlags.None);
-
+                    Tile tile = new Tile(i, TileFlags.None);
+                   
                     i++;
                     return tile;
                 });

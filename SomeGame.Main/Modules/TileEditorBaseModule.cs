@@ -29,14 +29,15 @@ namespace SomeGame.Main.Modules
             var background = GameSystem.GetLayer(LayerIndex.BG);
             var mouseTile = GetCurrentMouseTile(LayerIndex.BG);
 
-            foreground.TileMap.SetEach((x, y) => {
+            foreground.TileMap.SetEach((x, y) =>
+            {
                 if (x == mouseTile.X && y == mouseTile.Y)
                     return SelectedTile;
                 else
                     return new Tile(-1, TileFlags.None);
             });
 
-            var existingTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
+            Tile existingTile = background.TileMap.GetTile(mouseTile.X, mouseTile.Y);
 
             if (Input.A.IsPressed())
             {
@@ -54,8 +55,7 @@ namespace SomeGame.Main.Modules
             }
             if (Input.B.IsDown())
             {
-                background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(-1, TileFlags.None));
-                AfterTilePlaced(mouseTile);
+                SelectedTile = background.TileMap.GetTile(mouseTile);
             }
 
             if (_lastMouseTile != mouseTile)

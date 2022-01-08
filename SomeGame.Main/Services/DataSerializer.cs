@@ -184,23 +184,23 @@ namespace SomeGame.Main.Services
             writer.WriteEnumerable(spriteFrames);
         }
 
-        private void Save<T>(Grid<T> grid, string path)
+        private void Save<T>(IGrid<T> grid, string path)
         {
             using var fileStream = File.OpenWrite(path);
             using var writer = new DataWriter(fileStream);
             writer.Write(grid);
         }
 
-        public TileMap LoadTileMap(LevelContentKey key)
+        public TileMap LoadTileMap(LevelContentKey key, GameSystem gameSystem)
         {
             var grid = LoadGrid<Tile>(GetPath(key));
-            return new TileMap(key, grid);
+            return new TileMap(key, new TileGrid(gameSystem, grid));
         }
 
-        private Grid<T> LoadGrid<T>(string path)
+        private MemoryGrid<T> LoadGrid<T>(string path)
         {
             if (!File.Exists(path))
-                return new Grid<T>(1,1);
+                return new MemoryGrid<T>(1,1);
 
             using var fileStream = File.OpenRead(path);
             using var reader = new DataReader(fileStream);
@@ -228,5 +228,11 @@ namespace SomeGame.Main.Services
             return reader.ReadEnumerable<SpriteFrame>();
         }
 
+
+        public Texture2D LoadImageFromDisk(GraphicsDevice device, string imageName)
+        {
+            var path = $@"{_contentFolder.FullName}\Images\{imageName}.png";
+            return Texture2D.FromFile(device, path);
+        }
     }
 }

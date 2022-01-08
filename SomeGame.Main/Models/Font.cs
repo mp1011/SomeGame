@@ -30,7 +30,7 @@ namespace SomeGame.Main.Models
         {
             var index = _charset.IndexOf(c);
             if (index < 0)
-                return new Tile(-1, TileFlags.None);
+                return new Tile(255, TileFlags.None);
             else
                 return new Tile((_tileOffset- layerTileOffset) + index, TileFlags.None);
         }

@@ -18,7 +18,7 @@ namespace SomeGame.Main.Services
         {
             _gameSystem = gameSystem;
             Camera = gameSystem.RAM.DeclareBoundedRectangle(0, 0, _gameSystem.Screen.Width, _gameSystem.Screen.Height, 0, 0);
-            SetTileMaps(new TileMap(LevelContentKey.None,2,2),new TileMap(LevelContentKey.None, 2, 2));
+            SetTileMaps(new TileMap(gameSystem, LevelContentKey.None,2,2),new TileMap(gameSystem, LevelContentKey.None, 2, 2));
         }
 
         public GameRectangleWithSubpixels WorldPositionToLayerPosition(GameRectangleWithSubpixels worldPosition, LayerIndex layerIndex)

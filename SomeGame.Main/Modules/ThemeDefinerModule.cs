@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Editor;
-using SomeGame.Main.Extensions;
 using SomeGame.Main.Models;
 using SomeGame.Main.Services;
 using System;
@@ -21,19 +18,19 @@ namespace SomeGame.Main.Modules
         private EditorTileSet _editorTileset;
         private readonly DataSerializer _dataSerializer;
 
-        private ImageContentKey _imageKey;
         private TilesetContentKey _tileSetKey;
-        private IndexedImage _image;
 
-        public ThemeDefinerModule(ImageContentKey imageKey, TilesetContentKey tilesetContentKey, 
+        public ThemeDefinerModule(TilesetContentKey tilesetContentKey, 
             GameStartup gameStartup) : base(gameStartup)
         {
-            _imageKey = imageKey;
             _tileSetKey = tilesetContentKey;
             _tileSetService = new TileSetService();
             _dataSerializer = new DataSerializer();
 
             _blockSelect = new UIBlockSelect(AssignTheme,(x,y)=> { });
+
+            SetVram(p1: new TilesetContentKey[] { tilesetContentKey }, p2: new TilesetContentKey[] { TilesetContentKey.Font },
+                p3: new TilesetContentKey[] { tilesetContentKey }, p4: new TilesetContentKey[] { });
         }
 
         protected override void AfterInitialize()
@@ -46,6 +43,10 @@ namespace SomeGame.Main.Modules
                 _font, _editorTileset.Themes, new Point(0, 0));
 
             _save = new UIButton("SAVE", new Point(20, 0), GameSystem.GetLayer(LayerIndex.Interface), _font);
+
+            var highlightPalette = GameSystem.GetPalette(PaletteIndex.P3);
+            foreach (var c in highlightPalette.Colors)
+                c.Set((byte)c + 4);
 
         }
 
@@ -82,28 +83,25 @@ namespace SomeGame.Main.Modules
         {
             if(index == LayerIndex.BG)
             {
-                var grid = _tileSetService.CreateTileMapFromImageAndTileset(_image, GameSystem.GetTileSet());
-                layer.TileMap.SetEach(0,grid.Width,1, grid.Height+1, (x, y) => grid[x, y-1]);
+                int i = 0;
+                layer.TileMap.SetEach((x, y) =>
+                {
+                    if (y <= 2)
+                        return new Tile(255, TileFlags.None);
+                    else
+                        return new Tile(i++, TileFlags.None);
+                });
             }
             else if(index == LayerIndex.FG)
             {
                 layer.Palette = PaletteIndex.P3;
+                layer.TileMap.SetEach((x, y) => new Tile(255, TileFlags.None));                
+            }
+            else if (index == LayerIndex.Interface)
+            {
+                layer.TileMap.SetEach((x, y) => new Tile(255, TileFlags.None));
             }
         }
-
-        //protected override IndexedTilesetImage[] LoadVramImages(ResourceLoader resourceLoader)
-        //{
-        //    _image = resourceLoader.LoadTexture(_imageKey)
-        //        .ToIndexedImage();
-
-        //    return new IndexedTilesetImage[] 
-        //    { 
-        //        resourceLoader.LoadTexture(_tileSetKey).ToIndexedTilesetImage(_image.Palette),
-        //        resourceLoader.LoadTexture(TilesetContentKey.Font).ToIndexedTilesetImage()
-        //    };
-        //}
-
-
 
         private Point _mouseTile;
         private Point _lastMouseTile;
@@ -144,6 +142,5 @@ namespace SomeGame.Main.Modules
             _editorTileset.Blocks.Add(block);
         }
 
-      
     }
 }

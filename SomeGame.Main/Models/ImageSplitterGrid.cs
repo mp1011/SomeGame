@@ -2,11 +2,11 @@
 {
     class ImageSplitterGrid 
     {
-        private readonly Grid<bool> _grid;
+        private readonly MemoryGrid<bool> _grid;
 
         public ImageSplitterGrid(int width, int height)
         {
-            _grid = new Grid<bool>(width, height);
+            _grid = new MemoryGrid<bool>(width, height);
         }
     }
 }

@@ -167,7 +167,7 @@ namespace SomeGame.Main.Services
             else
                 tile = sprite.TileMap.GetTile(tileLocation);
 
-            if (tile.Index == -1)
+            if (tile.Index == 0)
                 return false;
 
             bool flipX = false;
@@ -179,10 +179,7 @@ namespace SomeGame.Main.Services
             if (((sprite.Flip & Flip.V) > 0) ^ ((tile.Flags & TileFlags.FlipV) > 0))
                 flipY = true;
 
-
-            var tileSet = _gameSystem.GetTileSet();
-
-            var tileSrcRec = tileSet.GetSrcRec(sprite.TileOffset + tile.Index);
+            var tileSrcRec = _gameSystem.GetPatternTableBlock((byte)(sprite.TileOffset + tile.Index));
 
             int tileScreenX = sprite.ScrollX + tileLocation.X * _gameSystem.TileSize;
             int tileScreenY = sprite.ScrollY + tileLocation.Y * _gameSystem.TileSize;
@@ -206,7 +203,7 @@ namespace SomeGame.Main.Services
                 tileSrcY = tileSrcRec.Y + (screenY - tileScreenY);
 
 
-            var colorByte = _gameSystem.GetVramData(new Point(tileSrcX, tileSrcY));
+            var colorByte = _gameSystem.GetPatternTableData(new Point(tileSrcX, tileSrcY));
             if (colorByte == 0)
                 return false;
 
@@ -222,12 +219,10 @@ namespace SomeGame.Main.Services
             var tileLocation = layer.TilePointFromScreenPixelPoint(screenX, screenY);
             var tile = layer.TileMap.GetTile(tileLocation);
 
-            if (tile == null || tile.Index == -1)
+            if (tile == null || tile.Index == 255)
                 return false;
 
-            var tileSet = _gameSystem.GetTileSet();
-
-            var tileSrcRec = tileSet.GetSrcRec(layer.TileOffset + tile.Index);
+            var tileSrcRec = _gameSystem.GetPatternTableBlock((byte)(layer.TileOffset + tile.Index));
 
             var tileScreenX = layer.ScrollX.Value + tileLocation.X * _gameSystem.TileSize;
             var tileScreenY = layer.ScrollY.Value + tileLocation.Y * _gameSystem.TileSize;
@@ -251,7 +246,7 @@ namespace SomeGame.Main.Services
                 tileSrcY = tileSrcRec.Y + (screenY - tileScreenY);
         
 
-            var colorByte = _gameSystem.GetVramData(new Point(tileSrcX,tileSrcY));
+            var colorByte = _gameSystem.GetPatternTableData(new Point(tileSrcX,tileSrcY));
             if (colorByte == 0)
                 return false;
 

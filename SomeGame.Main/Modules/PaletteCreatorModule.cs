@@ -94,8 +94,9 @@ namespace SomeGame.Main.Modules
 
         private IndexedTilesetImage Load(TilesetContentKey key)
         {
-            return ResourceLoader.LoadTexture(key)
-                .ToIndexedTilesetImage();
+            throw new System.NotImplementedException();
+            //return ResourceLoader.LoadTexture(key)
+            //    .ToIndexedTilesetImage();
         }
 
         protected override bool Update()
@@ -117,12 +118,13 @@ namespace SomeGame.Main.Modules
 
         private void SaveAdjustedImage()
         {
-            var ramPalette = GameSystem.GetPalette(PaletteIndex.P4);
-            var adjustedImage = ResourceLoader.LoadTexture(_imageSelector.SelectedItem)
-                .ToIndexedTilesetImage(ramPalette);
+            throw new System.NotImplementedException();
+            //var ramPalette = GameSystem.GetPalette(PaletteIndex.P4);
+            //var adjustedImage = ResourceLoader.LoadTexture(_imageSelector.SelectedItem)
+            //    .ToIndexedTilesetImage(ramPalette, _gameSystem);
 
-            DataSerializer.SaveTilesetImage($"{_imageSelector.SelectedItem}_Adjusted",
-                adjustedImage.ToTexture2D(GraphicsDevice));
+            //DataSerializer.SaveTilesetImage($"{_imageSelector.SelectedItem}_Adjusted",
+            //    adjustedImage.ToTexture2D(GraphicsDevice));
         }
     }
 }

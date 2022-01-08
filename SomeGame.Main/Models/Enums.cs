@@ -236,7 +236,8 @@ namespace SomeGame.Main.Models
         SpikeBlock,
         SpikeV,
         SpikeH,
-        Lock
+        Lock,
+        LockBlock
     }
 
     public enum CollectibleId : byte

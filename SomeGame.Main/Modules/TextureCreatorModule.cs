@@ -3,12 +3,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SomeGame.Main.Content;
 using SomeGame.Main.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SomeGame.Main.Modules
 {
@@ -17,16 +11,13 @@ namespace SomeGame.Main.Modules
         private readonly ResourceLoader _resourceLoader;
         private readonly GraphicsDevice _graphicsDevice;
 
-        private readonly ImageContentKey[] _src;
         private readonly TileSetService _tileSetService = new TileSetService();
         private readonly DataSerializer _dataSerializer = new DataSerializer();
 
-        public TextureCreatorModule(ContentManager contentManager, GraphicsDevice graphicsDevice,
-            params ImageContentKey[] src)
+        public TextureCreatorModule(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
             _resourceLoader = new ResourceLoader(contentManager);
             _graphicsDevice = graphicsDevice;
-            _src = src;
         }
 
 
@@ -39,16 +30,18 @@ namespace SomeGame.Main.Modules
 
         public void Initialize()
         {
-            foreach (var srcKey in _src)
-            {
-                var img = _resourceLoader.LoadTexture(srcKey)
-                                        .ToIndexedImage();
+            CreateTileset("MountainSky", TilesetContentKey.Mountains);
+        }
 
-                var tileset = _tileSetService.CreateTilesetFromImage(img)
-                                             .ToTexture2D(_graphicsDevice);
+        private void CreateTileset(string sourceImage, TilesetContentKey key)
+        {
+            var img = _dataSerializer.LoadImageFromDisk(_graphicsDevice, "MountainSky")
+              .ToIndexedImage();
 
-                _dataSerializer.SaveTilesetImage($"{srcKey}_tiled", tileset);
-            }
+            var tileset = _tileSetService.CreateTilesetFromImage(img)
+                                         .ToTexture2D(_graphicsDevice);
+
+            _dataSerializer.SaveTilesetImage(key.ToString(), tileset);
         }
 
         public void OnWindowSizeChanged(Viewport viewport)

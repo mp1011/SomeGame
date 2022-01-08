@@ -18,6 +18,7 @@ namespace SomeGame.Main.Models
             set => _state.Set(value);
         }
 
+        public RamEnum<ActorId> ActorId { get; }
         public RamEnum<ActorType> ActorType { get; }
         public Behavior Behavior { get; }
         public IDestroyedBehavior DestroyedBehavior { get; }
@@ -103,6 +104,7 @@ namespace SomeGame.Main.Models
 
         public Actor(GameSystem gameSystem,
                      ActorType actorType,
+                     ActorId actorId,
                      TilesetContentKey tilesetKey, 
                      Behavior behavior,
                      IDestroyedBehavior destroyedBehavior,
@@ -115,6 +117,7 @@ namespace SomeGame.Main.Models
             _palette = gameSystem.RAM.DeclareEnum(PaletteIndex.P1);
             _animation = gameSystem.RAM.DeclareEnum(AnimationKey.Idle);
             ActorType = gameSystem.RAM.DeclareEnum(actorType);
+            ActorId = gameSystem.RAM.DeclareEnum(actorId);
             WorldPosition = gameSystem.RAM.DeclareGameRectangleWithSubpixels(16,16);
             Tileset = gameSystem.RAM.DeclareEnum(tilesetKey);
             LocalHitbox = gameSystem.RAM.DeclareRectangle(localHitbox);
@@ -128,7 +131,10 @@ namespace SomeGame.Main.Models
         public void Destroy()
         {
             if (DestroyedBehavior == null)
+            {
+                State = ActorState.Destroyed;
                 return;
+            }
                            
             Destroying = true;
             DestroyedBehavior.OnDestroyed(this);            

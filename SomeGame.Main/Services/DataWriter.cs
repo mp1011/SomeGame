@@ -54,7 +54,7 @@ namespace SomeGame.Main.Services
         }
 
         public void Write(TilesetContentKey key) => _writer.Write((byte)key);
-        public void Write<T>(Grid<T> grid)
+        public void Write<T>(IGrid<T> grid)
         {
             _writer.Write(grid.Width);
             _writer.Write(grid.Height);
@@ -66,6 +66,8 @@ namespace SomeGame.Main.Services
             _writer.Write(tile.Index);
             _writer.Write((byte)tile.Flags);
         }
+
+        public void Write(RamTile tile) => Write((Tile)tile);
 
         public void Write(EditorTileSet tileSet)
         {

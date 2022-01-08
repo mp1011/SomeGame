@@ -38,7 +38,7 @@ namespace SomeGame.Main.Models
         }
 
         public Sprite(GameSystem gameSystem, int layerPixelWidth, int layerPixelHeight, int tileSize) 
-            : base(CreateBlankTilemap(), PaletteIndex.P1, 
+            : base(CreateBlankTilemap(gameSystem), PaletteIndex.P1, 
                   new RotatingInt(0,layerPixelWidth), 
                   new RotatingInt(0,layerPixelHeight),
                   tileSize)
@@ -46,9 +46,9 @@ namespace SomeGame.Main.Models
             _flags = gameSystem.RAM.DeclareEnum(SpriteFlags.None);
         }
 
-        private static TileMap CreateBlankTilemap()
+        private static TileMap CreateBlankTilemap(GameSystem gameSystem)
         {
-            return new TileMap(LevelContentKey.None, 2, 2);
+            return new TileMap(gameSystem, LevelContentKey.None, 2, 2);
         }
 
         public void SetTiles(Tile topLeft, Tile topRight, Tile bottomLeft, Tile bottomRight)

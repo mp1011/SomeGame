@@ -16,8 +16,11 @@ namespace SomeGame.Main.Models
         private readonly ResourceLoader _resourceLoader;
         private readonly GraphicsDevice _graphicsDevice;
         public RAM RAM { get; }
- 
-        private VramData _vram;
+
+        private readonly RamGrid<RamNibble> _patternTable;
+
+        private Dictionary<TilesetContentKey, byte> _offsets; //todo - ram'ify this
+
         private RamPalette[] _palettes;
         private Layer[] _layers;
         private Sprite[] _sprites;
@@ -30,7 +33,7 @@ namespace SomeGame.Main.Models
         public readonly int LayerTileWidth = 80;
         public readonly int LayerTileHeight = 60;
 
-        public readonly int ColorsPerPalette = 32;
+        public readonly int ColorsPerPalette = 16;
 
         public RamByte BackgroundColorIndex { get; }
 
@@ -54,27 +57,16 @@ namespace SomeGame.Main.Models
             _graphicsDevice = startup.GraphicsDevice;
             _resourceLoader = new ResourceLoader(startup.ContentManager);
 
-            if(startup.ContentManager != null)
-                _systemPalette = _resourceLoader
+            if (startup.ContentManager != null)
+                _systemPalette = new Palette(_resourceLoader
                                         .LoadTexture(ImageContentKey.SystemPalette)
-                                        .ToIndexedTilesetImage()
-                                        .Palette;
+                                        .ToColorData());
 
             DebugService.GameSystem = this;
             RAM = new RAM(this, startup.RamViewer ?? new EmptyRamViewer());
 
             BackgroundColorIndex = RAM.DeclareByte();
             _isPaused = RAM.DeclareByte();
-
-            _layers = new Layer[]
-            {
-                new Layer(new TileMap(LevelContentKey.None, LayerTileWidth,LayerTileHeight), PaletteIndex.P1, 
-                    new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize),
-                new Layer(new TileMap(LevelContentKey.None,LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
-                    new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize),
-                new Layer(new TileMap(LevelContentKey.None,LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
-                    new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize)
-            };
 
             Input = new MouseAndKeyboardInputSource();
             _sprites = new Sprite[Enum.GetValues<SpriteIndex>().Length];
@@ -88,13 +80,25 @@ namespace SomeGame.Main.Models
                 RAM.DeclarePalette(_systemPalette),
             };
 
+            RAM.AddLabel("Begin Pattern Table");
+            _patternTable = RAM.DeclareNibbleGrid(128, 256);
+
             RAM.AddLabel("Begin Sprites");
             for (int i = 0; i < _sprites.Length; i++)
                 _sprites[i] = new Sprite(this, LayerPixelWidth, LayerPixelHeight, TileSize);
-            RAM.AddLabel("End Sprites");
-        }
 
-        public TileSet GetTileSet() => _vram.TileSet;
+            RAM.AddLabel("Begin Layer TileMaps");
+            _layers = new Layer[]
+            {
+                new Layer(this,new TileMap(this, LevelContentKey.None, LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
+                    new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize),
+                new Layer(this,new TileMap(this, LevelContentKey.None,LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
+                    new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize),
+                new Layer(this,new TileMap(this, LevelContentKey.None,LayerTileWidth,LayerTileHeight), PaletteIndex.P1,
+                    new RotatingInt(0, LayerPixelWidth), new RotatingInt(0, LayerPixelHeight), TileSize)
+            };
+            RAM.AddLabel("End Layer TileMaps");
+        }
 
         public Layer GetLayer(LayerIndex layerIndex) =>_layers[(int)layerIndex];
 
@@ -105,12 +109,12 @@ namespace SomeGame.Main.Models
 
         public RamPalette GetPalette(PaletteIndex paletteIndex) => _palettes[(int)paletteIndex];
 
-        public int GetTileOffset(TilesetContentKey tilesetContentKey)
+        public byte GetTileOffset(TilesetContentKey tilesetContentKey)
         {
-            return _vram.Offsets[tilesetContentKey];
+            return _offsets[tilesetContentKey];
         }
 
-        public byte GetVramData(Point p) => _vram.ImageData[p.X, p.Y];
+        public byte GetPatternTableData(Point p) => _patternTable[p.X, p.Y];
 
         public void SetVram(TilesetContentKey[] vramImagesP1, TilesetContentKey[] vramImagesP2, TilesetContentKey[] vramImagesP3, TilesetContentKey[] vramImagesP4)                       
         {
@@ -124,12 +128,12 @@ namespace SomeGame.Main.Models
             if (images.Count == 0)
                 return;
 
-             _vram = CreateVramImage(images);
+            FillPatternTable(images);
 
-            SaveVramSnapshot(PaletteIndex.P1);
-            SaveVramSnapshot(PaletteIndex.P2);
-            SaveVramSnapshot(PaletteIndex.P3);
-            SaveVramSnapshot(PaletteIndex.P4);
+            SavePatternTableSnapshot(PaletteIndex.P1);
+            SavePatternTableSnapshot(PaletteIndex.P2);
+            SavePatternTableSnapshot(PaletteIndex.P3);
+            SavePatternTableSnapshot(PaletteIndex.P4);
         }
 
         private IndexedTilesetImage[] SetVram(TilesetContentKey[] vramImages, PaletteIndex paletteIndex)
@@ -146,17 +150,18 @@ namespace SomeGame.Main.Models
             {
                 var imageColors = texture.Image
                     .ToArray()
+                    .Select(t=>(byte)t)
                     .Distinct()
                     .ToArray();
 
                 var newColors = imageColors
                     .Except(colors)
                     .ToArray();
-
-                if (colors.Count + newColors.Length > ColorsPerPalette)
-                    throw new Exception("Too many colors");
-
-                colors.AddRange(newColors);                
+   
+                colors.AddRange(newColors);
+                if (colors.Count > ColorsPerPalette)
+                    colors = colors.Take(ColorsPerPalette).ToList(); //todo, should give error
+                      
             }
 
             GetPalette(paletteIndex).Set(colors);
@@ -166,21 +171,20 @@ namespace SomeGame.Main.Models
                 Image: t.Image.Map(b => GetPalette(paletteIndex).GetIndex(_systemPalette[b])),
                 Palette: null))
             .ToArray();
-
         }
 
-        private void SaveVramSnapshot(PaletteIndex p)
+        private void SavePatternTableSnapshot(PaletteIndex p)
         {
-            var fileName = $"VRAM_{p}.png";
+            var fileName = $"PatternTable_{p}.png";
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
             using var fs = File.OpenWrite(fileName);
-            var texture = _vram.ToTexture2D(GetPalette(p), _graphicsDevice);
+            var texture = _patternTable.ToTexture2D(GetPalette(p), _graphicsDevice);
             texture.SaveAsPng(fs, texture.Width, texture.Height);
         }
 
-        private VramData CreateVramImage(IEnumerable<IndexedTilesetImage> data)
+        private void FillPatternTable(IEnumerable<IndexedTilesetImage> data)
         {
             var splitImages = data
                 .Select(d => new { Key = d.Key, Data = d.Image.Split(TileSize) })
@@ -193,19 +197,37 @@ namespace SomeGame.Main.Models
                              .ToArray()
             }).ToArray();
 
-            var offsets = new Dictionary<TilesetContentKey, int>();
-            int currentOffset = 0;
+            _offsets = new Dictionary<TilesetContentKey, byte>();
+            byte currentOffset = 0;
             foreach(var tileGroup in tileGroups)
             {
-                offsets[tileGroup.Key] = currentOffset;
-                currentOffset += tileGroup.Data.Length;
+                _offsets[tileGroup.Key] = currentOffset;
+                currentOffset = (byte)(currentOffset + tileGroup.Data.Length);
             }
 
-            var combined = tileGroups
-                            .SelectMany(p=>p.Data)
-                            .Combine(32);
+            List<MemoryGrid<byte>> finalTiles = new List<MemoryGrid<byte>>();          
+            finalTiles.AddRange(tileGroups.SelectMany(p => p.Data));
 
-            return new VramData(ImageData: combined, Offsets: offsets, TileSet:new TileSet(offsets, TileSize, combined.Width,combined.Height));
+            while(finalTiles.Count < 512)
+                finalTiles.Add(new MemoryGrid<byte>(8, 8, (x, y) => 0));
+            
+            var combined = finalTiles.Combine(_patternTable.Width/TileSize);
+
+            if (combined.Height > _patternTable.Height)            
+                throw new Exception("Too many tiles");
+            
+            _patternTable.ForEach((x, y, n) =>
+            {
+                n.Set(combined[x, y]);
+            });
+        }
+
+        public Rectangle GetPatternTableBlock(byte tileIndex)
+        {
+            int tileWidth = _patternTable.Width / TileSize;
+            int row = tileIndex / tileWidth;
+            int col = tileIndex % tileWidth;
+            return new Rectangle(col * TileSize, row * TileSize, TileSize, TileSize);
         }
     }
 }

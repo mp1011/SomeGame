@@ -20,12 +20,14 @@ namespace SomeGame.Main
 
         public static void StartGame(IRamViewer ramViewer=null)
         {
+            RunGame(CreateTextureCreatorModule, ramViewer);
+           RunGame(CreateThemeDefinerModule, ramViewer);
          //   RunGame(CreatePaletteEditorModule, ramViewer);
-        //    RunGame(CreateSpriteEditorModule, ramViewer);
-            RunGame(CreateAnimationDefinitionModule, ramViewer);
+         //   RunGame(CreateSpriteEditorModule, ramViewer);
+         //   RunGame(CreateAnimationDefinitionModule, ramViewer);
             RunGame(CreateSceneDefinitionModule, ramViewer);
-           RunGame(CreateSceneModule, ramViewer);
-          //  RunGame(CreateEditorModule, ramViewer);
+          //  RunGame(CreateSceneModule, ramViewer);
+            RunGame(CreateEditorModule, ramViewer);
         }
 
         private static void RunGame(Func<GameStartup, IGameModule> createModule, IRamViewer ramViewer)
@@ -42,7 +44,7 @@ namespace SomeGame.Main
         private static IGameModule CreateSceneModule(GameStartup gameStartup) =>
             new SceneModule(SceneContentKey.Level1TitleCard, gameStartup);
         private static IGameModule CreateEditorModule(GameStartup gameStartup) =>
-           new LevelEditorModule(SceneContentKey.Level1, LayerIndex.FG, gameStartup);
+           new LevelEditorModule(SceneContentKey.Level1, LayerIndex.BG, gameStartup);
 
         private static IGameModule CreateSpriteEditorModule(GameStartup gameStartup) =>
             new SpriteEditorModule(TilesetContentKey.Gizmos, gameStartup);
@@ -52,6 +54,13 @@ namespace SomeGame.Main
 
         private static IGameModule CreatePaletteEditorModule(GameStartup gameStartup) =>
             new PaletteCreatorModule(gameStartup);
+
+        private static IGameModule CreateTextureCreatorModule(GameStartup gameStartup) =>
+            new TextureCreatorModule(gameStartup.ContentManager, gameStartup.GraphicsDevice);
+
+        private static IGameModule CreateThemeDefinerModule(GameStartup gameStartup) =>
+            new ThemeDefinerModule(TilesetContentKey.Mountains, gameStartup);
+
 
         //private static IEnumerable<IGameModule> CreateModules(GameStartup startup)
         //{
@@ -65,7 +74,6 @@ namespace SomeGame.Main
         // return new SceneModule(SceneContentKey.Level1TitleCard, startup);
         // return new TextureCreatorModule(cm, gd, ImageContentKey.Mountains);
         // ImageContentKey.Bullet3, ImageContentKey.Clouds, ImageContentKey.Ghost, ImageContentKey.Mountains);
-        //  return new ThemeDefinerModule(ImageContentKey.Tiles1, TilesetContentKey.Tiles1, cm, gd);
 
 
         //  return new PaletteCreatorModule(startup);

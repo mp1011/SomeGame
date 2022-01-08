@@ -43,7 +43,7 @@ namespace SomeGame.Main.Behaviors
                 actor.Animator.Update(actor.CurrentAnimation);
                 var animationFrame = actor.Animator.GetCurrentFrame(actor.CurrentAnimation);
 
-                int offset = _gameSystem.GetTileOffset(Content.TilesetContentKey.Gizmos) - layer.TileOffset;
+                byte offset = (byte)(_gameSystem.GetTileOffset(Content.TilesetContentKey.Gizmos) - layer.TileOffset);
 
                 if ((actor.Flip & Flip.FlipH) > 0)
                     flags |= TileFlags.FlipH;
@@ -57,19 +57,16 @@ namespace SomeGame.Main.Behaviors
             }
             else
             {
-                SetTile(tileX, tileY, -1, 0, TileFlags.None);
-                SetTile(tileX + 1, tileY, -1, 0, TileFlags.None);
-                SetTile(tileX, tileY + 1, -1, 0, TileFlags.None);
-                SetTile(tileX + 1, tileY + 1, -1, 0, TileFlags.None);
+                SetTile(tileX, tileY, 0, 0, TileFlags.None);
+                SetTile(tileX + 1, tileY, 0, 0, TileFlags.None);
+                SetTile(tileX, tileY + 1, 0, 0, TileFlags.None);
+                SetTile(tileX + 1, tileY + 1, 0, 0, TileFlags.None);
             }
         }
 
-        private void SetTile(int tileX, int tileY, int tileIndex, int offset, TileFlags flags)
+        private void SetTile(int tileX, int tileY, byte tileIndex, byte offset, TileFlags flags)
         {
-            if(tileIndex == -1)
-                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(-1, flags));
-            else
-                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tileIndex + offset, flags));
+            _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tileIndex + offset, flags));
         }
 
         protected bool IsBlockVisible(Actor actor)

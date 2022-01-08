@@ -13,12 +13,12 @@ namespace SomeGame.Main.Behaviors
             _actorManager = actorManager;
         }
 
-        public Actor FindActor()
+        public Actor FindActor(bool enabledOnly=true)
         {
-            if (_foundActor != null && _foundActor.Enabled)
+            if (_foundActor != null && (_foundActor.Enabled || !enabledOnly))
                 return _foundActor;
 
-            foreach(var actor in _actorManager.GetActors())
+            foreach(var actor in _actorManager.GetActors(enabledOnly: enabledOnly))
             {
                 if(IsMatch(actor))
                 {
@@ -43,6 +43,25 @@ namespace SomeGame.Main.Behaviors
         protected override bool IsMatch(Actor actor)
         {
             return actor.ActorType == (ActorType.Player | ActorType.Character);
+        }
+    }
+
+    class LockFinder : ActorFinder
+    {
+        private RamGameRectangle _blockPosition;
+
+        public LockFinder(ActorManager actorManager, RamGameRectangle blockPosition) : base(actorManager)
+        {
+            _blockPosition = blockPosition;
+        }
+
+        protected override bool IsMatch(Actor actor)
+        {
+            if (actor.ActorId != ActorId.Lock)
+                return false;
+
+            //todo, handle multiple key blocks
+            return true;
         }
     }
 }

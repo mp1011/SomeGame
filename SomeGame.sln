@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SomeGame.Main", "SomeGame.Main\SomeGame.Main.csproj", "{B3C8A250-C70A-4604-9D44-D7A790FA1864}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RamConsole", "RamConsole\RamConsole.csproj", "{C87DC8F1-93B2-4F4D-A4BD-97A835DC88C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RamConsole", "RamConsole\RamConsole.csproj", "{C87DC8F1-93B2-4F4D-A4BD-97A835DC88C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

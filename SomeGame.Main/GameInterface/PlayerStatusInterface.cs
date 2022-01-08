@@ -21,7 +21,7 @@ namespace SomeGame.Main.GameInterface
             _font = new Font(_gameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
             var interfaceLayer = _gameSystem.GetLayer(LayerIndex.Interface);
-            interfaceLayer.TileMap.SetEach((x, y) => new Tile(-1, TileFlags.None));
+            interfaceLayer.TileMap.SetEach((x, y) => new Tile(0, TileFlags.None));
 
             interfaceLayer.Palette = PaletteIndex.P4;
             interfaceLayer.TileOffset = _gameSystem.GetTileOffset(TilesetContentKey.Hud);
@@ -78,6 +78,17 @@ namespace SomeGame.Main.GameInterface
                         return new Tile(5 - partialValue, TileFlags.None);
                     }
                 });
+
+            if(playerState.HasKey)
+            {
+                interfaceLayer.TileMap.SetTile(heartX-5, 1, new Tile(9, TileFlags.None));
+                interfaceLayer.TileMap.SetTile(heartX-4, 1, new Tile(10, TileFlags.None));
+            }
+            else
+            {
+                interfaceLayer.TileMap.SetTile(heartX - 5, 1, new Tile(8, TileFlags.None));
+                interfaceLayer.TileMap.SetTile(heartX - 4, 1, new Tile(8, TileFlags.None));
+            }
 
             if (_gameSystem.Paused)
             {

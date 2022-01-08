@@ -27,10 +27,10 @@ namespace SomeGame.Main.Services
                 .Where(a => a.Enabled && (a.ActorType & actorType) == actorType);
         }
 
-        public IEnumerable<Actor> GetActors()
-        {
+        public IEnumerable<Actor> GetActors(bool enabledOnly=true)
+        {            
             return _actors
-                .Where(a => a.Enabled);
+                .Where(a => a.Enabled || !enabledOnly);
         }
 
         public void Update(Scene currentScene)

@@ -8,17 +8,17 @@ namespace SomeGame.Main.Models
 {
     class TileMap
     {
-        private Grid<Tile> _tiles;
+        private RamGrid<RamTile> _tiles;
 
         public LevelContentKey LevelKey { get; }
 
-        public TileMap(LevelContentKey levelContentKey, int tilesX, int tilesY)
+        public TileMap(GameSystem gameSystem, LevelContentKey levelContentKey, int tilesX, int tilesY)
         {
             LevelKey = levelContentKey;
-            _tiles = new Grid<Tile>(tilesX, tilesY, (x,y)=> new Tile(-1, TileFlags.None));
+            _tiles = new TileGrid(gameSystem, tilesX, tilesY, ()=> gameSystem.RAM.DeclareTile(255, TileFlags.None));
         }
 
-        public TileMap(LevelContentKey levelContentKey, Grid<Tile> tiles)
+        public TileMap(LevelContentKey levelContentKey, RamGrid<RamTile> tiles)
         {
             LevelKey = levelContentKey;
             _tiles = tiles;
@@ -28,33 +28,40 @@ namespace SomeGame.Main.Models
 
         public int TilesX => _tiles.Width;
         public int TilesY => _tiles.Height;
-        public Grid<Tile> GetGrid() => _tiles;
+        public RamGrid<RamTile> GetGrid() => _tiles;
 
-        public Tile GetTile(int x, int y) => _tiles[new RotatingInt(x,TilesX) , new RotatingInt(y,TilesY)];
-        public Tile GetTile(Point p) => _tiles[p.X, p.Y];
+        public RamTile GetTile(int x, int y) => _tiles[new RotatingInt(x,TilesX) , new RotatingInt(y,TilesY)];
+        public RamTile GetTile(Point p) => _tiles[p.X, p.Y];
 
         public void SetTile(int x, int y, Tile tile)
         {
-            _tiles[new BoundedInt(x,TilesX), new BoundedInt(y,TilesY)] = tile;
+            _tiles[new BoundedInt(x,TilesX), new BoundedInt(y,TilesY)].Set(tile);
         }
 
-        public void Set(Grid<Tile> tiles)
+        public void Set(RamGrid<RamTile> tiles)
         {
             _tiles = tiles;
         }
 
-        public void ForEach(Action<int, int, Tile> action) => _tiles.ForEach(action);
+        public void ForEach(Action<int, int, RamTile> action) => _tiles.ForEach(action);
 
-        public void ForEach(Point upperLeftTile, Point bottomRightTile, Action<int, int, Tile> action)
+        public void ForEach(Point upperLeftTile, Point bottomRightTile, Action<int, int, RamTile> action)
         {
             _tiles.ForEach(upperLeftTile.X, bottomRightTile.X, upperLeftTile.Y, bottomRightTile.Y, action);
         }
 
-        public void SetEach(Func<int, int, Tile> createTile) => _tiles.SetEach(createTile);
-        public void SetEach(int xStart, int xEnd, int yStart, int yEnd, Func<int, int, Tile> createTile) => 
-            _tiles.SetEach(xStart, xEnd, yStart, yEnd, createTile);
+        public void SetEach(Func<int, int, Tile> createTile)
+        {
+            _tiles.ForEach((x, y, t) => t.Set(createTile(x, y)));
+        }
+        public void SetEach(int xStart, int xEnd, int yStart, int yEnd, Func<int, int, Tile> createTile)
+        {
+            _tiles.ForEach(xStart,xEnd,yStart,yEnd, (x, y, t) => t.Set(createTile(x, y)));
+        }
 
-        public void SetEach(Point upperLeft, Point bottomRight, Func<int, int, Tile> createTile) => 
-            _tiles.SetEach(upperLeft.X, bottomRight.X, upperLeft.Y, bottomRight.Y, createTile);
+        public void SetEach(Point upperLeft, Point bottomRight, Func<int, int, Tile> createTile)
+        {
+            _tiles.ForEach(upperLeft.X, bottomRight.X, upperLeft.Y, bottomRight.Y, (x, y, t) => t.Set(createTile(x, y)));
+        }
     }
 }

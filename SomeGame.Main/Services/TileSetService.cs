@@ -15,42 +15,12 @@ namespace SomeGame.Main.Services
             var tiles = indexedImage.Image
                                     .Split(8)
                                     .ToArray();
-
             var distinctTiles = tiles
                                    .Distinct(new MirrorAgnosticGridComparer<byte>())
                                    .ToArray()
                                    .Combine(32);
 
             return new IndexedImage(distinctTiles, indexedImage.Palette);
-        }
-
-        public Grid<Tile> CreateTileMapFromImageAndTileset(IndexedImage image, TileSet tileSet)
-        {
-            throw new System.NotImplementedException();
-            //var imageTiles = image.Image.Split(8);
-
-            //var tileSetIndexedImage = tileSet.Texture
-            //                                 .ToIndexedImage(image.Palette)
-            //                                 .Image
-            //                                 .Split(8);
-
-            //return imageTiles.Map((x, y, imageTile) =>
-            //{
-            //    for (int i = 0; i < tileSetIndexedImage.Size; i++)
-            //    {
-            //        var tilesetTile = tileSetIndexedImage[i];
-            //        if (tilesetTile.Equals(imageTile))
-            //            return new Tile(i, TileFlags.None);
-            //        else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.H)))
-            //            return new Tile(i, TileFlags.FlipH);
-            //        else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.V)))
-            //            return new Tile(i, TileFlags.FlipV);
-            //        else if (tilesetTile.Equals(imageTile.CreateMirror(Flip.Both)))
-            //            return new Tile(i, TileFlags.FlipH | TileFlags.FlipV);
-            //    }
-
-            //    throw new Exception("Unable to match image tile with a tileSet tile");
-            //});
         }
 
         public Tile[] GetMatchingTiles(EditorTileSet editorTileSet, string theme, TileMap tileMap, 
@@ -163,9 +133,9 @@ namespace SomeGame.Main.Services
         }
     }
 
-    class MirrorAgnosticGridComparer<T> : IEqualityComparer<Grid<T>>
+    class MirrorAgnosticGridComparer<T> : IEqualityComparer<MemoryGrid<T>>
     {
-        public bool Equals(Grid<T> x, Grid<T> y)
+        public bool Equals(MemoryGrid<T> x, MemoryGrid<T> y)
         {
             if (x.Equals(y))
                 return true;
@@ -182,7 +152,7 @@ namespace SomeGame.Main.Services
             return false;
         }
 
-        public int GetHashCode([DisallowNull] Grid<T> obj)
+        public int GetHashCode([DisallowNull] MemoryGrid<T> obj)
         {
             return obj.GetHashCode();
         }

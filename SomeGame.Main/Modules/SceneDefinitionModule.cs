@@ -101,7 +101,6 @@ namespace SomeGame.Main.Modules
                     TilesetContentKey.Hero,
                     TilesetContentKey.Skeleton,
                     TilesetContentKey.Bat,
-                    TilesetContentKey.Ghost,
                     TilesetContentKey.Bullet2,
                     TilesetContentKey.Bullet,
                },

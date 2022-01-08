@@ -7,7 +7,7 @@ namespace SomeGame.Main.Extensions
 {
     public static class GridExtensions
     {
-        public static Grid<T> Combine<T>(this IEnumerable<Grid<T>> sections, int horizontalSections)
+        public static MemoryGrid<T> Combine<T>(this IEnumerable<MemoryGrid<T>> sections, int horizontalSections)
         {
             int sectionWidth = sections.First().Width;
             int sectionHeight = sections.First().Height;
@@ -35,7 +35,7 @@ namespace SomeGame.Main.Extensions
                 }
             }
 
-            return new Grid<T>(newGrid);
+            return new MemoryGrid<T>(newGrid);
         }
 
         private static Exception Exception()

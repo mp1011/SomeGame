@@ -9,15 +9,16 @@ namespace SomeGame.Main.Behaviors
     {
         private readonly AudioService _audioService;
         private readonly PlayerStateManager _playerStateManager;
-        private int _timer = 0;
+        private readonly RamByte _timer;
 
         protected abstract SoundContentKey CollectSound { get; }
         protected abstract void OnCollected(PlayerState playerState);
 
-        public CollectibleBehavior(AudioService audioService, PlayerStateManager playerStateManager)
+        public CollectibleBehavior(GameSystem gameSystem, AudioService audioService, PlayerStateManager playerStateManager)
         {
             _audioService = audioService;
             _playerStateManager = playerStateManager;
+            _timer = gameSystem.RAM.DeclareByte();
         }
 
         protected override void OnCreated( )
@@ -25,12 +26,12 @@ namespace SomeGame.Main.Behaviors
             OnCollected(_playerStateManager.CurrentState);
             _audioService.Play(CollectSound);
             Actor.MotionVector.Set(new PixelPoint(0, -2));
-            _timer = 0;
+            _timer.Set(0);
         }
 
         protected override void DoUpdate()
         {
-            _timer++;
+            _timer.Inc();
             if (_timer >= 5)
                 Actor.Destroy();
         }
@@ -38,7 +39,8 @@ namespace SomeGame.Main.Behaviors
 
     class CoinBehavior : CollectibleBehavior
     {
-        public CoinBehavior(AudioService audioService, PlayerStateManager playerStateManager) : base(audioService, playerStateManager)
+        public CoinBehavior(GameSystem gameSystem, AudioService audioService, PlayerStateManager playerStateManager) 
+            : base(gameSystem, audioService, playerStateManager)
         {
         }
 
@@ -52,7 +54,8 @@ namespace SomeGame.Main.Behaviors
 
     class GemBehavior : CollectibleBehavior
     {
-        public GemBehavior(AudioService audioService, PlayerStateManager playerStateManager) : base(audioService, playerStateManager)
+        public GemBehavior(GameSystem gameSystem, AudioService audioService, PlayerStateManager playerStateManager) 
+            : base(gameSystem, audioService, playerStateManager)
         {
         }
 
@@ -66,7 +69,8 @@ namespace SomeGame.Main.Behaviors
 
     class AppleBehavior : CollectibleBehavior
     {
-        public AppleBehavior(AudioService audioService, PlayerStateManager playerStateManager) : base(audioService, playerStateManager)
+        public AppleBehavior(GameSystem gameSystem, AudioService audioService, PlayerStateManager playerStateManager) 
+            : base(gameSystem, audioService, playerStateManager)
         {
         }
 
@@ -80,7 +84,8 @@ namespace SomeGame.Main.Behaviors
 
     class MeatBehavior : CollectibleBehavior
     {
-        public MeatBehavior(AudioService audioService, PlayerStateManager playerStateManager) : base(audioService, playerStateManager)
+        public MeatBehavior(GameSystem gameSystem, AudioService audioService, PlayerStateManager playerStateManager) 
+            : base(gameSystem, audioService, playerStateManager)
         {
         }
 
@@ -94,7 +99,8 @@ namespace SomeGame.Main.Behaviors
 
     class KeyBehavior : CollectibleBehavior
     {
-        public KeyBehavior(AudioService audioService, PlayerStateManager playerStateManager) : base(audioService, playerStateManager)
+        public KeyBehavior(GameSystem gameSystem, AudioService audioService, PlayerStateManager playerStateManager) 
+            : base(gameSystem, audioService, playerStateManager)
         {
         }
 
@@ -102,7 +108,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnCollected(PlayerState playerState)
         {
-            //todo
+            playerState.HasKey = true;
         }
     }
 

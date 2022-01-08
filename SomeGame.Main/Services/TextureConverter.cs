@@ -9,14 +9,18 @@ namespace SomeGame.Main.Services
 {
     public static class TextureConverter
     {
+        private static readonly Color TransparentColor = new Color(255, 0, 255);
+
         public static Color[] ToColorData(this Texture2D texture)
         {
             Color[] pixels = new Color[texture.Width * texture.Height];
             texture.GetData(pixels);
-            return pixels;
+            return pixels
+                .Select(p => p.Equals(TransparentColor) ? new Color(0, 0, 0, 0) : p)
+                .ToArray();
         }
 
-        public static IndexedImage ToIndexedImage(this Grid<Color> pixels, Palette palette)
+        public static IndexedImage ToIndexedImage(this MemoryGrid<Color> pixels, Palette palette)
         {
             return new IndexedImage(pixels.Map(palette.GetIndex), palette);
         }
@@ -28,21 +32,7 @@ namespace SomeGame.Main.Services
             return ToIndexedImage(pixels.ToGrid(texture.Width,texture.Height), palette);
         }
 
-        public static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture)
-        {
-            var pixels = ToColorData(texture);
-            var palette = new Palette(pixels);
-            var key = texture.Name.Split('\\')
-                                  .Last()
-                                  .ParseEnum<TilesetContentKey>();
-
-            var grid = pixels.ToGrid(texture.Width, texture.Height)
-                             .Map(palette.GetIndex);
-
-            return new IndexedTilesetImage(key, grid, palette);
-        }
-        
-        public static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, Palette palette)
+        internal static IndexedTilesetImage ToIndexedTilesetImage(this Texture2D texture, Palette palette)
         {
             var pixels = ToColorData(texture);
             var key = texture.Name.Split('\\')
@@ -73,10 +63,10 @@ namespace SomeGame.Main.Services
             return texture;
         }
 
-        internal static Texture2D ToTexture2D(this VramData vram, RamPalette palette, GraphicsDevice graphicsDevice)
+        internal static Texture2D ToTexture2D(this RamGrid<RamNibble> patternTable, RamPalette palette, GraphicsDevice graphicsDevice)
         {
-            var texture = new Texture2D(graphicsDevice, vram.ImageData.Width, vram.ImageData.Height);
-            var colors = vram.ImageData
+            var texture = new Texture2D(graphicsDevice, patternTable.Width, patternTable.Height);
+            var colors = patternTable
                                 .Map(ix => palette[ix])
                                 .ToArray();
             texture.SetData(colors);
@@ -94,13 +84,13 @@ namespace SomeGame.Main.Services
 
         internal static IndexedTilesetImage MapToPalette(this IndexedTilesetImage image, RamPalette palette)
         {
-            var newImage = image.Image.Map(b =>
-            {
-                var color = image.Palette[b];
-                return palette.GetIndex(color);
-            });
+            //var newImage = image.Image.Map(b =>
+            //{
+            //    var color = image.Palette[b];
+            //    return palette.GetIndex(color);
+            //});
 
-            return new IndexedTilesetImage(image.Key, newImage, null);
+            throw new System.NotImplementedException(); //return new IndexedTilesetImage(image.Key, newImage, null);
         }
     }
 }

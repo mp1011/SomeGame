@@ -12,7 +12,7 @@ namespace SomeGame.Main.Behaviors
 
         protected override void OnCollision(CollisionInfo collisionInfo)
         {
-            if (collisionInfo.IsOnGround || collisionInfo.Actor != null)
+            if (collisionInfo.IsOnGround || collisionInfo.Actor != null || Actor.Destroying)
                 return;
 
             Actor.MotionVector.Offset(Orientation.Vertical, 0, _acceleration);

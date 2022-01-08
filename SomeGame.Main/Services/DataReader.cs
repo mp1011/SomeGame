@@ -37,17 +37,17 @@ namespace SomeGame.Main.Services
             _reader.Dispose();
         }
 
-        public Grid<T> ReadGrid<T>()
+        public MemoryGrid<T> ReadGrid<T>()
         {
             var width = _reader.ReadInt32();
             var height = _reader.ReadInt32();
-            var grid = new Grid<T>(width, height, (x, y) => Read<T>());
+            var grid = new MemoryGrid<T>(width, height, (x, y) => Read<T>());
             return grid;          
         }
 
         public Tile ReadTile()
         {
-            return new Tile(_reader.ReadInt32(), (TileFlags)_reader.ReadByte());
+            return new Tile(_reader.ReadByte(), (TileFlags)_reader.ReadByte());
         }
 
         public EditorTileSet ReadEditorTileset(TilesetContentKey key)

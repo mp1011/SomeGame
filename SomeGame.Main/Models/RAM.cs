@@ -31,9 +31,11 @@ namespace SomeGame.Main.Models
     public class RAM
     {
         private GameSystem _gameSystem;
-        private byte[] _memory = new byte[2000];
+        private byte[] _memory = new byte[64000];
         private int _declareIndex = 0;
         private IRamViewer _ramViewer;
+
+        public int WritePointer => _declareIndex;
 
         public int SceneDataAddress { get; private set; }
 
@@ -188,6 +190,71 @@ namespace SomeGame.Main.Models
             return new RamPalette(systemPalette,
                 Enumerable.Range(0, _gameSystem.ColorsPerPalette).Select(e => DeclareByte()));
         }
+
+        internal RamTile DeclareTile(byte index, TileFlags flags)
+        {
+            return new RamTile(DeclareByte(index), DeclareEnum(flags));
+        }
+
+        internal RamTile DeclareTile(Tile t)
+        {
+            if (t == null)
+                return DeclareTile(0, TileFlags.None);
+            else
+                return DeclareTile((byte)t.Index, t.Flags);
+        }
+
+        internal RamNibble DeclareLowNibble(byte value)
+        {
+            var ret = new RamLowNibble(_declareIndex, this);
+            ret.Set(value);
+            return ret;
+        }
+
+        internal RamNibble DeclareHighNibble(byte value)
+        {
+            var ret = new RamHighNibble(_declareIndex, this);
+            ret.Set(value);
+            _declareIndex++;
+            return ret;
+        }
+
+        internal RamGrid<RamNibble> DeclareNibbleGrid(int width, int height)
+        {
+            int index = 0;
+            return new NibbleGrid(_gameSystem, width, height, () =>
+            {
+                RamNibble n;
+                if ((index % 2) == 0)
+                    n = DeclareLowNibble(0);
+                else
+                    n = DeclareHighNibble(0);
+                index++;
+                return n;
+            });
+        }
+
+        internal RamGrid<RamNibble> DeclareNibbleGrid(IGrid<byte> values)
+        {
+            int index = 0;
+            return new NibbleGrid(_gameSystem, values.Width, values.Height, () =>
+            {
+                RamNibble n;
+                if ((index % 2) == 0)
+                    n=DeclareLowNibble(values[index]);
+                else
+                    n=DeclareHighNibble(values[index]);
+                index++;
+                return n;
+            });
+        }
+
+        public RamNibble ReadLowNibble(int address) => new RamLowNibble(address, this);
+        public RamNibble ReadHighNibble(int address) => new RamHighNibble(address, this);
+
+        public RamByte ReadByte(int address) => new RamByte(address, this);
+
+        public RamTile ReadTile(int index) => new RamTile(new RamByte(index, this), new RamEnum<TileFlags>(index + 1, this));
     }
 
     public abstract class RamValue
@@ -197,9 +264,49 @@ namespace SomeGame.Main.Models
 
         public RamValue(int index, RAM ram)
         {
+            if (index < 0)
+                throw new Exception("Illegal address");
+
             Address = index;
             Memory = ram;
         }
+    }
+
+    public abstract class RamNibble : RamValue 
+    {
+        public static implicit operator byte(RamNibble r) => r.GetValue();
+        public RamNibble(int index, RAM ram) : base(index, ram) { }
+        protected abstract byte GetValue();
+
+        public abstract void Set(byte value);
+    }
+
+    public class RamLowNibble : RamNibble
+    {
+        public RamLowNibble(int index, RAM ram) : base(index, ram) { }
+        public override void Set(byte value)
+        {
+            value = (byte)(value & 15);
+
+            Memory[Address] = (byte)(Memory[Address] & 240);
+            Memory[Address] = (byte)(Memory[Address] | value);
+        }
+        protected override byte GetValue() => (byte)(Memory[Address] & 15);
+    }
+
+    public class RamHighNibble : RamNibble
+    {
+        public RamHighNibble(int index, RAM ram) : base(index, ram) { }
+
+        public override void Set(byte value)
+        {
+            value = (byte)(value & 15);
+            value = (byte)(value << 4);
+
+            Memory[Address] = (byte)(Memory[Address] & 15);
+            Memory[Address] = (byte)(Memory[Address] | value);
+        }
+        protected override byte GetValue() => (byte)((Memory[Address] & 240) >> 4);
     }
 
     public class RamByte : RamValue

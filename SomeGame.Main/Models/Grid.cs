@@ -6,53 +6,32 @@ using System.Text;
 
 namespace SomeGame.Main.Models
 {
-    public struct Grid<T>
+    public interface IGrid<T>
     {
-        private readonly T[,] _grid;
+        int Width { get; }
+        int Height { get; }
+        public int Size { get; }
+        T this[int i] { get; }
+        T this[int x, int y] { get;set; }
+        T[] ToArray();
+        IEnumerable<T> Where(Func<T, bool> predicate);
+        bool All(Func<int, int, T, bool> predicate);
+        void ForEach(Action<int, int, T> action);
+        void ForEach(int xStart, int xEnd, int yStart, int yEnd, Action<int, int, T> action);
 
-        public Grid(int width, int height, Func<int, int, T> generator=null)
-        {
-            _grid = new T[width, height];
-            var t = this;
+        MemoryGrid<K> Map<K>(Func<int, int, T, K> transform);
 
-            if (width == 0 || height == 0)
-                return;
+        MemoryGrid<K> Map<K>(Func<T, K> transform);
+    }
 
-            if(generator == null)
-                generator = (x,y) => default(T);
-            
-            ForEach((x, y, v) => t._grid[x, y] = generator(x, y));
-        }
-
-        public Grid(T[,] grid)
-        {
-            if (grid == null)
-                throw new NullReferenceException();
-            _grid = grid;
-        }
-
-        public int Width => _grid.GetLength(0);
-        public int Height => _grid.GetLength(1);
+    public abstract class BaseGrid<T> : IGrid<T>
+    {
+        public abstract int Width { get; }
+        public abstract int Height { get; }
 
         public int Size => Width * Height;
 
-        public T this[int x, int y]
-        {
-            get 
-            {
-                if (x < 0)
-                    x = 0;
-                if (x >= Width)
-                    x = Width - 1;
-                if (y < 0)
-                    y = 0;
-                if (y >= Height)
-                    y = Height - 1;
-
-                return _grid[x, y];
-            }
-            set => _grid[x.AsRotatingInt(Width), y.AsRotatingInt(Height)] = value;
-        }
+        public abstract T this[int x, int y] { get; set; }
 
         public T this[int i]
         {
@@ -88,7 +67,7 @@ namespace SomeGame.Main.Models
 
             for (int y = yStart; y < yEnd; y++)
                 for (int x = xStart; x < xEnd; x++)                
-                    action(x, y, _grid[x, y]);
+                    action(x, y, this[x, y]);
         }
         public void SetEach(Func<int, int, T> createTile)
         {
@@ -99,19 +78,7 @@ namespace SomeGame.Main.Models
         {
             for (int y = yStart; y < yEnd; y++)
                 for (int x = xStart; x < xEnd; x++)
-                    _grid[x, y] = createTile(x,y);
-        }
-
-        public Grid<K> Map<K>(Func<int,int,T,K> transform)
-        {
-            var newGrid = new K[Width, Height];
-            ForEach((x, y, v) => newGrid[x, y] = transform(x, y, v));
-            return new Grid<K>(newGrid);
-        }
-
-        public Grid<K> Map<K>(Func<T,K> transform)
-        {
-            return Map((x, y, i) => transform(i));
+                    this[x, y] = createTile(x,y);
         }
 
         public T[] ToArray()
@@ -127,53 +94,33 @@ namespace SomeGame.Main.Models
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
                 {
-                    if (predicate(_grid[x, y]))
-                        yield return _grid[x, y];
+                    if (predicate(this[x, y]))
+                        yield return this[x, y];
                 }
         }
 
-        public Grid<Grid<T>> Split(int segmentSize)
-        {
-            var thisGrid = this;
-            return new Grid<Grid<T>>(Width / segmentSize, Height / segmentSize,
-                (newX, newY) =>
-                {
-                    var cell = new T[segmentSize, segmentSize];
-                    thisGrid.ForEach(xStart: newX * segmentSize,
-                            xEnd: (newX + 1) * segmentSize,
-                            yStart: newY * segmentSize,
-                            yEnd: (newY + 1) * segmentSize,
-                            action: (x, y, t) =>
-                            {
-                                cell[x - (newX * segmentSize), y - (newY * segmentSize)] = thisGrid[x, y];
-                            });
-                    return new Grid<T>(cell);
-                });
-        }
-
-
-        public Grid<T> CreateMirror(Flip flip)
+        public MemoryGrid<T> CreateMirror(Flip flip)
         {
             var thisGrid = this;
             return Map((x, y, v) =>
             {
                 int srcX = x, srcY = y;
                 if ((flip & Flip.H) != 0)
-                    srcX = (thisGrid.Width - x)-1;
+                    srcX = (thisGrid.Width - x) - 1;
                 if ((flip & Flip.V) != 0)
-                    srcY = (thisGrid.Height - y)-1;
+                    srcY = (thisGrid.Height - y) - 1;
 
                 return thisGrid[srcX, srcY];
             });
         }
 
-        public Grid<T> Extract(Point upperLeft, Point bottomRight)
+        public MemoryGrid<T> Extract(Point upperLeft, Point bottomRight)
         {
             var thisGrid = this;
-            return new Grid<T>(
+            return new MemoryGrid<T>(
                             width: (bottomRight.X - upperLeft.X) + 1,
                             height: (bottomRight.Y - upperLeft.Y) + 1,
-                            (x, y) => thisGrid[x + upperLeft.X, y + upperLeft.Y]);                            
+                            (x, y) => thisGrid[x + upperLeft.X, y + upperLeft.Y]);
         }
 
 
@@ -204,7 +151,7 @@ namespace SomeGame.Main.Models
 
         public override bool Equals(object obj)
         {
-            if(obj is Grid<T> otherGrid)
+            if(obj is IGrid<T> otherGrid)
             {
                 for (int y = 0; y < Height; y++)
                     for (int x = 0; x < Width; x++)
@@ -233,6 +180,171 @@ namespace SomeGame.Main.Models
             });
 
             return sb.ToString();
+        }
+
+        public MemoryGrid<K> Map<K>(Func<int, int, T, K> transform)
+        {
+            var newGrid = new K[Width, Height];
+            ForEach((x, y, v) => newGrid[x, y] = transform(x, y, v));
+            return new MemoryGrid<K>(newGrid);
+        }
+
+        public MemoryGrid<K> Map<K>(Func<T, K> transform)
+        {
+            return Map((x, y, i) => transform(i));
+        }
+    }
+
+    public class MemoryGrid<T> :BaseGrid<T>
+    {
+        private readonly T[,] _grid;
+
+        public override int Width => _grid.GetLength(0);
+        public override int Height => _grid.GetLength(1);
+
+        public MemoryGrid(int width, int height, Func<int, int, T> generator = null)
+        {
+            _grid = new T[width, height];
+            var t = this;
+
+            if (width == 0 || height == 0)
+                return;
+
+            if (generator == null)
+                generator = (x, y) => default(T);
+
+            ForEach((x, y, v) => t._grid[x, y] = generator(x, y));
+        }
+
+        public MemoryGrid(T[,] grid)
+        {
+            if (grid == null)
+                throw new NullReferenceException();
+            _grid = grid;
+        }
+
+        public override T this[int x, int y]
+        {
+            get
+            {
+                if (x < 0)
+                    x = 0;
+                if (x >= Width)
+                    x = Width - 1;
+                if (y < 0)
+                    y = 0;
+                if (y >= Height)
+                    y = Height - 1;
+
+                return _grid[x, y];
+            }
+            set => _grid[x.AsRotatingInt(Width), y.AsRotatingInt(Height)] = value;
+        }
+
+        public MemoryGrid<MemoryGrid<T>> Split(int segmentSize)
+        {
+            var thisGrid = this;
+            return new MemoryGrid<MemoryGrid<T>>(Width / segmentSize, Height / segmentSize,
+                (newX, newY) =>
+                {
+                    var cell = new T[segmentSize, segmentSize];
+                    thisGrid.ForEach(xStart: newX * segmentSize,
+                            xEnd: (newX + 1) * segmentSize,
+                            yStart: newY * segmentSize,
+                            yEnd: (newY + 1) * segmentSize,
+                            action: (x, y, t) =>
+                            {
+                                cell[x - (newX * segmentSize), y - (newY * segmentSize)] = thisGrid[x, y];
+                            });
+                    return new MemoryGrid<T>(cell);
+                });
+        }
+
+    }
+
+    public abstract class RamGrid<T> : BaseGrid<T>
+    {
+        private int _address;
+        private RAM _ram;
+
+        public override int Width { get; }
+
+        public override int Height { get; }
+
+        public override T this[int x, int y] 
+        {
+            get
+            {
+                int index = (y * Width) + x;
+                return ReadValue(_ram, _address, index);
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        protected abstract T ReadValue(RAM ram, int gridAddress, int index);
+
+        internal RamGrid(GameSystem gameSystem, int width, int height, Func<T> declareMemory)
+        {
+            Width = width;
+            Height = height;
+            _ram = gameSystem.RAM;
+            _address = gameSystem.RAM.WritePointer;
+
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    declareMemory();
+        }
+    }
+
+
+    class NibbleGrid : RamGrid<RamNibble>
+    {
+        internal NibbleGrid(GameSystem gameSystem, int width, int height, Func<RamNibble> declareMemory) : base(gameSystem, width, height, declareMemory)
+        {
+        }
+
+        protected override RamNibble ReadValue(RAM ram, int gridAddress, int index)
+        {
+            var realAddress = gridAddress + (index / 2);
+            if ((index % 2) == 0)
+                return ram.ReadLowNibble(realAddress);
+            else
+                return ram.ReadHighNibble(realAddress);
+        }
+    }
+
+    class ByteGrid : RamGrid<RamByte>
+    {
+        public ByteGrid(GameSystem gameSystem, int width, int height, Func<RamByte> declareMemory) : base(gameSystem, width, height, declareMemory)
+        {
+        }
+
+        protected override RamByte ReadValue(RAM ram, int gridAddress, int index)
+        {
+            int address = gridAddress + index;
+            return ram.ReadByte(address);
+        }
+    }
+
+    class TileGrid : RamGrid<RamTile>
+    {
+        public TileGrid(GameSystem gameSystem, int width, int height, Func<RamTile> declareMemory) : base(gameSystem, width, height, declareMemory)
+        {
+        }
+
+        public TileGrid(GameSystem gameSystem, IGrid<Tile> source) : base(gameSystem, source.Width,source.Height, 
+            ()=> gameSystem.RAM.DeclareTile(255, TileFlags.None))
+        {
+            ForEach((x, y, t) => t.Set(source[x, y]));
+        }
+
+        protected override RamTile ReadValue(RAM ram, int gridAddress, int index)
+        {
+            int address = gridAddress + (index * 2);
+            return ram.ReadTile(address);
         }
     }
 }

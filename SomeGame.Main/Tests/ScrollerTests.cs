@@ -17,9 +17,10 @@ namespace SomeGame.Main.Tests
         {
             var scroller = new Scroller(gameSystem);
 
-            scroller.SetTileMaps(new TileMap(LevelContentKey.None, gameSystem.LayerTileWidth * 2, gameSystem.LayerTileHeight * 2),
-                                 new TileMap(LevelContentKey.None, gameSystem.LayerTileWidth * 2, gameSystem.LayerTileHeight * 2));
-
+            gameSystem.RAM.AddLabel("Begin Scroll Maps");
+            scroller.SetTileMaps(new TileMap(gameSystem, LevelContentKey.None, gameSystem.LayerTileWidth * 2, gameSystem.LayerTileHeight * 2),
+                                 new TileMap(gameSystem, LevelContentKey.None, gameSystem.LayerTileWidth * 2, gameSystem.LayerTileHeight * 2));
+            gameSystem.RAM.AddLabel("End Scroll Maps");
             return scroller;
         }
 
@@ -30,7 +31,7 @@ namespace SomeGame.Main.Tests
         public void TestSpriteScreenPosition(int actorWorldX, int cameraX, int expectedActorLayerX)
         {
             var gameSystem = new GameSystem(new GameStartup(null,null,null));
-            var actor = new Actor(gameSystem, ActorType.Character, TilesetContentKey.None, null, null, null, new Rectangle(0, 0, 16, 16), null);
+            var actor = new Actor(gameSystem, ActorType.Character, ActorId.Player, TilesetContentKey.None, null, null, null, new Rectangle(0, 0, 16, 16), null);
             actor.WorldPosition.X.Set(actorWorldX);
 
             var scroller = CreateScroller(gameSystem);

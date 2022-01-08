@@ -49,7 +49,7 @@ namespace SomeGame.Main.Services
             IDestroyedBehavior destroyedBehavior=null)
         {
             var tileset = GetTileset(actorId);
-            var actor = new Actor(_gameSystem, actorType, tileset, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
+            var actor = new Actor(_gameSystem, actorType, actorId, tileset, behavior, destroyedBehavior, collisionDetector, hitBox, CreateAnimator(actorId, tileset));
             actor.Palette = palette;
             actor.WorldPosition = _gameSystem.RAM.DeclareGameRectangleWithSubpixels(position.X,position.Y + hitBox.Top, (byte)hitBox.Width, (byte)hitBox.Height);
             _actorManager.AddActor(actor);                
@@ -77,6 +77,8 @@ namespace SomeGame.Main.Services
                 case ActorId.TouchVanishingBlock: return CreateTouchVanishingBlock(position, palette);
                 case ActorId.TimedVanishingBlock: return CreateTimedVanishingBlock(position, palette);
                 case ActorId.SpikeBlock: return CreateSpikeBlock(position, palette);
+                case ActorId.Lock: return CreateLock(position, palette);
+                case ActorId.LockBlock: return CreateLockBlock(position, palette);
                 case ActorId.Bat: return CreateBat(position, palette);
                 case ActorId.Ghost: return CreateGhost(position, palette);
 
@@ -93,11 +95,11 @@ namespace SomeGame.Main.Services
             return new ActorPool(actors);
         }
 
-        public Actor CreateCoin() => CreateCollectible(ActorId.Coin, size: 8, behavior: new CoinBehavior(_audioService, _playerStateManager));
-        public Actor CreateGem() => CreateCollectible(ActorId.Gem, size: 16, behavior: new GemBehavior(_audioService, _playerStateManager));
-        public Actor CreateApple() => CreateCollectible(ActorId.Apple, size: 16, behavior: new AppleBehavior(_audioService, _playerStateManager));
-        public Actor CreateMeat() => CreateCollectible(ActorId.Meat, size: 16, behavior: new MeatBehavior(_audioService, _playerStateManager));
-        public Actor CreateKey() => CreateCollectible(ActorId.Key, size: 16, behavior: new KeyBehavior(_audioService, _playerStateManager));
+        public Actor CreateCoin() => CreateCollectible(ActorId.Coin, size: 8, behavior: new CoinBehavior(_gameSystem, _audioService, _playerStateManager));
+        public Actor CreateGem() => CreateCollectible(ActorId.Gem, size: 16, behavior: new GemBehavior(_gameSystem, _audioService, _playerStateManager));
+        public Actor CreateApple() => CreateCollectible(ActorId.Apple, size: 16, behavior: new AppleBehavior(_gameSystem, _audioService, _playerStateManager));
+        public Actor CreateMeat() => CreateCollectible(ActorId.Meat, size: 16, behavior: new MeatBehavior(_gameSystem, _audioService, _playerStateManager));
+        public Actor CreateKey() => CreateCollectible(ActorId.Key, size: 16, behavior: new KeyBehavior(_gameSystem, _audioService, _playerStateManager));
 
         private Actor CreateCollectible(ActorId id, int size, CollectibleBehavior behavior)
         {
@@ -356,6 +358,39 @@ namespace SomeGame.Main.Services
             return block;
         }
 
+        public Actor CreateLock(PixelPoint position, PaletteIndex palette)
+        {
+            var block = CreateActor(
+              actorId: ActorId.Lock,
+              actorType: ActorType.Gizmo,
+              behavior: new LockBehavior(_gameSystem, _scroller, _audioService, _playerStateManager),
+              destroyedBehavior: new EmptyDestroyedBehavior(),
+              collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Character),
+              hitBox: new Rectangle(0, 0, 16, 16),
+              palette: palette,
+              position: position
+           );
+
+            return block;
+        }
+
+        public Actor CreateLockBlock(PixelPoint position, PaletteIndex palette)
+        {
+            var block = CreateActor(
+              actorId: ActorId.LockBlock,
+              actorType: ActorType.Gizmo,
+              behavior: new LockBlockBehavior(_gameSystem, _scroller, _audioService, _actorManager),
+              destroyedBehavior: new EmptyDestroyedBehavior(),
+              collisionDetector: new ActorCollisionDetector(_actorManager, ActorType.Character),
+              hitBox: new Rectangle(0, 0, 16, 16),
+              palette: palette,
+              position: position
+           );
+
+            return block;
+        }
+
+
         public Actor CreateVSpike(PixelPoint position, PaletteIndex palette)
         {
             return CreateActor(
@@ -405,6 +440,8 @@ namespace SomeGame.Main.Services
                 case ActorId.TouchVanishingBlock: return TilesetContentKey.Gizmos;
                 case ActorId.TimedVanishingBlock: return TilesetContentKey.Gizmos;
                 case ActorId.SpikeBlock: return TilesetContentKey.Gizmos;
+                case ActorId.LockBlock: return TilesetContentKey.Gizmos;
+                case ActorId.Lock: return TilesetContentKey.Gizmos;
                 case ActorId.SpikeV: return TilesetContentKey.Gizmos;
                 case ActorId.SpikeH: return TilesetContentKey.Gizmos;
                 case ActorId.MovingPlatform: return TilesetContentKey.Gizmos;
