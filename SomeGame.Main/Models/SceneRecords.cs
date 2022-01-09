@@ -43,19 +43,10 @@ namespace SomeGame.Main.Models
         TilesetContentKey[] VramImagesP3,
         TilesetContentKey[] VramImagesP4,
         SoundInfo[] Sounds,
-        ActorStart[] Actors,
-        CollectiblePlacement[] CollectiblePlacements,
-        SceneTransitions Transitions)
-    {
+        SceneTransitions Transitions);   
 
-        public SceneInfo SetActorsAndCollectibles(IEnumerable<ActorStart> actors, IEnumerable<CollectiblePlacement> collectibles)
-        {
-            return new SceneInfo(BgMap, FgMap,  InterfaceType, Song, Bounds, BackgroundColor, 
-                VramImagesP1, VramImagesP2, VramImagesP3, VramImagesP4,
-                Sounds, 
-                actors.ToArray(),
-                collectibles.ToArray(), 
-                Transitions);
-        }
+    record SceneObjectPlacements(ActorStart[] ActorStarts, CollectiblePlacement[] CollectiblePlacements)
+    {
+        public SceneObjectPlacements() : this(new ActorStart[] { }, new CollectiblePlacement[] { }) { }
     }
 }

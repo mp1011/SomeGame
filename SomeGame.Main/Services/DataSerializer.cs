@@ -44,6 +44,11 @@ namespace SomeGame.Main.Services
             return $"{_contentFolder.FullName}\\Levels\\Scene_{contentKey}.bin";
         }
 
+        private string GetObjectPlacementsPath(SceneContentKey contentKey)
+        {
+            return $"{_contentFolder.FullName}\\Levels\\Scene_{contentKey}_Objects.bin";
+        }
+
         private string GetPath(TilesetContentKey tilesetContentKey)
         {
             return $"{_contentFolder.FullName}\\Tilesets\\{tilesetContentKey}.bin";
@@ -122,6 +127,14 @@ namespace SomeGame.Main.Services
             Save(tileMap.GetGrid(), GetPath(tileMap.LevelKey));
         }
 
+        public void SaveObjectPlacements(SceneContentKey key, ActorStart[] actorStarts, CollectiblePlacement[] collectiblePlacements)
+        {
+            var path = GetObjectPlacementsPath(key);
+            using var stream = File.OpenWrite(path);
+            using var writer = new DataWriter(stream);
+            writer.Write(new SceneObjectPlacements(actorStarts, collectiblePlacements));
+        }
+
         public void Save(SongData song)
         {
             var path = GetPath(song.Key);
@@ -155,6 +168,17 @@ namespace SomeGame.Main.Services
             using var stream = File.OpenRead(path);
             using var reader = new DataReader(stream);
             return reader.ReadScene();
+        }
+
+        public SceneObjectPlacements LoadObjectPlacements(SceneContentKey sceneContentKey)
+        {
+            var path = GetObjectPlacementsPath(sceneContentKey);
+            if (!File.Exists(path))
+                return null;
+
+            using var stream = File.OpenRead(path);
+            using var reader = new DataReader(stream);
+            return reader.ReadObjectPlacements();
         }
 
         public void Save(TilesetContentKey tilesetContentKey, SpriteFrame[] spriteFrames)

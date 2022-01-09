@@ -167,7 +167,7 @@ namespace SomeGame.Main.Services
             else
                 tile = sprite.TileMap.GetTile(tileLocation);
 
-            if (tile.Index == 0)
+            if (tile.Index == 255)
                 return false;
 
             bool flipX = false;

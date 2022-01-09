@@ -32,15 +32,24 @@ namespace SomeGame.Main.Behaviors
         {
             var layer = _gameSystem.GetLayer(LayerIndex.FG);
 
+            actor.Animator.Update(actor.CurrentAnimation);
+            var animationFrame = actor.Animator.GetCurrentFrame(actor.CurrentAnimation);
+
             int offset = _gameSystem.GetTileOffset(Content.TilesetContentKey.Gizmos) - layer.TileOffset;
 
             var tileX = actor.WorldPosition.X.Pixel / _gameSystem.TileSize;
             var tileY = actor.WorldPosition.Y.Pixel / _gameSystem.TileSize;
 
-            int tileIndex = offset + (springActive ? 8 : 1);
-
-            _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tileIndex, TileFlags.Solid));
-            _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, new Tile(tileIndex + 1, TileFlags.Solid));
+            if (springActive)
+            {
+                _scroller.SetTile(LayerIndex.FG, tileX, tileY, animationFrame.BottomLeft.Offset(offset));
+                _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, animationFrame.BottomRight.Offset(offset));
+            }
+            else
+            {
+                _scroller.SetTile(LayerIndex.FG, tileX, tileY, animationFrame.TopLeft.Offset(offset));
+                _scroller.SetTile(LayerIndex.FG, tileX + 1, tileY, animationFrame.TopRight.Offset(offset));
+            }
         }
 
         protected override void OnCollision(CollisionInfo collisionInfo)

@@ -65,6 +65,7 @@ namespace SomeGame.Main.Behaviors
                 if (_timer > 64 && spike.IsAnimationFinished)
                     spike.CurrentAnimation = AnimationKey.Idle;
 
+                
                 DrawSpikeTiles(spike, true);
             }
 

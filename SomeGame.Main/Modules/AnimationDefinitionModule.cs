@@ -27,20 +27,20 @@ namespace SomeGame.Main.Modules
                         new AnimationFrame(SpriteFrameIndex: 1, Duration: 50)),
                 jumping:
                     new Animation(
-                        new AnimationFrame(SpriteFrameIndex: 4, Duration: 50),
-                        new AnimationFrame(SpriteFrameIndex: 3, Duration: 50)),
+                        new AnimationFrame(SpriteFrameIndex: 10, Duration: 50),
+                        new AnimationFrame(SpriteFrameIndex: 11, Duration: 50)),
                 attacking:
                     new Animation(
-                        new AnimationFrame(SpriteFrameIndex: 5, Duration: 5),
-                        new AnimationFrame(SpriteFrameIndex: 6, Duration: 5)),
+                        new AnimationFrame(SpriteFrameIndex: 12, Duration: 5),
+                        new AnimationFrame(SpriteFrameIndex: 13, Duration: 5)),
                 moving:
                   new Animation(
+                      new AnimationFrame(SpriteFrameIndex: 4, Duration: 10),
+                      new AnimationFrame(SpriteFrameIndex: 5, Duration: 10),
+                      new AnimationFrame(SpriteFrameIndex: 6, Duration: 10),
                       new AnimationFrame(SpriteFrameIndex: 7, Duration: 10),
-                      new AnimationFrame(SpriteFrameIndex: 8, Duration: 10),
-                      new AnimationFrame(SpriteFrameIndex: 9, Duration: 10),
-                      new AnimationFrame(SpriteFrameIndex: 10, Duration: 10),
-                      new AnimationFrame(SpriteFrameIndex: 11, Duration: 10)),
-                hurt:  new Animation(SpriteFrameIndex:12,Duration:10));
+                      new AnimationFrame(SpriteFrameIndex: 8, Duration: 10)),
+                hurt:  new Animation(SpriteFrameIndex:3,Duration:10));
 
             SaveAnimations(ActorId.Skeleton,
                 idle: new Animation(SpriteFrameIndex: 0, Duration: 10),
@@ -48,14 +48,16 @@ namespace SomeGame.Main.Modules
                     new Animation(
                         new AnimationFrame(SpriteFrameIndex: 1, Duration: 20),
                         new AnimationFrame(SpriteFrameIndex: 2, Duration: 20)),
-                attacking: new Animation(SpriteFrameIndex: 3, Duration: 50));
+                attacking: new Animation(
+                        new AnimationFrame(SpriteFrameIndex: 3, Duration: 10),
+                        new AnimationFrame(SpriteFrameIndex: 4, Duration: 50)));
 
             SaveAnimations(ActorId.SkeletonBone, AnimationKey.Moving,
                 new Animation(
-                    new AnimationFrame(SpriteFrameIndex: 4, Duration: 10),
                     new AnimationFrame(SpriteFrameIndex: 5, Duration: 10),
                     new AnimationFrame(SpriteFrameIndex: 6, Duration: 10),
-                    new AnimationFrame(SpriteFrameIndex: 7, Duration: 10)));
+                    new AnimationFrame(SpriteFrameIndex: 7, Duration: 10),
+                    new AnimationFrame(SpriteFrameIndex: 8, Duration: 10)));
 
             SaveAnimations(ActorId.Skull, AnimationKey.Moving,
                 new Animation(SpriteFrameIndex: 9, Duration: 10));
@@ -110,28 +112,28 @@ namespace SomeGame.Main.Modules
                    new Animation(SpriteFrameIndex: 6, Duration: 0),
                disappearing:
                    new Animation(
+                            new AnimationFrame(SpriteFrameIndex: 6, Duration: 4),
                             new AnimationFrame(SpriteFrameIndex: 7, Duration: 4),
-                            new AnimationFrame(SpriteFrameIndex: 8, Duration: 4),
-                            new AnimationFrame(SpriteFrameIndex: 9, Duration: 4)),
+                            new AnimationFrame(SpriteFrameIndex: 8, Duration: 4)),
                appearing:
                     new Animation(
-                           new AnimationFrame(SpriteFrameIndex: 9, Duration: 4),
-                            new AnimationFrame(SpriteFrameIndex: 8, Duration: 4),
-                            new AnimationFrame(SpriteFrameIndex: 7, Duration: 4)));
+                           new AnimationFrame(SpriteFrameIndex: 8, Duration: 4),
+                            new AnimationFrame(SpriteFrameIndex: 7, Duration: 4),
+                            new AnimationFrame(SpriteFrameIndex: 6, Duration: 4)));
 
             SaveAnimations(ActorId.SpikeH,
               idle:
-                  new Animation(SpriteFrameIndex: 10, Duration: 0),
+                  new Animation(SpriteFrameIndex: 9, Duration: 0),
               disappearing:
                   new Animation(
-                           new AnimationFrame(SpriteFrameIndex: 11, Duration: 4),
-                           new AnimationFrame(SpriteFrameIndex: 12, Duration: 4),
-                           new AnimationFrame(SpriteFrameIndex: 13, Duration: 4)),
+                           new AnimationFrame(SpriteFrameIndex: 9, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 10, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 11, Duration: 4)),
               appearing:
                    new Animation(
-                          new AnimationFrame(SpriteFrameIndex: 13, Duration: 4),
-                           new AnimationFrame(SpriteFrameIndex: 12, Duration: 4),
-                           new AnimationFrame(SpriteFrameIndex: 11, Duration: 4)));
+                          new AnimationFrame(SpriteFrameIndex: 11, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 10, Duration: 4),
+                           new AnimationFrame(SpriteFrameIndex: 9, Duration: 4)));
 
 
 

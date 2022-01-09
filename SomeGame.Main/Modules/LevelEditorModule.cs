@@ -44,6 +44,7 @@ namespace SomeGame.Main.Modules
             _scroller = new Scroller(GameSystem);
             _scene = scene;
             var sceneInfo = DataSerializer.Load(scene);
+            var sceneItemPlacements = DataSerializer.LoadObjectPlacements(scene) ?? new SceneObjectPlacements();
             GameSystem.BackgroundColorIndex.Set(sceneInfo.BackgroundColor);
 
             SetVram(sceneInfo.VramImagesP1, sceneInfo.VramImagesP2, sceneInfo.VramImagesP3, sceneInfo.VramImagesP4);
@@ -58,9 +59,9 @@ namespace SomeGame.Main.Modules
             {
                 _levelKey = sceneInfo.FgMap.Key;
                 _tilePalette = sceneInfo.FgMap.Palette;
-                _editorTileset = DataSerializer.LoadEditorTileset(VramImagesP2[0]); 
-                _actorStarts = sceneInfo.Actors.ToList();
-                _collectiblePlacements = sceneInfo.CollectiblePlacements.ToList();
+                _editorTileset = DataSerializer.LoadEditorTileset(VramImagesP2[0]);
+                _actorStarts = sceneItemPlacements.ActorStarts.ToList();
+                _collectiblePlacements = sceneItemPlacements.CollectiblePlacements.ToList();
             }
             else
                 throw new ArgumentException("Invalid layer index");
@@ -178,7 +179,7 @@ namespace SomeGame.Main.Modules
                     if (HandleSelectTile())
                         break;
                        
-                    HandleStandardInput();
+                    HandleStandardInput(rightClickErase:false);
                     break;
                 case LevelEditorMode.Auto:
 
@@ -186,7 +187,7 @@ namespace SomeGame.Main.Modules
                         _nextClickPlacesTile = true;
                     else if (_nextClickPlacesTile)
                     {
-                        HandleStandardInput();
+                        HandleStandardInput(rightClickErase: false);
                         if (Input.A.IsPressed() || Input.B.IsPressed())
                         {
                             _nextClickPlacesTile = false;
@@ -431,12 +432,7 @@ namespace SomeGame.Main.Modules
         private void SaveMap()
         {
             DataSerializer.Save(_tileMap);
-
-            var sceneInfo = DataSerializer
-                                .Load(_scene)
-                                .SetActorsAndCollectibles(_actorStarts, _collectiblePlacements);
-
-            DataSerializer.Save(_scene, sceneInfo);
+            DataSerializer.SaveObjectPlacements(_scene, _actorStarts.ToArray(), _collectiblePlacements.ToArray());    
         }
 
         protected override void InitializeLayer(LayerIndex index, Layer layer)
@@ -506,13 +502,12 @@ namespace SomeGame.Main.Modules
 
         private void RelateBlockRange(Point start, Point end)
         {
-            throw new System.NotImplementedException();
-            //var bg = GameSystem.GetLayer(LayerIndex.BG);
-            //var block = new EditorBlock(_themeSelector.SelectedItem,
-            //    bg.TileMap.GetGrid().Extract(start, end));
+            var bg = GameSystem.GetLayer(LayerIndex.BG);
+            var block = new EditorBlock(_themeSelector.SelectedItem,
+                bg.TileMap.GetGrid().Extract(start, end));
 
-            //_editorTileset.Blocks.Add(block);
-            //DataSerializer.Save(_editorTileset);
+            _editorTileset.Blocks.Add(block);
+            DataSerializer.Save(_editorTileset);
         }
 
         private void MoveOrCopyBlockRange(Point start, Point end, bool isCopy)
@@ -523,7 +518,7 @@ namespace SomeGame.Main.Modules
 
             var selection = bg.TileMap
                                 .GetGrid()
-                                .Extract(start, end);
+                                .Extract(start, end, t=> (Tile)t);
 
             if (!isCopy)
             {

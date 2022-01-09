@@ -9,6 +9,7 @@ namespace SomeGame.Main.Scenes
     {
         public SceneContentKey Key { get; }
         public SceneInfo SceneInfo { get; }
+        public SceneObjectPlacements SceneObjectPlacements { get; }
         public Rectangle Bounds { get; }
       
         public Rectangle LeftEdge { get; }
@@ -16,10 +17,11 @@ namespace SomeGame.Main.Scenes
         public Rectangle TopEdge { get; }
         public Rectangle BottomEdge { get; }
 
-        public Scene(SceneContentKey key, SceneInfo sceneInfo, GameSystem gameSystem)
+        public Scene(SceneContentKey key, SceneInfo sceneInfo, SceneObjectPlacements sceneObjectPlacements, GameSystem gameSystem)
         {
             Key = key;
             SceneInfo = sceneInfo;
+            SceneObjectPlacements = sceneObjectPlacements ?? new SceneObjectPlacements();
             Bounds = sceneInfo.Bounds;
 
             LeftEdge = Bounds.LeftSection(10);

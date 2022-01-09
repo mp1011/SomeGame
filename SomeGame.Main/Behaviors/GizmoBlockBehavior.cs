@@ -44,29 +44,36 @@ namespace SomeGame.Main.Behaviors
                 var animationFrame = actor.Animator.GetCurrentFrame(actor.CurrentAnimation);
 
                 byte offset = (byte)(_gameSystem.GetTileOffset(Content.TilesetContentKey.Gizmos) - layer.TileOffset);
-
+              
                 if ((actor.Flip & Flip.FlipH) > 0)
                     flags |= TileFlags.FlipH;
                 if ((actor.Flip & Flip.FlipV) > 0)
                     flags |= TileFlags.FlipV;
-
-                SetTile(tileX, tileY,animationFrame.TopLeft.Index,offset, flags);
-                SetTile(tileX + 1, tileY,animationFrame.TopRight.Index,offset, flags);
-                SetTile(tileX, tileY + 1,animationFrame.BottomLeft.Index ,offset, flags);
-                SetTile(tileX + 1, tileY + 1,animationFrame.BottomRight.Index , offset, flags);
+                
+                SetTile(tileX, tileY, animationFrame.TopLeft, offset, flags);
+                SetTile(tileX + 1, tileY, animationFrame.TopRight, offset, flags);
+                SetTile(tileX, tileY + 1, animationFrame.BottomLeft, offset, flags);
+                SetTile(tileX + 1, tileY + 1, animationFrame.BottomRight, offset, flags);
             }
             else
             {
-                SetTile(tileX, tileY, 0, 0, TileFlags.None);
-                SetTile(tileX + 1, tileY, 0, 0, TileFlags.None);
-                SetTile(tileX, tileY + 1, 0, 0, TileFlags.None);
-                SetTile(tileX + 1, tileY + 1, 0, 0, TileFlags.None);
+                ClearTile(tileX, tileY);
+                ClearTile(tileX + 1, tileY);
+                ClearTile(tileX, tileY + 1);
+                ClearTile(tileX + 1, tileY + 1);
             }
         }
 
-        private void SetTile(int tileX, int tileY, byte tileIndex, byte offset, TileFlags flags)
+        private void SetTile(int tileX, int tileY, Tile tile, byte offset, TileFlags flags)
         {
-            _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tileIndex + offset, flags));
+            if (tile.Index == 255)
+                ClearTile(tileX,tileY);
+            else 
+                _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(tile.Index + offset, tile.Flags | flags));
+        }
+        private void ClearTile(int tileX, int tileY)
+        {
+            _scroller.SetTile(LayerIndex.FG, tileX, tileY, new Tile(255, TileFlags.None));
         }
 
         protected bool IsBlockVisible(Actor actor)

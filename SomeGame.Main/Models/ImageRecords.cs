@@ -44,12 +44,17 @@ namespace SomeGame.Main.Models
     {
         public Tile(int Index, TileFlags flags) : this((byte)(Index < 0 ? 255 : Index), flags) { }
 
-        public Tile() : this(0, TileFlags.None) { }
+        public Tile() : this(255, TileFlags.None) { }
 
         public bool IsSolid => (Flags & TileFlags.Solid) != 0;
         public bool IsCollectible => (Flags & TileFlags.Collectible) != 0;
 
+        public bool IsBlank => Index == 255;
+        public bool IsNotBlank => Index != 255;
+
         public Tile NextFlip() => new Tile(Index, GetNextFlipFlags(Flags));
+
+        public Tile Offset(int offset) => Index == 255 ? this : new Tile(Index + offset, Flags);
 
         private static TileFlags GetNextFlipFlags(TileFlags flags)
         {

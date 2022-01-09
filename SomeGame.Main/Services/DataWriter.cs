@@ -126,9 +126,13 @@ namespace SomeGame.Main.Services
             WriteEnumerable(scene.VramImagesP3);
             WriteEnumerable(scene.VramImagesP4);
             WriteEnumerable(scene.Sounds);
-            WriteEnumerable(scene.Actors);
-            WriteEnumerable(scene.CollectiblePlacements);
             Write(scene.Transitions);
+        }
+
+        public void Write(SceneObjectPlacements sceneObjectPlacements)
+        {
+            WriteEnumerable(sceneObjectPlacements.ActorStarts);
+            WriteEnumerable(sceneObjectPlacements.CollectiblePlacements);
         }
 
         public void Write(SceneTransitions sceneTransitions)

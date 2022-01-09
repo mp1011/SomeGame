@@ -83,7 +83,7 @@ namespace SomeGame.Main.Modules
             else
             {
                 HandleFlip();
-                HandleStandardInput();
+                HandleStandardInput(rightClickErase: true);
                 HandleSelectTile();
                 HandleMovePreview();
 

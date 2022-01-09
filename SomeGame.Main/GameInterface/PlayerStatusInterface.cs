@@ -21,7 +21,7 @@ namespace SomeGame.Main.GameInterface
             _font = new Font(_gameSystem.GetTileOffset(TilesetContentKey.Font), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-X!©");
 
             var interfaceLayer = _gameSystem.GetLayer(LayerIndex.Interface);
-            interfaceLayer.TileMap.SetEach((x, y) => new Tile(0, TileFlags.None));
+            interfaceLayer.TileMap.SetEach((x, y) => new Tile(255, TileFlags.None));
 
             interfaceLayer.Palette = PaletteIndex.P4;
             interfaceLayer.TileOffset = _gameSystem.GetTileOffset(TilesetContentKey.Hud);
@@ -48,7 +48,7 @@ namespace SomeGame.Main.GameInterface
 
             var bgXScroll = _gameSystem.RAM.DeclareInt();
             renderService.AddInterrupt(new SetBgXAutoScroll(_gameSystem, -5, 25, bgXScroll));
-            renderService.AddInterrupt(new SetBgXAutoScroll(_gameSystem, 0, 96, bgXScroll));
+            renderService.AddInterrupt(new SetBgXAutoScroll(_gameSystem, 0, 88, bgXScroll));
         }
 
         public void Update()

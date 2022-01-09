@@ -19,7 +19,7 @@ namespace SomeGame.Main.GameInterface
             _text = GetLevelText(thisScene);
 
             var layer = _gameSystem.GetLayer(LayerIndex.Interface);
-            layer.TileMap.SetEach((x, y) => new Tile(0, TileFlags.None));
+            layer.TileMap.SetEach((x, y) => new Tile(255, TileFlags.None));
 
             int textX = ((_gameSystem.Screen.Width / _gameSystem.TileSize) - _text.Length) / 2;
             _font.WriteToLayer(_text, layer, new Point(textX, 10));

@@ -72,8 +72,6 @@ namespace SomeGame.Main.Modules
                     new SoundInfo(SoundContentKey.Jump, 1),
                     new SoundInfo(SoundContentKey.Hurt, 1),
                },
-               Actors: previouslySaved?.Actors ?? new ActorStart[] { },
-               CollectiblePlacements: previouslySaved?.CollectiblePlacements ?? new CollectiblePlacement[] { },
                Transitions: new SceneTransitions());
         }
 
@@ -99,15 +97,16 @@ namespace SomeGame.Main.Modules
                VramImagesP3: new TilesetContentKey[]
                {
                     TilesetContentKey.Hero,
-                    TilesetContentKey.Skeleton,
-                    TilesetContentKey.Bat,
-                    TilesetContentKey.Bullet2,
                     TilesetContentKey.Bullet,
+                    TilesetContentKey.Bat,
                },
                VramImagesP4: new TilesetContentKey[]
                {
                     TilesetContentKey.Hud,
                     TilesetContentKey.Font,
+                    TilesetContentKey.Skeleton,
+                    TilesetContentKey.Ghost,
+                    TilesetContentKey.Bullet2
                },
                Sounds: new SoundInfo[]
                {
@@ -120,8 +119,6 @@ namespace SomeGame.Main.Modules
                     new SoundInfo(SoundContentKey.Pause, 1),
                     new SoundInfo(SoundContentKey.Bounce, 1),
                },
-               Actors: previousSaved?.Actors ?? new ActorStart[] { },
-               CollectiblePlacements: previousSaved?.CollectiblePlacements ?? new CollectiblePlacement[] { },
                Transitions: new SceneTransitions(Right: SceneContentKey.Level1));
         }
 

@@ -98,10 +98,11 @@ namespace SomeGame.Main.Services
                 VramImagesP3: ReadEnumerable<TilesetContentKey>(),
                 VramImagesP4: ReadEnumerable<TilesetContentKey>(),
                 Sounds: ReadEnumerable<SoundInfo>(),
-                Actors: ReadEnumerable<ActorStart>(),
-                CollectiblePlacements: ReadEnumerable<CollectiblePlacement>(),
                 Transitions: ReadSceneTransitions());
         }
+        public SceneObjectPlacements ReadObjectPlacements() =>
+            new SceneObjectPlacements(ReadEnumerable<ActorStart>(), ReadEnumerable<CollectiblePlacement>());
+
         public SceneTransitions ReadSceneTransitions() => new SceneTransitions(
             ReadEnum<SceneContentKey>(),
             ReadEnum<SceneContentKey>(),

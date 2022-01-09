@@ -23,7 +23,7 @@ namespace SomeGame.Main.Services
             if (_transitionInfo.NextScene != SceneContentKey.None)
             {
                 CurrentScene = sceneLoader.LoadScene(_transitionInfo);
-                sceneLoader.InitializeScene(CurrentScene.SceneInfo, _transitionInfo);
+                sceneLoader.InitializeScene(CurrentScene.SceneInfo, CurrentScene.SceneObjectPlacements, _transitionInfo);
                 _transitionInfo = new TransitionInfo();
 
                 return new SceneLoadResult(NewScene: true, 

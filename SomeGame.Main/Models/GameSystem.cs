@@ -81,7 +81,7 @@ namespace SomeGame.Main.Models
             };
 
             RAM.AddLabel("Begin Pattern Table");
-            _patternTable = RAM.DeclareNibbleGrid(128, 256);
+            _patternTable = RAM.DeclareNibbleGrid(128, 128);
 
             RAM.AddLabel("Begin Sprites");
             for (int i = 0; i < _sprites.Length; i++)
@@ -160,7 +160,10 @@ namespace SomeGame.Main.Models
    
                 colors.AddRange(newColors);
                 if (colors.Count > ColorsPerPalette)
-                    colors = colors.Take(ColorsPerPalette).ToList(); //todo, should give error
+                {
+
+                    throw new Exception("too many colors");
+                }
                       
             }
 
@@ -208,7 +211,7 @@ namespace SomeGame.Main.Models
             List<MemoryGrid<byte>> finalTiles = new List<MemoryGrid<byte>>();          
             finalTiles.AddRange(tileGroups.SelectMany(p => p.Data));
 
-            while(finalTiles.Count < 512)
+            while(finalTiles.Count < (_patternTable.Width / TileSize) * (_patternTable.Height / TileSize))
                 finalTiles.Add(new MemoryGrid<byte>(8, 8, (x, y) => 0));
             
             var combined = finalTiles.Combine(_patternTable.Width/TileSize);

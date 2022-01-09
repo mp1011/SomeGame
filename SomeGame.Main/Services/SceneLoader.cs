@@ -56,14 +56,17 @@ namespace SomeGame.Main.Services
                 sceneInfo = new SceneInfo(sceneInfo.BgMap, sceneInfo.FgMap, sceneInfo.InterfaceType, sceneInfo.Song,
                     sceneInfo.Bounds, sceneInfo.BackgroundColor, 
                     sceneInfo.VramImagesP1, sceneInfo.VramImagesP2, sceneInfo.VramImagesP3, sceneInfo.VramImagesP4,
-                    sceneInfo.Sounds, sceneInfo.Actors, sceneInfo.CollectiblePlacements, new SceneTransitions(Right: titleCardScene));
-                return new Scene(sceneTransition.NextScene, sceneInfo, _gameSystem);
+                    sceneInfo.Sounds, new SceneTransitions(Right: titleCardScene));
+                return new Scene(sceneTransition.NextScene, sceneInfo, new SceneObjectPlacements(), _gameSystem);
             }
 
-            return new Scene(sceneTransition.NextScene, _dataSerializer.Load(sceneTransition.NextScene), _gameSystem);            
+            return new Scene(key: sceneTransition.NextScene,
+                sceneInfo: _dataSerializer.Load(sceneTransition.NextScene),
+                sceneObjectPlacements: _dataSerializer.LoadObjectPlacements(sceneTransition.NextScene),
+                gameSystem: _gameSystem);
         }
 
-        public void InitializeScene(SceneInfo sceneInfo, TransitionInfo sceneTransition)
+        public void InitializeScene(SceneInfo sceneInfo, SceneObjectPlacements sceneObjectPlacements, TransitionInfo sceneTransition)
         {
             _gameSystem.RAM.MarkSceneDataAddress();
             _gameSystem.RAM.AddLabel("Begin Current Level");
@@ -75,8 +78,8 @@ namespace SomeGame.Main.Services
             var fg = InitializeLayer(sceneInfo.FgMap, LayerIndex.FG, sceneInfo.VramImagesP2[0]);
             _scroller.SetTileMaps(bg, fg);
 
-            InitializeActors(sceneInfo, sceneTransition);
-            PlaceCollectibles(sceneInfo, fg);
+            InitializeActors(sceneObjectPlacements, sceneTransition);
+            PlaceCollectibles(sceneObjectPlacements, fg);
             InitializeSounds(sceneInfo);
 
             _scroller.Initialize();
@@ -131,21 +134,21 @@ namespace SomeGame.Main.Services
             return tileMap;
         }
 
-        private void InitializeActors(SceneInfo sceneInfo, TransitionInfo transitionInfo)
+        private void InitializeActors(SceneObjectPlacements sceneObjectPlacements, TransitionInfo transitionInfo)
         {
             _gameSystem.RAM.AddLabel("Begin Actors");
-            foreach (var actorStart in sceneInfo.Actors)
+            foreach (var actorStart in sceneObjectPlacements.ActorStarts)
                 _actorFactory.CreateActor(actorStart.ActorId, actorStart.Position, actorStart.Palette, transitionInfo);
 
-            if (sceneInfo.CollectiblePlacements.Any())
+            if (sceneObjectPlacements.CollectiblePlacements.Any())
                 _collectiblesService.CreateCollectedItemActors(_actorFactory);
             _gameSystem.RAM.AddLabel("End Actors");
 
         }
 
-        private void PlaceCollectibles(SceneInfo sceneInfo, TileMap tileMap)
+        private void PlaceCollectibles(SceneObjectPlacements sceneObjectPlacements, TileMap tileMap)
         {
-            foreach(var collectiblePlacement in sceneInfo.CollectiblePlacements)
+            foreach(var collectiblePlacement in sceneObjectPlacements.CollectiblePlacements)
             {
                 _collectiblesService.AddCollectible(
                     collectiblePlacement.Id,

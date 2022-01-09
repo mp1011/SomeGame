@@ -20,7 +20,7 @@ namespace SomeGame.Main.Modules
             return layer.TilePointFromScreenPixelPoint(Input.MouseX, Input.MouseY);
         }
 
-        protected void HandleStandardInput()
+        protected void HandleStandardInput(bool rightClickErase)
         {
             if (GetCurrentMouseTile(LayerIndex.Interface).Y < 2)
                 return;
@@ -55,7 +55,13 @@ namespace SomeGame.Main.Modules
             }
             if (Input.B.IsDown())
             {
-                SelectedTile = background.TileMap.GetTile(mouseTile);
+                if(rightClickErase)
+                {
+                    background.TileMap.SetTile(mouseTile.X, mouseTile.Y, new Tile(255, TileFlags.None));
+                    AfterTilePlaced(mouseTile);
+                }
+                else 
+                    SelectedTile = background.TileMap.GetTile(mouseTile);
             }
 
             if (_lastMouseTile != mouseTile)

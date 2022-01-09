@@ -122,7 +122,14 @@ namespace SomeGame.Main.Models
                             height: (bottomRight.Y - upperLeft.Y) + 1,
                             (x, y) => thisGrid[x + upperLeft.X, y + upperLeft.Y]);
         }
-
+        public MemoryGrid<K> Extract<K>(Point upperLeft, Point bottomRight, Func<T,K> map)
+        {
+            var thisGrid = this;
+            return new MemoryGrid<K>(
+                            width: (bottomRight.X - upperLeft.X) + 1,
+                            height: (bottomRight.Y - upperLeft.Y) + 1,
+                            (x, y) => map(thisGrid[x + upperLeft.X, y + upperLeft.Y]));
+        }
 
         public T GetNeighborOrDefault(int x, int y, Direction direction)
         {

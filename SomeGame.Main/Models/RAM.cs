@@ -31,7 +31,7 @@ namespace SomeGame.Main.Models
     public class RAM
     {
         private GameSystem _gameSystem;
-        private byte[] _memory = new byte[64000];
+        private byte[] _memory = new byte[512000]; //todo, reduce down to RAM vs "Cartridge" ROM
         private int _declareIndex = 0;
         private IRamViewer _ramViewer;
 
@@ -581,7 +581,7 @@ namespace SomeGame.Main.Models
                 i++;
             }
 
-            return 0;
+            throw new Exception("Unsupported color");
         }
 
         public void Set(Palette colors)

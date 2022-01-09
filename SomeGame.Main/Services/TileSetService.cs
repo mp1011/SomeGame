@@ -81,7 +81,7 @@ namespace SomeGame.Main.Services
                     var left = tileRelations.Grid[x - 1, y];
                     if (left == neighbors[Direction.Left])
                         leftMatch = true;
-                    else if (neighbors[Direction.Left].Index >= 0)
+                    else if (neighbors[Direction.Left].IsNotBlank)
                         leftMatch = false;
                 }
 
@@ -90,7 +90,7 @@ namespace SomeGame.Main.Services
                     var above = tileRelations.Grid[x, y-1];
                     if (above == neighbors[Direction.Up])
                         topMatch = true;
-                    else if (neighbors[Direction.Up].Index >= 0)
+                    else if (neighbors[Direction.Up].IsNotBlank)
                         topMatch = false;
 
                 }
@@ -100,7 +100,7 @@ namespace SomeGame.Main.Services
                     var right = tileRelations.Grid[x+1, y];
                     if (right == neighbors[Direction.Right])
                         rightMatch = true;
-                    else if (neighbors[Direction.Right].Index >= 0)
+                    else if (neighbors[Direction.Right].IsNotBlank)
                         rightMatch = false;
                 }
 
@@ -109,7 +109,7 @@ namespace SomeGame.Main.Services
                     var below = tileRelations.Grid[x, y+1];
                     if (below == neighbors[Direction.Down])
                         bottomMatch = true;
-                    else if (neighbors[Direction.Down].Index >= 0)
+                    else if (neighbors[Direction.Down].IsNotBlank)
                         bottomMatch = false;
                 }
 

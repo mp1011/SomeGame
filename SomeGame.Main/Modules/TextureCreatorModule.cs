@@ -31,11 +31,14 @@ namespace SomeGame.Main.Modules
         public void Initialize()
         {
             CreateTileset("MountainSky", TilesetContentKey.Mountains);
+            CreateTileset("Ground", TilesetContentKey.Tiles1);
+            CreateTileset("Hero", TilesetContentKey.Hero);
+
         }
 
         private void CreateTileset(string sourceImage, TilesetContentKey key)
         {
-            var img = _dataSerializer.LoadImageFromDisk(_graphicsDevice, "MountainSky")
+            var img = _dataSerializer.LoadImageFromDisk(_graphicsDevice, sourceImage)
               .ToIndexedImage();
 
             var tileset = _tileSetService.CreateTilesetFromImage(img)
