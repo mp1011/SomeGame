@@ -23,10 +23,10 @@ namespace SomeGame.Main
           // RunGame(CreateTextureCreatorModule, ramViewer);
          //   RunGame(startup=> CreateThemeDefinerModule(startup, TilesetContentKey.Tiles1), ramViewer);
          //   RunGame(CreatePaletteEditorModule, ramViewer);
-              RunGame(startup=> CreateSpriteEditorModule(startup, TilesetContentKey.Gizmos), ramViewer);
+              RunGame(startup=> CreateSpriteEditorModule(startup, TilesetContentKey.Items), ramViewer);
               RunGame(CreateAnimationDefinitionModule, ramViewer);
               RunGame(CreateSceneDefinitionModule, ramViewer);
-          //  RunGame(startup=> CreateEditorModule(startup, SceneContentKey.Level1, LayerIndex.FG), ramViewer);
+            RunGame(startup=> CreateEditorModule(startup, SceneContentKey.Level1, LayerIndex.FG), ramViewer);
             RunGame(startup => CreateSceneModule(startup, SceneContentKey.Level1TitleCard), ramViewer);
 
         }
